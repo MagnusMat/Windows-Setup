@@ -1,5 +1,7 @@
 # Windows Install Script
 
+Set-ExecutionPolicy RemoteSigned
+
 # -------------------- Dependencies --------------------
 
 winget install --id Git.Git --accept-package-agreements
