@@ -142,7 +142,6 @@ Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe 
 Remove-Item 1password.exe
 
 winget install -e --id 7zip.7zip --location "D:\7-Zip" --accept-package-agreements # 7-Zip
-winget install -e --id Microsoft.AccessibilityInsights.Windows --location "D:\AccessibilityInsights" --accept-package-agreements # Accessibily Insights
 # Blender
 # Calibre
 # CPU-Z
