@@ -141,8 +141,7 @@ if ($envMachinePath -split ';' -notcontains $installDir) {
 }
 Remove-Item -Path op.zip
 
-Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe
-# 1Password
+Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe # 1Password
 # 7-Zip
 winget install --id Microsoft.AccessibilityInsights.Windows --location "D:\AccessibilityInsights" --accept-package-agreements
 # Blender
