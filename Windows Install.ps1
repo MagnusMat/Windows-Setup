@@ -146,13 +146,15 @@ winget install --id Microsoft.AccessibilityInsights.Windows --location "D:\Acces
 winget install --id Discord.Discord --location "D:\Discord"
 # Draw.io
 # DroidCam
+# eM Client
+# Microsoft Teams
 
 if ($confirmationDxWnd -eq 'y') {
     # DxWnd
 }
 
 # FileZilla
-# Firefox
+# Mozilla Firefox
 # Google Drive
 
 if ($confirmationHue -eq 'y') {
@@ -172,7 +174,7 @@ if ($confirmationMaple -eq 'y') {
 # Notion
 # Nvidia Geforce Experience
 # Nvidia RTX Voice
-# OBS
+# OBS Studio
 # Open Hardware Monitor
 # ProtonVPN
 # Shotcut
@@ -188,12 +190,13 @@ if ($confirmationMaple -eq 'y') {
 # -------------------- Progressive Web Apps --------------------
 
 Start-Process https://app.dinero.dk/
-Start-Process http://calendar.google.com/
+Start-Process https://calendar.google.com/
 Start-Process https://photos.google.com/
 Start-Process https://www.overleaf.com/
 Start-Process https://remove.bg/
 Start-Process https://snapdrop.net/
-Start-Process http://music.youtube.com/
+Start-Process https://music.youtube.com/
+Start-Process https://mail.proton.me/
 
 # -------------------- Tools & Tweaks --------------------
 
@@ -251,14 +254,15 @@ if ($confirmationDocker -eq 'y') {
 }
 
 # ffmpeg
+# JDK
 winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept-package-agreements
 # Insomnia
-# MinGW-w64
+# Msys2 - MinGW-w64
 choco install -y nvm # nvm
 nvm install latest # npm & node.js
 # R
 # Visual Studio
-# Wireshark
+winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" --accept-package-agreements # Wireshark
 
 # -------------------- Fonts --------------------
 
@@ -295,6 +299,8 @@ winget install --id QL-Win.QuickLook --accept-package-agreements # QuickLook
 winget install --id Microsoft.VisualStudioCode --accept-package-agreements # Visual Studio Code
 winget install --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
 choco install -y python3 # Python
+# 3d Viewer
+# Wikipedia
 
 # -------------------- Configurations --------------------
 
