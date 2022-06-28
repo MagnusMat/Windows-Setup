@@ -41,6 +41,9 @@ $confirmationDocker = Read-Host "Do you want to install Docker y/n"
 
 Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression # install scoop
 
+# Run as elevated
+Start-Process PowerShell -Verb runas
+
 # Install Chocolatey
 Set-ExecutionPolicy Bypass -Scope Process
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
@@ -138,6 +141,7 @@ if ($envMachinePath -split ';' -notcontains $installDir) {
 }
 Remove-Item -Path op.zip
 
+Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe
 # 1Password
 # 7-Zip
 winget install --id Microsoft.AccessibilityInsights.Windows --location "D:\AccessibilityInsights" --accept-package-agreements
