@@ -1,12 +1,12 @@
 # Windows Install Script
 
-Set-ExecutionPolicy RemoteSigned
+Set-ExecutionPolicy RemoteSigned # Execute Scripts
 
 # -------------------- Dependencies --------------------
 
-winget install --id Git.Git --accept-package-agreements
-winget install --id GitHub.cli --accept-package-agreements
-gh auth login
+winget install --id Git.Git --accept-package-agreements # Git
+winget install --id GitHub.cli --accept-package-agreements # GitHub CLI
+gh auth login # GitHub Cli Login
 
 # -------------------- Confirmation Specific --------------------
 
@@ -41,10 +41,7 @@ $confirmationDocker = Read-Host "Do you want to install Docker y/n"
 
 Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression # install scoop
 
-# Run as elevated
-Start-Process PowerShell -Verb runas
-
-# Install Chocolatey
+# Chocolatey
 Set-ExecutionPolicy Bypass -Scope Process
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 
@@ -53,7 +50,6 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 # Kmonad
 scoop install stack # install stack
 if ($confirmationKmonad -eq 'y') {
-    # Kmonad
     Set-Location D:\
     git clone https://github.com/kmonad/kmonad.git
     Set-Location kmonad
@@ -69,7 +65,7 @@ if ($confirmationGames -eq 'y') {
     # Epic Games
     # GOG Galaxy
     # Playnite (https://github.com/JosefNemec/Playnite/)
-    winget install --id Valve.Steam --location "D:\Steam" --accept-package-agreements
+    winget install --id Valve.Steam --location "D:\Steam" --accept-package-agreements # Steam
     # Twitch
     # Ubisoft Connect
 }
@@ -132,7 +128,7 @@ switch ($arch) {
     '32-bit' { $opArch = '386'; break }
     Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
 }
-$installDir = Join-Path -Path $env:ProgramFiles -ChildPath '1Password CLI'
+$installDir = Join-Path -Path "D:\1Password CLI" -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
@@ -141,14 +137,17 @@ if ($envMachinePath -split ';' -notcontains $installDir) {
 }
 Remove-Item -Path op.zip
 
-Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe # 1Password
-# 7-Zip
-winget install --id Microsoft.AccessibilityInsights.Windows --location "D:\AccessibilityInsights" --accept-package-agreements
+# 1Password
+Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe -OutFile 1password.exe
+Remove-Item 1password.exe
+
+winget install -e --id 7zip.7zip --location "D:\7-Zip" --accept-package-agreements # 7-Zip
+winget install -e --id Microsoft.AccessibilityInsights.Windows --location "D:\AccessibilityInsights" --accept-package-agreements # Accessibily Insights
 # Blender
 # Calibre
 # CPU-Z
 # Cryptomator
-winget install --id Discord.Discord --location "D:\Discord"
+winget install --id Discord.Discord --location "D:\Discord" --accept-package-agreements # Discord
 # Draw.io
 # DroidCam
 # eM Client
