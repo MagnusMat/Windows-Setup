@@ -128,7 +128,7 @@ switch ($arch) {
     '32-bit' { $opArch = '386'; break }
     Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
 }
-$installDir = Join-Path -Path "D:\1Password CLI"
+$installDir = Join-Path -Path "D:\" -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
