@@ -159,7 +159,7 @@ winget install --id Microsoft.Teams --accept-package-agreements # Microsoft Team
 #}
 
 # FileZilla
-# Mozilla Firefox
+# Mozilla Firefox https://gmusumeci.medium.com/unattended-install-of-firefox-browser-using-powershell-6841a7742f9a
 # Google Drive
 
 #if ($confirmationHue -eq 'y') {
@@ -180,7 +180,7 @@ winget install --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 # Nvidia Geforce Experience
 # Nvidia RTX Voice
 # OBS Studio
-# Open Hardware Monitor
+# Open Hardware Monitor # Download file and unzip
 # ProtonVPN
 # Shotcut
 # TeamViewer
@@ -190,7 +190,7 @@ winget install --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 # VeraCrypt
 # WizTree
 # Yubikey Manager
-# PhotoShop
+# PhotoShop # Download from Drive
 
 # -------------------- Progressive Web Apps --------------------
 
@@ -222,7 +222,7 @@ Start-Process https://mail.proton.me/ # Proton Mail
 #}
 
 #if ($confirmationLocale -eq 'y') {
-    # Locale Emulator (https://github.com/xupefei/Locale-Emulator)
+    # Locale Emulator (https://github.com/xupefei/Locale-Emulator) # Download and Unzip
 #}
 
 #if ($confirmationLunar -eq 'y') {
@@ -232,12 +232,12 @@ Start-Process https://mail.proton.me/ # Proton Mail
 # Figma
 # Mendeley
 # Onion Share (https://github.com/onionshare/onionshare)
-# Pandoc
+# Pandoc # Download and unzip
 # PSX2PSP
 # Reduce PDF Size
 # ScreenToGif
-# Transmission (https://github.com/transmission/transmission)
-# gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "D:\YT-DLP" # YT-DLP
+# Transmission (https://github.com/transmission/transmission) # Download installer
+# gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "D:\YT-DLP" # YT-DLP # Check folder structrue
 
 # -------------------- Development Tools --------------------
 
@@ -257,22 +257,22 @@ Start-Process https://mail.proton.me/ # Proton Mail
     #winget install --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements
 #}
 
-# ffmpeg
+# ffmpeg # Download and unzip
 # JDK
 winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept-package-agreements
 # Insomnia
-# Msys2 - MinGW-w64
+# Msys2 - MinGW-w64 # Download installer
 #choco install -y nvm # nvm
 #nvm install latest # npm & node.js
 # R
 # Visual Studio
-#winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" --accept-package-agreements # Wireshark # Restarts pc
 
 # -------------------- Fonts --------------------
 
 <# Fira Code #>
-
-# (https://github.com/tonsky/FiraCode)
+# (https://github.com/tonsky/FiraCode) https://blog.simontimms.com/2021/06/11/installing-fonts/
+# Move all files in folder https://stackoverflow.com/questions/38063424/powershell-move-all-files-from-folders-and-subfolders-into-single-folder
+# Folder delete https://stackoverflow.com/questions/43611350/how-can-i-delete-files-with-powershell-without-confirmation
 # Fira Code iScript (https://github.com/kencrocken/FiraCodeiScript)
 # FiraCode Nerd Font (https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode
 <# ---------- #>
@@ -297,15 +297,15 @@ if ($confirmationGameBar -eq 'y') {
     winget install --id 9NG4TL7TX1KW --accept-package-agreements # Notes for Game Bar
 }
 
-#winget install --id 9MSPC6MP8FM4 --accept-package-agreements # Microsoft Whiteboard
-#winget install --id 9N95Q1ZZPMH4 --accept-package-agreements # MPEG-2
-#winget install --id 9NF8H0H7WMLT --accept-package-agreements # Nvidia Control Panel
-#winget install --id Microsoft.PowerToys --accept-package-agreements # Powertoys
-#winget install --id Microsoft.Powershell --source winget # PowerShell 7
-#winget install --id QL-Win.QuickLook --accept-package-agreements # QuickLook
-#winget install --id Microsoft.VisualStudioCode --accept-package-agreements # Visual Studio Code
-#winget install --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
-#choco install -y python3 # Python
+winget install --id 9MSPC6MP8FM4 --accept-package-agreements # Microsoft Whiteboard
+winget install --id 9N95Q1ZZPMH4 --accept-package-agreements # MPEG-2
+winget install --id 9NF8H0H7WMLT --accept-package-agreements # Nvidia Control Panel
+winget install --id Microsoft.PowerToys --accept-package-agreements # Powertoys
+winget install --id Microsoft.Powershell --source winget # PowerShell 7
+winget install --id QL-Win.QuickLook --accept-package-agreements # QuickLook
+winget install --id Microsoft.VisualStudioCode --accept-package-agreements # Visual Studio Code
+winget install --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
+choco install -y python3 # Python
 # 3d Viewer
 # Wikipedia
 
@@ -314,8 +314,13 @@ if ($confirmationGameBar -eq 'y') {
 # OneDrive backups
 
 # -------------------- WSL --------------------
-#dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-#dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-#wsl --install
+
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+#wsl --install # Needs reboot https://stackoverflow.com/questions/15166839/powershell-reboot-and-continue-script
 #wsl --install -d Debian
 #wsl --set-default-version 2
+
+# -------------------- Restarts pc --------------------
+
+winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" --accept-package-agreements # Wireshark
