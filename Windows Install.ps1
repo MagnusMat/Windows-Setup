@@ -70,7 +70,7 @@ if ($confirmationGames -eq 'y') {
     # Ubisoft Connect
 }
 
-if ($confirmationEmulators -eq 'y') {
+#if ($confirmationEmulators -eq 'y') {
     # Cemu
     # Citra (https://github.com/citra-emu/citra)
     # Dolphin (https://github.com/dolphin-emu/dolphin)
@@ -85,43 +85,43 @@ if ($confirmationEmulators -eq 'y') {
     # Ryujinx
     # SNES9X
     # Visual Boy Advance
-}
+#}
 
-if ($confirmationAliens -eq 'y') {
+#if ($confirmationAliens -eq 'y') {
     # Aliens vs. Predator 2
     # Aliens vs. Predator 2 - Primal Hunt
-}
+#}
 
-if ($confirmationBlur -eq 'y') {
+#if ($confirmationBlur -eq 'y') {
     # Blur
-}
+#}
 
-if ($confirmationSilent -eq 'y') {
+#if ($confirmationSilent -eq 'y') {
     # Silent Hill - The Arcade
-}
+#}
 
 # -------------------- Miscellaneous --------------------
 
-if ($confirmationAISuite -eq 'y') {
+#if ($confirmationAISuite -eq 'y') {
     # AI Suite 3
-}
-if ($confirmationAmazon -eq 'y') {
+#}
+#if ($confirmationAmazon -eq 'y') {
     # Amazon Send to Kindle
-}
-if ($confirmationAorus -eq 'y') {
+#}
+#if ($confirmationAorus -eq 'y') {
     # Aorus Engine
-}
-if ($confirmationArchi -eq 'y') {
+#}
+#if ($confirmationArchi -eq 'y') {
     # Archi Steam Farm
-}
-if ($confirmationROG -eq 'y') {
+#}
+#if ($confirmationROG -eq 'y') {
     # ROG Xonar Phoebus
-}
-if ($confirmationSamsung -eq 'y') {
+#}
+#if ($confirmationSamsung -eq 'y') {
     # Samsung Magician
-}
+#}
 
-# 1Password CLI
+<# 1Password CLI #>
 $arch = "64-bit"
 switch ($arch) {
     '64-bit' { $opArch = 'amd64'; break }
@@ -136,39 +136,41 @@ if ($envMachinePath -split ';' -notcontains $installDir) {
     [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
 }
 Remove-Item -Path op.zip
+<# ---------- #>
 
-# 1Password
+<# 1Password #>
 Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe -OutFile 1password.exe
 Remove-Item 1password.exe
+<# ---------- #>
 
 winget install -e --id 7zip.7zip --location "D:\7-Zip" --accept-package-agreements # 7-Zip
 # Blender
 # Calibre
 # CPU-Z
 # Cryptomator
-winget install --id Discord.Discord --location "D:\Discord" --accept-package-agreements # Discord
+winget install --id Discord.Discord --accept-package-agreements # Discord
 # Draw.io
 # DroidCam
 # eM Client
 winget install --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
 
-if ($confirmationDxWnd -eq 'y') {
+#if ($confirmationDxWnd -eq 'y') {
     # DxWnd
-}
+#}
 
 # FileZilla
 # Mozilla Firefox
 # Google Drive
 
-if ($confirmationHue -eq 'y') {
+#if ($confirmationHue -eq 'y') {
     # Hue Sync
-}
+#}
 
 # Inkscape
 
-if ($confirmationMaple -eq 'y') {
+#if ($confirmationMaple -eq 'y') {
     # Maple
-}
+#}
 
 # Mathpix
 # MegaSync
@@ -192,80 +194,79 @@ winget install --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 
 # -------------------- Progressive Web Apps --------------------
 
-Start-Process https://app.dinero.dk/
-Start-Process https://calendar.google.com/
-Start-Process https://photos.google.com/
-Start-Process https://www.overleaf.com/
-Start-Process https://remove.bg/
-Start-Process https://snapdrop.net/
-Start-Process https://music.youtube.com/
-Start-Process https://mail.proton.me/
+Start-Process https://app.dinero.dk/ # Dinere
+Start-Process https://calendar.google.com/ # Google Calendar
+Start-Process https://photos.google.com/ # Google Photos
+Start-Process https://www.overleaf.com/ # Overleaf
+Start-Process https://remove.bg/ # Remove.bg
+Start-Process https://snapdrop.net/ # Snapdrop
+Start-Process https://music.youtube.com/ # Youtube Music
+Start-Process https://mail.proton.me/ # Proton Mail
 
 # -------------------- Tools & Tweaks --------------------
 
-if ($confirmationFlawless -eq 'y') {
+#if ($confirmationFlawless -eq 'y') {
     # Flawless Widescreen
-}
+#}
 
-if ($confirmationFloating -eq 'y') {
+#if ($confirmationFloating -eq 'y') {
     # Floating ISP (Patch bps Roms) (https://github.com/Alcaro/Flips)
-}
+#}
 
-if ($confirmationGlosc -eq 'y') {
+#if ($confirmationGlosc -eq 'y') {
     # GloSC (Global Steam Controller) (https://github.com/Alia5/GloSC)
-}
+#}
 
-if ($confirmationISO -eq 'y') {
+#if ($confirmationISO -eq 'y') {
     # ISO to WBFS
-}
+#}
 
-if ($confirmationLocale -eq 'y') {
+#if ($confirmationLocale -eq 'y') {
     # Locale Emulator (https://github.com/xupefei/Locale-Emulator)
-}
+#}
 
-if ($confirmationLunar -eq 'y') {
+#if ($confirmationLunar -eq 'y') {
     # Lunar IPS
-}
+#}
 
 # Figma
 # Mendeley
 # Onion Share (https://github.com/onionshare/onionshare)
-winget install pandoc --accept-package-agreements
+# Pandoc
 # PSX2PSP
 # Reduce PDF Size
 # ScreenToGif
 # Transmission (https://github.com/transmission/transmission)
-
-gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "D:\YT-DLP" # YT-DLP
+# gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "D:\YT-DLP" # YT-DLP
 
 # -------------------- Development Tools --------------------
 
-if ($confirmationMatLab -eq 'y') {
+#if ($confirmationMatLab -eq 'y') {
     # MatLab
-}
+#}
 
-if ($confirmationTex -eq 'y') {
+#if ($confirmationTex -eq 'y') {
     # TexLive
-}
+#}
 
-if ($confirmationUppaal -eq 'y') {
+#if ($confirmationUppaal -eq 'y') {
     # Uppaal
-}
+#}
 
-if ($confirmationDocker -eq 'y') {
-    winget install --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements
-}
+#if ($confirmationDocker -eq 'y') {
+    #winget install --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements
+#}
 
 # ffmpeg
 # JDK
 winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept-package-agreements
 # Insomnia
 # Msys2 - MinGW-w64
-choco install -y nvm # nvm
-nvm install latest # npm & node.js
+#choco install -y nvm # nvm
+#nvm install latest # npm & node.js
 # R
 # Visual Studio
-winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" --accept-package-agreements # Wireshark
+#winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" --accept-package-agreements # Wireshark # Restarts pc
 
 # -------------------- Fonts --------------------
 
@@ -285,23 +286,23 @@ winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" -
 
 # -------------------- Windows Store Apps (winget) --------------------
 
-if ($confirmationHP -eq 'y') {
+#if ($confirmationHP -eq 'y') {
     # HP Support Assistant (Laptop only)
-}
+#}
 
 if ($confirmationGameBar -eq 'y') {
     winget install --id 9NG4TL7TX1KW --accept-package-agreements # Notes for Game Bar
 }
 
-winget install --id 9MSPC6MP8FM4 --accept-package-agreements # Microsoft Whiteboard
-winget install --id 9N95Q1ZZPMH4 --accept-package-agreements # MPEG-2
-winget install --id 9NF8H0H7WMLT --accept-package-agreements # Nvidia Control Panel
-winget install --id Microsoft.PowerToys --accept-package-agreements # Powertoys
-winget install --id Microsoft.Powershell --source winget # PowerShell 7
-winget install --id QL-Win.QuickLook --accept-package-agreements # QuickLook
-winget install --id Microsoft.VisualStudioCode --accept-package-agreements # Visual Studio Code
-winget install --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
-choco install -y python3 # Python
+#winget install --id 9MSPC6MP8FM4 --accept-package-agreements # Microsoft Whiteboard
+#winget install --id 9N95Q1ZZPMH4 --accept-package-agreements # MPEG-2
+#winget install --id 9NF8H0H7WMLT --accept-package-agreements # Nvidia Control Panel
+#winget install --id Microsoft.PowerToys --accept-package-agreements # Powertoys
+#winget install --id Microsoft.Powershell --source winget # PowerShell 7
+#winget install --id QL-Win.QuickLook --accept-package-agreements # QuickLook
+#winget install --id Microsoft.VisualStudioCode --accept-package-agreements # Visual Studio Code
+#winget install --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
+#choco install -y python3 # Python
 # 3d Viewer
 # Wikipedia
 
@@ -310,8 +311,8 @@ choco install -y python3 # Python
 # OneDrive backups
 
 # -------------------- WSL --------------------
-dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-wsl --install
-wsl --install -d Debian
-wsl --set-default-version 2
+#dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+#dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+#wsl --install
+#wsl --install -d Debian
+#wsl --set-default-version 2
