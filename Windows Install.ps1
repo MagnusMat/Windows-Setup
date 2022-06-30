@@ -150,7 +150,7 @@ winget install --id Discord.Discord --location "D:\Discord" --accept-package-agr
 # Draw.io
 # DroidCam
 # eM Client
-# Microsoft Teams
+winget install --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
 
 if ($confirmationDxWnd -eq 'y') {
     # DxWnd
@@ -172,7 +172,7 @@ if ($confirmationMaple -eq 'y') {
 
 # Mathpix
 # MegaSync
-# Messenger
+winget install --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 # MiniBin
 # Notion
 # Nvidia Geforce Experience
