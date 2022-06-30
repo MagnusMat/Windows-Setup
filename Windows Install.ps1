@@ -270,9 +270,12 @@ winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept
 
 # -------------------- Fonts --------------------
 
-# Fira Code (https://github.com/tonsky/FiraCode)
+<# Fira Code #>
+
+# (https://github.com/tonsky/FiraCode)
 # Fira Code iScript (https://github.com/kencrocken/FiraCodeiScript)
 # FiraCode Nerd Font (https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode
+<# ---------- #>
 
 # -------------------- Paths --------------------
 
