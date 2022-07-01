@@ -142,11 +142,12 @@ Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe 
 Remove-Item 1password.exe
 
 winget install -e --id 7zip.7zip --location "D:\7-Zip" --accept-package-agreements # 7-Zip
-# Blender
-# Calibre
+gh release download -R microsoft/accessibility-insights-windows --patters "*.msi" -D "D:\" # Accessibility Insights for Windows
+winget install -e --id BlenderFoundation.Blender --accept-package-agreements # Blender
+winget install -e --id calibre.calibre --accept-package-agreements # Calibre
 # CPU-Z
-# Cryptomator
-winget install --id Discord.Discord --location "D:\Discord" --accept-package-agreements # Discord
+gh release download -R cryptomator/cryptomator --pattern "*.msi" -D "D:\" # Cryptomator
+winget install --id Discord.Discord --accept-package-agreements # Discord
 # Draw.io
 # DroidCam
 # eM Client
