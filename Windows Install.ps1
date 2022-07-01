@@ -70,58 +70,58 @@ if ($confirmationGames -eq 'y') {
     # Ubisoft Connect
 }
 
-if ($confirmationEmulators -eq 'y') {
-    # Cemu
-    # Citra (https://github.com/citra-emu/citra)
-    # Dolphin (https://github.com/dolphin-emu/dolphin)
-    # NoPayStation
-    # PCSX2 (https://github.com/PCSX2/pcsx2)
-    # PCSXR (https://github.com/iCatButler/pcsxr)
-    # PPSSPP (https://github.com/hrydgard/ppsspp)
-    # Project64](https://github.com/project64/project64)
-    # QCMA (https://github.com/codestation/qcma)
-    # RetroArch (https://github.com/libretro/RetroArch)
-    # RPCS3 (https://github.com/RPCS3/rpcs3)
-    # Ryujinx
-    # SNES9X
-    # Visual Boy Advance
-}
+#if ($confirmationEmulators -eq 'y') {
+# Cemu
+# Citra (https://github.com/citra-emu/citra)
+# Dolphin (https://github.com/dolphin-emu/dolphin)
+# NoPayStation
+# PCSX2 (https://github.com/PCSX2/pcsx2)
+# PCSXR (https://github.com/iCatButler/pcsxr)
+# PPSSPP (https://github.com/hrydgard/ppsspp)
+# Project64](https://github.com/project64/project64)
+# QCMA (https://github.com/codestation/qcma)
+# RetroArch (https://github.com/libretro/RetroArch)
+# RPCS3 (https://github.com/RPCS3/rpcs3)
+# Ryujinx
+# SNES9X
+# Visual Boy Advance
+#}
 
-if ($confirmationAliens -eq 'y') {
-    # Aliens vs. Predator 2
-    # Aliens vs. Predator 2 - Primal Hunt
-}
+#if ($confirmationAliens -eq 'y') {
+# Aliens vs. Predator 2
+# Aliens vs. Predator 2 - Primal Hunt
+#}
 
-if ($confirmationBlur -eq 'y') {
-    # Blur
-}
+#if ($confirmationBlur -eq 'y') {
+# Blur
+#}
 
-if ($confirmationSilent -eq 'y') {
-    # Silent Hill - The Arcade
-}
+#if ($confirmationSilent -eq 'y') {
+# Silent Hill - The Arcade
+#}
 
 # -------------------- Miscellaneous --------------------
 
-if ($confirmationAISuite -eq 'y') {
-    # AI Suite 3
-}
-if ($confirmationAmazon -eq 'y') {
-    # Amazon Send to Kindle
-}
-if ($confirmationAorus -eq 'y') {
-    # Aorus Engine
-}
-if ($confirmationArchi -eq 'y') {
-    # Archi Steam Farm
-}
-if ($confirmationROG -eq 'y') {
-    # ROG Xonar Phoebus
-}
-if ($confirmationSamsung -eq 'y') {
-    # Samsung Magician
-}
+#if ($confirmationAISuite -eq 'y') {
+# AI Suite 3
+#}
+#if ($confirmationAmazon -eq 'y') {
+# Amazon Send to Kindle
+#}
+#if ($confirmationAorus -eq 'y') {
+# Aorus Engine
+#}
+#if ($confirmationArchi -eq 'y') {
+# Archi Steam Farm
+#}
+#if ($confirmationROG -eq 'y') {
+# ROG Xonar Phoebus
+#}
+#if ($confirmationSamsung -eq 'y') {
+# Samsung Magician
+#}
 
-# 1Password CLI
+<# 1Password CLI #>
 $arch = "64-bit"
 switch ($arch) {
     '64-bit' { $opArch = 'amd64'; break }
@@ -136,10 +136,12 @@ if ($envMachinePath -split ';' -notcontains $installDir) {
     [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
 }
 Remove-Item -Path op.zip
+<# ---------- #>
 
-# 1Password
+<# 1Password #>
 Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe -OutFile 1password.exe
 Remove-Item 1password.exe
+<# ---------- #>
 
 winget install -e --id 7zip.7zip --location "D:\7-Zip" --accept-package-agreements # 7-Zip
 gh release download -R microsoft/accessibility-insights-windows --patters "*.msi" -D "D:\" # Accessibility Insights for Windows
@@ -147,39 +149,40 @@ winget install -e --id BlenderFoundation.Blender --accept-package-agreements # B
 winget install -e --id calibre.calibre --accept-package-agreements # Calibre
 # CPU-Z
 gh release download -R cryptomator/cryptomator --pattern "*.msi" -D "D:\" # Cryptomator
+# Cryptomator
 winget install --id Discord.Discord --accept-package-agreements # Discord
 # Draw.io
 # DroidCam
 # eM Client
-# Microsoft Teams
+winget install --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
 
-if ($confirmationDxWnd -eq 'y') {
-    # DxWnd
-}
+#if ($confirmationDxWnd -eq 'y') {
+# DxWnd
+#}
 
 # FileZilla
-# Mozilla Firefox
+# Mozilla Firefox https://gmusumeci.medium.com/unattended-install-of-firefox-browser-using-powershell-6841a7742f9a
 # Google Drive
 
-if ($confirmationHue -eq 'y') {
-    # Hue Sync
-}
+#if ($confirmationHue -eq 'y') {
+# Hue Sync
+#}
 
 # Inkscape
 
-if ($confirmationMaple -eq 'y') {
-    # Maple
-}
+#if ($confirmationMaple -eq 'y') {
+# Maple
+#}
 
 # Mathpix
 # MegaSync
-# Messenger
+winget install --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 # MiniBin
 # Notion
 # Nvidia Geforce Experience
 # Nvidia RTX Voice
 # OBS Studio
-# Open Hardware Monitor
+# Open Hardware Monitor # Download file and unzip
 # ProtonVPN
 # Shotcut
 # TeamViewer
@@ -189,90 +192,92 @@ if ($confirmationMaple -eq 'y') {
 # VeraCrypt
 # WizTree
 # Yubikey Manager
-# PhotoShop
+# PhotoShop # Download from Drive
 
 # -------------------- Progressive Web Apps --------------------
 
-Start-Process https://app.dinero.dk/
-Start-Process https://calendar.google.com/
-Start-Process https://photos.google.com/
-Start-Process https://www.overleaf.com/
-Start-Process https://remove.bg/
-Start-Process https://snapdrop.net/
-Start-Process https://music.youtube.com/
-Start-Process https://mail.proton.me/
+Start-Process https://app.dinero.dk/ # Dinere
+Start-Process https://calendar.google.com/ # Google Calendar
+Start-Process https://photos.google.com/ # Google Photos
+Start-Process https://www.overleaf.com/ # Overleaf
+Start-Process https://remove.bg/ # Remove.bg
+Start-Process https://snapdrop.net/ # Snapdrop
+Start-Process https://music.youtube.com/ # Youtube Music
+Start-Process https://mail.proton.me/ # Proton Mail
 
 # -------------------- Tools & Tweaks --------------------
 
-if ($confirmationFlawless -eq 'y') {
-    # Flawless Widescreen
-}
+#if ($confirmationFlawless -eq 'y') {
+# Flawless Widescreen
+#}
 
-if ($confirmationFloating -eq 'y') {
-    # Floating ISP (Patch bps Roms) (https://github.com/Alcaro/Flips)
-}
+#if ($confirmationFloating -eq 'y') {
+# Floating ISP (Patch bps Roms) (https://github.com/Alcaro/Flips)
+#}
 
-if ($confirmationGlosc -eq 'y') {
-    # GloSC (Global Steam Controller) (https://github.com/Alia5/GloSC)
-}
+#if ($confirmationGlosc -eq 'y') {
+# GloSC (Global Steam Controller) (https://github.com/Alia5/GloSC)
+#}
 
-if ($confirmationISO -eq 'y') {
-    # ISO to WBFS
-}
+#if ($confirmationISO -eq 'y') {
+# ISO to WBFS
+#}
 
-if ($confirmationLocale -eq 'y') {
-    # Locale Emulator (https://github.com/xupefei/Locale-Emulator)
-}
+#if ($confirmationLocale -eq 'y') {
+# Locale Emulator (https://github.com/xupefei/Locale-Emulator) # Download and Unzip
+#}
 
-if ($confirmationLunar -eq 'y') {
-    # Lunar IPS
-}
+#if ($confirmationLunar -eq 'y') {
+# Lunar IPS
+#}
 
 # Figma
 # Mendeley
 # Onion Share (https://github.com/onionshare/onionshare)
-winget install pandoc --accept-package-agreements
+# Pandoc # Download and unzip
 # PSX2PSP
 # Reduce PDF Size
 # ScreenToGif
-# Transmission (https://github.com/transmission/transmission)
-
-gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "D:\YT-DLP" # YT-DLP
+# Transmission (https://github.com/transmission/transmission) # Download installer
+# gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "D:\YT-DLP" # YT-DLP # Check folder structrue
 
 # -------------------- Development Tools --------------------
 
-if ($confirmationMatLab -eq 'y') {
-    # MatLab
-}
+#if ($confirmationMatLab -eq 'y') {
+# MatLab
+#}
 
-if ($confirmationTex -eq 'y') {
-    # TexLive
-}
+#if ($confirmationTex -eq 'y') {
+# TexLive
+#}
 
-if ($confirmationUppaal -eq 'y') {
-    # Uppaal
-}
+#if ($confirmationUppaal -eq 'y') {
+# Uppaal
+#}
 
-if ($confirmationDocker -eq 'y') {
-    winget install --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements
-}
+#if ($confirmationDocker -eq 'y') {
+#winget install --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements
+#}
 
-# ffmpeg
+# ffmpeg # Download and unzip
 # JDK
 winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept-package-agreements
 # Insomnia
-# Msys2 - MinGW-w64
-choco install -y nvm # nvm
-nvm install latest # npm & node.js
+# Msys2 - MinGW-w64 # Download installer
+#choco install -y nvm # nvm
+#nvm install latest # npm & node.js
 # R
 # Visual Studio
-winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" --accept-package-agreements # Wireshark
 
 # -------------------- Fonts --------------------
 
-# Fira Code (https://github.com/tonsky/FiraCode)
+<# Fira Code #>
+# (https://github.com/tonsky/FiraCode) https://blog.simontimms.com/2021/06/11/installing-fonts/
+# Move all files in folder https://stackoverflow.com/questions/38063424/powershell-move-all-files-from-folders-and-subfolders-into-single-folder
+# Folder delete https://stackoverflow.com/questions/43611350/how-can-i-delete-files-with-powershell-without-confirmation
 # Fira Code iScript (https://github.com/kencrocken/FiraCodeiScript)
 # FiraCode Nerd Font (https://github.com/ryanoasis/nerd-fonts/tree/master/patched-fonts/FiraCode
+<# ---------- #>
 
 # -------------------- Paths --------------------
 
@@ -286,9 +291,9 @@ winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" -
 
 # -------------------- Windows Store Apps (winget) --------------------
 
-if ($confirmationHP -eq 'y') {
-    # HP Support Assistant (Laptop only)
-}
+#if ($confirmationHP -eq 'y') {
+# HP Support Assistant (Laptop only)
+#}
 
 if ($confirmationGameBar -eq 'y') {
     winget install --id 9NG4TL7TX1KW --accept-package-agreements # Notes for Game Bar
@@ -311,8 +316,13 @@ choco install -y python3 # Python
 # OneDrive backups
 
 # -------------------- WSL --------------------
+
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-wsl --install
-wsl --install -d Debian
-wsl --set-default-version 2
+#wsl --install # Needs reboot https://stackoverflow.com/questions/15166839/powershell-reboot-and-continue-script
+#wsl --install -d Debian
+#wsl --set-default-version 2
+
+# -------------------- Restarts pc --------------------
+
+winget install -e --id WiresharkFoundation.Wireshark --location "D:\Wireshark" --accept-package-agreements # Wireshark
