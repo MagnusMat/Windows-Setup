@@ -288,7 +288,7 @@ winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept
 # D:\NVM
 # D:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
 # D:\FFMPEG\bin
-
+s
 # -------------------- Windows Store Apps (winget) --------------------
 
 #if ($confirmationHP -eq 'y') {
@@ -309,6 +309,7 @@ winget install --id Microsoft.VisualStudioCode --accept-package-agreements # Vis
 winget install --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
 choco install -y python3 # Python
 # 3d Viewer
+# HP Smart
 # Wikipedia
 
 # -------------------- Configurations --------------------
