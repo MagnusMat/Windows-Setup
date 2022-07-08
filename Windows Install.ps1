@@ -2,10 +2,14 @@
 
 Set-ExecutionPolicy RemoteSigned # Execute Scripts
 
+# -------------------- Upgrade --------------------
+
+winget upgrade -h --all
+
 # -------------------- Dependencies --------------------
 
-winget install --id Git.Git --accept-package-agreements # Git
-winget install --id GitHub.cli --accept-package-agreements # GitHub CLI
+winget install -e --id Git.Git --accept-package-agreements # Git
+winget install -e --id GitHub.cli --accept-package-agreements # GitHub CLI
 gh auth login # GitHub Cli Login
 
 # -------------------- Confirmation Specific --------------------
@@ -65,60 +69,65 @@ if ($confirmationGames -eq 'y') {
     # Epic Games
     # GOG Galaxy
     # Playnite (https://github.com/JosefNemec/Playnite/)
-    winget install --id Valve.Steam --location "D:\Steam" --accept-package-agreements # Steam
+    winget install -e --id Valve.Steam --location "D:\Steam" --accept-package-agreements # Steam
     # Twitch
     # Ubisoft Connect
 }
 
 #if ($confirmationEmulators -eq 'y') {
-# Cemu
-# Citra (https://github.com/citra-emu/citra)
-# Dolphin (https://github.com/dolphin-emu/dolphin)
-# NoPayStation
-# PCSX2 (https://github.com/PCSX2/pcsx2)
-# PCSXR (https://github.com/iCatButler/pcsxr)
-# PPSSPP (https://github.com/hrydgard/ppsspp)
-# Project64](https://github.com/project64/project64)
-# QCMA (https://github.com/codestation/qcma)
-# RetroArch (https://github.com/libretro/RetroArch)
-# RPCS3 (https://github.com/RPCS3/rpcs3)
-# Ryujinx
-# SNES9X
-# Visual Boy Advance
+    <# Cemu #>
+    Invoke-WebRequest "https://cemu.info/releases/cemu_1.26.2.zip" -OutFile Cemu.zip
+    Expand-Archive Cemu.zip D:\Emulators
+    Remove-Item Cemu.zip
+    <# ---------- #>
+
+    # Citra (https://github.com/citra-emu/citra)
+    # Dolphin (https://github.com/dolphin-emu/dolphin)
+    # NoPayStation
+    # PCSX2 (https://github.com/PCSX2/pcsx2)
+    # PCSXR (https://github.com/iCatButler/pcsxr)
+    # PPSSPP (https://github.com/hrydgard/ppsspp)
+    # Project64](https://github.com/project64/project64)
+    # QCMA (https://github.com/codestation/qcma)
+    # RetroArch (https://github.com/libretro/RetroArch)
+    # RPCS3 (https://github.com/RPCS3/rpcs3)
+    # Ryujinx
+    # SNES9X
+    # Visual Boy Advance
 #}
 
 #if ($confirmationAliens -eq 'y') {
-# Aliens vs. Predator 2
-# Aliens vs. Predator 2 - Primal Hunt
+    # Aliens vs. Predator 2
+    # Aliens vs. Predator 2 - Primal Hunt
 #}
 
 #if ($confirmationBlur -eq 'y') {
-# Blur
+    # Blur
 #}
 
 #if ($confirmationSilent -eq 'y') {
-# Silent Hill - The Arcade
+    # Silent Hill - The Arcade
 #}
 
 # -------------------- Miscellaneous --------------------
 
 #if ($confirmationAISuite -eq 'y') {
-# AI Suite 3
+    # AI Suite 3
 #}
 #if ($confirmationAmazon -eq 'y') {
-# Amazon Send to Kindle
+    # Amazon Send to Kindle
 #}
 #if ($confirmationAorus -eq 'y') {
-# Aorus Engine
+    # Aorus Engine
 #}
 #if ($confirmationArchi -eq 'y') {
-# Archi Steam Farm
+    # Archi Steam Farm
 #}
 #if ($confirmationROG -eq 'y') {
-# ROG Xonar Phoebus
+    # ROG Xonar Phoebus
 #}
 #if ($confirmationSamsung -eq 'y') {
-# Samsung Magician
+    # Samsung Magician
 #}
 
 <# 1Password CLI #>
@@ -150,11 +159,11 @@ winget install -e --id calibre.calibre --accept-package-agreements # Calibre
 # CPU-Z
 gh release download -R cryptomator/cryptomator --pattern "*.msi" -D "D:\" # Cryptomator
 # Cryptomator
-winget install --id Discord.Discord --accept-package-agreements # Discord
+winget install -e --id Discord.Discord --accept-package-agreements # Discord
 # Draw.io
 # DroidCam
 # eM Client
-winget install --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
+winget install -e --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
 
 #if ($confirmationDxWnd -eq 'y') {
 # DxWnd
@@ -176,7 +185,7 @@ winget install --id Microsoft.Teams --accept-package-agreements # Microsoft Team
 
 # Mathpix
 # MegaSync
-winget install --id 9WZDNCRF0083 --accept-package-agreements # Messenger
+winget install -e --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 # MiniBin
 # Notion
 # Nvidia Geforce Experience
@@ -256,18 +265,19 @@ Start-Process https://mail.proton.me/ # Proton Mail
 #}
 
 #if ($confirmationDocker -eq 'y') {
-#winget install --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements
+#winget install -e --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements
 #}
 
 # ffmpeg # Download and unzip
 # JDK
-winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept-package-agreements
+winget install -e --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept-package-agreements
 # Insomnia
 # Msys2 - MinGW-w64 # Download installer
 #choco install -y nvm # nvm
 #nvm install latest # npm & node.js
 # R
 # Visual Studio
+choco install -y python3 # Python
 
 # -------------------- Fonts --------------------
 
@@ -288,7 +298,7 @@ winget install --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept
 # D:\NVM
 # D:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
 # D:\FFMPEG\bin
-s
+
 # -------------------- Windows Store Apps (winget) --------------------
 
 #if ($confirmationHP -eq 'y') {
@@ -296,21 +306,20 @@ s
 #}
 
 if ($confirmationGameBar -eq 'y') {
-    winget install --id 9NG4TL7TX1KW --accept-package-agreements # Notes for Game Bar
+    winget install -e --id 9NG4TL7TX1KW --accept-package-agreements # Notes for Game Bar
 }
 
-winget install --id 9MSPC6MP8FM4 --accept-package-agreements # Microsoft Whiteboard
-winget install --id 9N95Q1ZZPMH4 --accept-package-agreements # MPEG-2
-winget install --id 9NF8H0H7WMLT --accept-package-agreements # Nvidia Control Panel
-winget install --id Microsoft.PowerToys --accept-package-agreements # Powertoys
-winget install --id Microsoft.Powershell --source winget # PowerShell 7
-winget install --id QL-Win.QuickLook --accept-package-agreements # QuickLook
-winget install --id Microsoft.VisualStudioCode --accept-package-agreements # Visual Studio Code
-winget install --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
-choco install -y python3 # Python
-# 3d Viewer
-# HP Smart
-# Wikipedia
+#winget install -e --id 9MSPC6MP8FM4 --accept-package-agreements # Microsoft Whiteboard
+#winget install -e --id 9N95Q1ZZPMH4 --accept-package-agreements # MPEG-2
+#winget install -e --id 9NF8H0H7WMLT --accept-package-agreements # Nvidia Control Panel
+#winget install -e --id Microsoft.PowerToys --accept-package-agreements # Powertoys
+#winget install -e --id Microsoft.Powershell --source winget # PowerShell 7
+#winget install -e --id QL-Win.QuickLook --accept-package-agreements # QuickLook
+#winget install -e --id Microsoft.VisualStudioCode --accept-package-agreements # Visual Studio Code
+#winget install -e --id 9N26S50LN705 --accept-package-agreements # Windows File Recovery
+#winget install -e --id 9WZDNCRFHWLH --accept-package-agreements # HP Smart
+#winget install -e --id 9WZDNCRFHWM4 --accept-package-agreements # Wikipedia
+#winget install -e --id 9NBLGGH42THS --accept-package-agreements # 3d Viewer
 
 # -------------------- Configurations --------------------
 
