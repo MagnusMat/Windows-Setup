@@ -14,6 +14,32 @@ gh auth login # GitHub Cli Login
 
 # -------------------- Functions --------------------
 
+function ConfirmationPrompt {
+    param (
+        $Confirmation,
+        [string]$Variable = $Confirmation,
+        [string]$Question,
+        [string]$FirstTerm = 'y',
+        [string]$SecondTerm = 'n',
+        [string]$FirstResult = $FirstTerm,
+        [string]$SecondResult = $SecondTerm
+    )
+    do {
+        $Confirmation = Read-Host "$Question"
+        if ($Confirmation -eq "$FirstTerm") {
+            $Variable = $FirstResult
+        }
+        elseif ($confirmation -eq $SecondTerm) {
+            $Variable = $SecondResult
+        }
+        else {
+            'You need to pick a valid option'
+        }
+    } while (
+        ($Confirmation -ne "$FirstTerm") -and ($Confirmation -ne "$SecondTerm")
+    )
+}
+
 function DownloadZipToLocation {
     param (
         [string]$Name,
@@ -37,7 +63,12 @@ function GitHubZipToLocation {
     gh release download $Version -R $Repo --pattern $Pattern
     Get-ChildItem *.$ArchiveType | Rename-Item -NewName { $_.Name -replace $_.Name, "$Name.$ArchiveType" }
     if ($ArchiveType -eq "7z") {
-        D:\7-Zip\7z.exe x -o"$Location" "*.7z" -r
+        if ($confirmationDrive -eq "c") {
+            C:\Program Files\7-Zip\7z.exe x -o"$Location" "*.7z" -r
+        }
+        if ($confirmationDrive -eq "d") {
+            D:\7-Zip\7z.exe x -o"$Location" "*.7z" -r
+        }
     }
     elseif ($ArchiveType -eq "zip") {
         Expand-Archive "$Name.$ArchiveType" $Location
@@ -50,29 +81,31 @@ function GitHubZipToLocation {
 
 # -------------------- Confirmation Specific --------------------
 
-$confirmationLaptopDesktop = Read-Host "Are you installing on a Laptop or Desktop l/d"
-$confirmationGames = Read-Host "Do you want to install Games y/n"
-$confirmationEmulators = Read-Host "Do you want to install Emulators y/n"
-$confirmationAmazon = Read-Host "Do you want to install Amazon Send to Kindle y/n"
-$confirmationTex = Read-Host "Do you want to install LaTeX y/n"
-$confirmationMaple = Read-Host "Do you want to install Maple y/n"
-$confirmationMatLab = Read-Host "Do you want to install MatLab y/n"
-$confirmationKmonad = Read-Host "Do you want to install Kmonad y/n"
-$confirmationDocker = Read-Host "Do you want to install Docker y/n"
-$confirmationUbuntu = Read-Host "Do you want to install Ubuntu WSL y/n"
-$confirmationDebian = Read-Host "Do you want to install Debian WSL y/n"
+ConfirmationPrompt -Confirmation $confirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
+ConfirmationPrompt -Confirmation $confirmationDrive -Variable $InstallDrive -Question "Do you want to install software the C: or D: drive c/d" -FirstTerm 'c' -SecondTerm 'd' -FirstResult "C:\Program Files" -SecondResult "D:"
+ConfirmationPrompt -Confirmation $confirmationGames -Question "Do you want to install Games y/n"
+ConfirmationPrompt -Confirmation $confirmationEmulators -Question "Do you want to install Emulators y/n"
+ConfirmationPrompt -Confirmation $confirmationAmazon -Question "Do you want to install Amazon Send to Kindle y/n"
+ConfirmationPrompt -Confirmation $confirmationTex -Question "Do you want to install LaTeX y/n"
+ConfirmationPrompt -Confirmation $confirmationMaple -Question "Do you want to install Maple y/n"
+ConfirmationPrompt -Confirmation $confirmationMatLab -Question "Do you want to install MatLab y/n"
+ConfirmationPrompt -Confirmation $confirmationKmonad -Question "Do you want to install Kmonad y/n"
+ConfirmationPrompt -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
+ConfirmationPrompt -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
+ConfirmationPrompt -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
 
 # -------------------- Package Managers --------------------
 
-Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression # install scoop
+Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression # Scoop
 
-# Chocolatey
+<# Chocolatey #>
 Set-ExecutionPolicy Bypass -Scope Process
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+<# ---------- #>
 
 # -------------------- Personal GitHub Repos --------------------
 
-Set-Location D:\
+Set-Location $InstallDrive\
 mkdir GitHub
 Set-Location GitHub
 gh repo clone MagnusMat/Windows-Setup
@@ -89,8 +122,8 @@ if ($confirmationGames -eq 'y') {
     # EA Desktop
     # Epic Games
     # GOG Galaxy
-    GitHubZipToLocation -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location "D:\Playnite" # Playnite
-    winget install -e --id Valve.Steam --location "D:\Steam" --accept-package-agreements # Steam
+    GitHubZipToLocation -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location "$InstallDrive\Playnite" # Playnite
+    winget install -e --id Valve.Steam --location "$InstallDrive\Steam" --accept-package-agreements # Steam
     # Twitch
     # Ubisoft Connect
     # Aliens vs. Predator 2
@@ -100,18 +133,18 @@ if ($confirmationGames -eq 'y') {
 }
 
 if ($confirmationEmulators -eq 'y') {
-    DownloadZipToLocation -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location "D:\Emulators" # Cemu
-    # Citra (https://github.com/citra-emu/citra)
-    # Dolphin (https://github.com/dolphin-emu/dolphin)
+    DownloadZipToLocation -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location "$InstallDrive\Emulators" # Cemu
+    # Citra https://citra-emu.org/download/#
+    # Dolphin https://da.dolphin-emu.org/download/
     # NoPayStation
-    # PCSX2 (https://github.com/PCSX2/pcsx2)
-    # PCSXR (https://github.com/iCatButler/pcsxr)
-    # PPSSPP (https://github.com/hrydgard/ppsspp)
-    # Project64](https://github.com/project64/project64)
-    # QCMA (https://github.com/codestation/qcma)
-    # RetroArch (https://github.com/libretro/RetroArch)
-    GitHubZipToLocation -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location "D:\Emulators\RPCS3" -ArchiveType "7z" # RPCS3
-    # Ryujinx
+    # PCSX2 https://pcsx2.net/downloads/
+    # PCSXR https://emulation.gametechwiki.com/index.php/PCSX-Reloaded
+    # PPSSPP https://www.ppsspp.org/downloads.html
+    # Project64 https://www.pj64-emu.com/public-releases
+    # QCMA https://github.com/codestation/qcma/releases
+    # RetroArch https://www.retroarch.com/?page=platforms
+    GitHubZipToLocation -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location "$InstallDrive\Emulators\RPCS3" -ArchiveType "7z" # RPCS3
+    # Ryujinx https://github.com/Ryujinx/release-channel-master/releases/tag/1.1.171
     # SNES9X
     # Visual Boy Advance
 }
@@ -121,14 +154,14 @@ if ($confirmationEmulators -eq 'y') {
 if ($confirmationLaptopDesktop -eq 'd') {
     # AI Suite 3
     # Aorus Engine
-    # Archi Steam Farm
+    # Archi Steam Farm https://github.com/JustArchiNET/ArchiSteamFarm/releases/tag/5.2.7.7
     # ROG Xonar Phoebus
     # DxWnd
-    # Flawless Widescreen
-    # Floating ISP (Patch bps Roms) (https://github.com/Alcaro/Flips)
-    GitHubZipToLocation -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location "D:\Global Steam Controller" -Version "0.0.7.0" # Global Steam Controller
+    # Flawless Widescreen https://www.flawlesswidescreen.org/#Download
+    # Floating ISP (Patch bps Roms) https://github.com/Alcaro/Flips
+    GitHubZipToLocation -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location "$InstallDrive\Global Steam Controller" -Version "0.0.7.0" # Global Steam Controller
     # ISO to WBFS
-    GitHubZipToLocation -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location "D:\Locale Emulator" # Locale Emulator
+    GitHubZipToLocation -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location "$InstallDrive\Locale Emulator" # Locale Emulator
     # Lunar IPS
     # Hue Sync
     winget install -e --id 9NG4TL7TX1KW --accept-package-agreements # Notes for Game Bar
@@ -143,7 +176,7 @@ if ($confirmationAmazon -eq 'y') {
 }
 
 if ($confirmationSamsung -eq 'y') {
-    # Samsung Magician
+    # Samsung Magician https://semiconductor.samsung.com/consumer-storage/support/tools/
 }
 
 <# 1Password CLI #>
@@ -153,7 +186,7 @@ switch ($arch) {
     '32-bit' { $opArch = '386'; break }
     Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
 }
-$installDir = Join-Path -Path "D:\" -ChildPath '1Password CLI'
+$installDir = Join-Path -Path "$InstallDrive\" -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
@@ -169,33 +202,32 @@ Remove-Item -Path op.zip
 #Remove-Item 1password.exe
 <# ---------- #>
 
-winget install -e --id 7zip.7zip --location "D:\7-Zip" --accept-package-agreements # 7-Zip
-#gh release download -R microsoft/accessibility-insights-windows --pattern "*.msi" -D "D:\" # Accessibility Insights for Windows
+winget install -e --id 7zip.7zip --location "$InstallDrive\7-Zip" --accept-package-agreements # 7-Zip
+#gh release download -R microsoft/accessibility-insights-windows --pattern "*.msi" -D "$InstallDrive\" # Accessibility Insights for Windows
 winget install -e --id BlenderFoundation.Blender --accept-package-agreements # Blender
 winget install -e --id calibre.calibre --accept-package-agreements # Calibre
 
-# CPU-Z
+# CPU-Z https://www.cpuid.com/softwares/cpu-z.html
 
 <# Cryptomator #>
-#gh release download -R cryptomator/cryptomator --pattern "*.msi" -D "D:\" # Cryptomator
+#gh release download -R cryptomator/cryptomator --pattern "*.msi" -D "$InstallDrive\" # Cryptomator
 <# ---------- #>
 
 winget install -e --id Discord.Discord --accept-package-agreements # Discord
-# Draw.io
+# Draw.io https://github.com/jgraph/drawio-desktop/releases/tag/v19.0.3
 # DroidCam
-# eM Client
+# eM Client https://www.emclient.com/
 winget install -e --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
 
-# FileZilla
+# FileZilla https://filezilla-project.org/download.php?show_all=1
 # Mozilla Firefox https://gmusumeci.medium.com/unattended-install-of-firefox-browser-using-powershell-6841a7742f9a
 # Google Drive
-
-# Inkscape
+# Inkscape https://inkscape.org/release/1.2/windows/64-bit/
 
 <# Kmonad #>
 scoop install stack # install stack
 if ($confirmationKmonad -eq 'y') {
-    Set-Location D:\
+    Set-Location $InstallDrive\
     git clone https://github.com/kmonad/kmonad.git
     Set-Location kmonad
     stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
@@ -206,26 +238,26 @@ if ($confirmationKmonad -eq 'y') {
 # Mathpix
 # MegaSync
 winget install -e --id 9WZDNCRF0083 --accept-package-agreements # Messenger
-# MiniBin
+# MiniBin https://minibin.en.uptodown.com/windows/download
 # Notion
 # Nvidia Geforce Experience
 # Nvidia RTX Voice
-# OBS Studio
+# OBS Studio https://github.com/obsproject/obs-studio/releases/tag/27.2.4
 
 <# Open Hardware Monitor #>
-DownloadZipToLocation -Name "Open Hardware Monitor" -URL "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip" -Location "D:\"
-Rename-Item D:\OpenHardwareMonitor\ "Open Hardware Monitor"
+DownloadZipToLocation -Name "Open Hardware Monitor" -URL "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip" -Location "$InstallDrive\"
+Rename-Item $InstallDrive\OpenHardwareMonitor\ "Open Hardware Monitor"
 <# ---------- #>
 
 # ProtonVPN
-# Shotcut
+# Shotcut https://github.com/mltframework/shotcut/releases/tag/v22.06.23
 # TeamViewer
-# TeraCopy
+# TeraCopy https://www.codesector.com/downloads
 # Tor
 # Unity Hub
 # VeraCrypt
-# WizTree
-# Yubikey Manager
+# WizTree https://diskanalyzer.com/download
+# Yubikey Manager https://docs.yubico.com/software/yubikey/tools/ykman/Install_ykman.html#windows https://www.yubico.com/support/download/yubikey-manager/#h-downloads
 # PhotoShop # Download from Drive
 
 # -------------------- Progressive Web Apps --------------------
@@ -243,18 +275,18 @@ Start-Process https://mail.proton.me/ # Proton Mail
 
 # Figma
 # Mendeley
-# Onion Share (https://github.com/onionshare/onionshare)
+# Onion Share https://github.com/onionshare/onionshare/releases/tag/v2.5
 
 <# Pandoc #>
-GitHubZipToLocation -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip" -Location "D:\"
-Get-ChildItem D:\pandoc-* | Rename-Item -NewName { $_.Name -replace $_.Name, "Pandoc" }
+GitHubZipToLocation -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip" -Location "$InstallDrive\"
+Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName { $_.Name -replace $_.Name, "Pandoc" }
 <# ---------- #>
 
 # PSX2PSP
 # Reduce PDF Size
-# ScreenToGif
+# ScreenToGif https://github.com/NickeManarin/ScreenToGif
 # Transmission
-gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "D:\YT-DLP" # YT-DLP
+gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "$InstallDrive\YT-DLP" # YT-DLP
 
 # -------------------- Development Tools --------------------
 
@@ -270,24 +302,22 @@ if ($confirmationTex -eq 'y') {
     # TexLive
 }
 
-if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location "D:\Docker" --accept-package-agreements }
+if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location "$InstallDrive\Docker" --accept-package-agreements }
 
 <# ffmpeg #>
-GitHubZipToLocation -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip" -Location "D:\"
-Get-ChildItem D:\*-full_build | Rename-Item -NewName { $_.Name -replace $_.Name, "ffmpeg" }
+GitHubZipToLocation -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip" -Location "$InstallDrive\"
+Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName { $_.Name -replace $_.Name, "ffmpeg" }
 <# ---------- #>
 
-<# JDK #>
-DownloadZipToLocation -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location "D:\JDK"
-<# ---------- #>
+DownloadZipToLocation -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location "$InstallDrive\JDK" # JDK
 
-winget install -e --id GitHub.GitHubDesktop --location "D:\GitHub\Desktop" --accept-package-agreements
+winget install -e --id GitHub.GitHubDesktop --location "$InstallDrive\GitHub\Desktop" --accept-package-agreements
 # Insomnia
 # Msys2 - MinGW-w64 # Download installer
 choco install -y nvm # nvm #ELEVATED
 nvm install latest # npm & node.jsnvm install latest #ELEVATED
 # R
-# Visual Studio
+# Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
 choco install -y python3 # Python
 
 # -------------------- Fonts --------------------
@@ -333,12 +363,12 @@ Remove-Item Fonts -Recurse -Force -Confirm:$false
 # -------------------- Paths --------------------
 
 # [Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT', '1')
-# [Environment]::SetEnvironmentVariable("INCLUDE", $env:Path + ";D:\YT-DLP", [System.EnvironmentVariableTarget]::User)
+# [Environment]::SetEnvironmentVariable("INCLUDE", $env:Path + ";$InstallDrive\YT-DLP", [System.EnvironmentVariableTarget]::User)
 # C:\Program Files\CMake\bin
-# D:\NodeJS
-# D:\NVM
-# D:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
-# D:\FFMPEG\bin
+# $InstallDrive\NodeJS
+# $InstallDrive\NVM
+# $InstallDrive\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin
+# $InstallDrive\FFMPEG\bin
 
 # -------------------- Windows Store Apps (winget) --------------------
 
