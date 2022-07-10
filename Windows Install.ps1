@@ -118,61 +118,63 @@ Set-Location ~
 # -------------------------- Games --------------------
 
 if ($confirmationGames -eq 'y') {
-    # Battle.net
-    # EA Desktop
-    # Epic Games
-    # GOG Galaxy
+    # Battle.net https://www.blizzard.com/en-sg/apps/battle.net/desktop
+    # EA Desktop https://www.ea.com/ea-app-beta
+    # Epic Games https://store.epicgames.com/en-US/
+    # GOG Galaxy https://www.gog.com/galaxy
+
     GitHubZipToLocation -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location "$InstallDrive\Playnite" # Playnite
     winget install -e --id Valve.Steam --location "$InstallDrive\Steam" --accept-package-agreements # Steam
-    # Twitch
-    # Ubisoft Connect
-    # Aliens vs. Predator 2
-    # Aliens vs. Predator 2 - Primal Hunt
+
+    # Ubisoft Connect https://ubisoftconnect.com/da-DK/?isSso=true&refreshStatus=noLoginData
+    # Aliens vs. Predator 2 https://avpunknown.com/avp2aio/
+    # Aliens vs. Predator 2 - Primal Hunt https://avpunknown.com/avp2aio/
     # Blur
-    # Silent Hill - The Arcade
+    # Silent Hill - The Arcade https://collectionchamber.blogspot.com/2015/09/silent-hill-arcade.html
 }
 
 if ($confirmationEmulators -eq 'y') {
     DownloadZipToLocation -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location "$InstallDrive\Emulators" # Cemu
+
     # Citra https://citra-emu.org/download/#
     # Dolphin https://da.dolphin-emu.org/download/
-    # NoPayStation
+    # NoPayStation https://nopaystation.com/
     # PCSX2 https://pcsx2.net/downloads/
     # PCSXR https://emulation.gametechwiki.com/index.php/PCSX-Reloaded
     # PPSSPP https://www.ppsspp.org/downloads.html
     # Project64 https://www.pj64-emu.com/public-releases
     # QCMA https://github.com/codestation/qcma/releases
     # RetroArch https://www.retroarch.com/?page=platforms
+
     GitHubZipToLocation -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location "$InstallDrive\Emulators\RPCS3" -ArchiveType "7z" # RPCS3
+
     # Ryujinx https://github.com/Ryujinx/release-channel-master/releases/tag/1.1.171
-    # SNES9X
-    # Visual Boy Advance
+    # SNES9X https://www.snes9x.com/
+    # Visual Boy Advance https://www.emulator-zone.com/doc.php/gba/vboyadvance.html
 }
 
 # -------------------- Miscellaneous --------------------
 
 if ($confirmationLaptopDesktop -eq 'd') {
-    # AI Suite 3
-    # Aorus Engine
+    # Aorus Engine https://www.gigabyte.com/Support/Utility
     # Archi Steam Farm https://github.com/JustArchiNET/ArchiSteamFarm/releases/tag/5.2.7.7
-    # ROG Xonar Phoebus
-    # DxWnd
+    # ROG Xonar Phoebus https://www.asus.com/SupportOnly/ROG_Xonar_Phoebus/HelpDesk_Knowledge/
     # Flawless Widescreen https://www.flawlesswidescreen.org/#Download
-    # Floating ISP (Patch bps Roms) https://github.com/Alcaro/Flips
+
     GitHubZipToLocation -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location "$InstallDrive\Global Steam Controller" -Version "0.0.7.0" # Global Steam Controller
-    # ISO to WBFS
     GitHubZipToLocation -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location "$InstallDrive\Locale Emulator" # Locale Emulator
-    # Lunar IPS
-    # Hue Sync
+
+    # Hue Sync https://www.philips-hue.com/en-us/explore-hue/propositions/entertainment/sync-with-pc
+
     winget install -e --id 9NG4TL7TX1KW --accept-package-agreements # Notes for Game Bar
 }
 
 if ($confirmationLaptopDesktop -eq 'l') {
-    # HP Support Assistant
+    # HP Support Assistant https://support.hp.com/dk-da/help/hp-support-assistant
 }
 
 if ($confirmationAmazon -eq 'y') {
-    # Amazon Send to Kindle
+    # Amazon Send to Kindle https://smile.amazon.com/gp/sendtokindle?sa-no-redirect=1
 }
 
 if ($confirmationSamsung -eq 'y') {
@@ -203,7 +205,9 @@ Remove-Item -Path op.zip
 <# ---------- #>
 
 winget install -e --id 7zip.7zip --location "$InstallDrive\7-Zip" --accept-package-agreements # 7-Zip
+
 #gh release download -R microsoft/accessibility-insights-windows --pattern "*.msi" -D "$InstallDrive\" # Accessibility Insights for Windows
+
 winget install -e --id BlenderFoundation.Blender --accept-package-agreements # Blender
 winget install -e --id calibre.calibre --accept-package-agreements # Calibre
 
@@ -214,14 +218,16 @@ winget install -e --id calibre.calibre --accept-package-agreements # Calibre
 <# ---------- #>
 
 winget install -e --id Discord.Discord --accept-package-agreements # Discord
+
 # Draw.io https://github.com/jgraph/drawio-desktop/releases/tag/v19.0.3
-# DroidCam
+# DroidCam https://www.dev47apps.com/
 # eM Client https://www.emclient.com/
+
 winget install -e --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
 
 # FileZilla https://filezilla-project.org/download.php?show_all=1
 # Mozilla Firefox https://gmusumeci.medium.com/unattended-install-of-firefox-browser-using-powershell-6841a7742f9a
-# Google Drive
+# Google Drive https://www.google.com/intl/da/drive/download/
 # Inkscape https://inkscape.org/release/1.2/windows/64-bit/
 
 <# Kmonad #>
@@ -235,13 +241,15 @@ if ($confirmationKmonad -eq 'y') {
 }
 <# ---------- #>
 
-# Mathpix
-# MegaSync
+# Mathpix https://mathpix.com/
+# MegaSync https://mega.io/desktop
+
 winget install -e --id 9WZDNCRF0083 --accept-package-agreements # Messenger
+
 # MiniBin https://minibin.en.uptodown.com/windows/download
-# Notion
-# Nvidia Geforce Experience
-# Nvidia RTX Voice
+# Notion https://www.notion.so/desktop
+# Nvidia Geforce Experience https://www.nvidia.com/da-dk/geforce/geforce-experience/
+# Nvidia RTX Voice https://www.nvidia.com/da-dk/geforce/guides/nvidia-rtx-voice-setup-guide/
 # OBS Studio https://github.com/obsproject/obs-studio/releases/tag/27.2.4
 
 <# Open Hardware Monitor #>
@@ -249,13 +257,13 @@ DownloadZipToLocation -Name "Open Hardware Monitor" -URL "https://openhardwaremo
 Rename-Item $InstallDrive\OpenHardwareMonitor\ "Open Hardware Monitor"
 <# ---------- #>
 
-# ProtonVPN
+# ProtonVPN https://protonvpn.com/
 # Shotcut https://github.com/mltframework/shotcut/releases/tag/v22.06.23
-# TeamViewer
+# TeamViewer https://www.teamviewer.com/da/
 # TeraCopy https://www.codesector.com/downloads
-# Tor
-# Unity Hub
-# VeraCrypt
+# Tor https://www.torproject.org/
+# Unity Hub https://unity3d.com/get-unity/download
+# VeraCrypt https://www.veracrypt.fr/code/VeraCrypt/
 # WizTree https://diskanalyzer.com/download
 # Yubikey Manager https://docs.yubico.com/software/yubikey/tools/ykman/Install_ykman.html#windows https://www.yubico.com/support/download/yubikey-manager/#h-downloads
 # PhotoShop # Download from Drive
@@ -273,8 +281,8 @@ Start-Process https://mail.proton.me/ # Proton Mail
 
 # -------------------- Tools & Tweaks --------------------
 
-# Figma
-# Mendeley
+# Figma https://www.figma.com/downloads/
+# Mendeley https://www.mendeley.com/search/
 # Onion Share https://github.com/onionshare/onionshare/releases/tag/v2.5
 
 <# Pandoc #>
@@ -282,24 +290,24 @@ GitHubZipToLocation -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip" -Locat
 Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName { $_.Name -replace $_.Name, "Pandoc" }
 <# ---------- #>
 
-# PSX2PSP
-# Reduce PDF Size
-# ScreenToGif https://github.com/NickeManarin/ScreenToGif
-# Transmission
+# Reduce PDF Size https://okular.kde.org/download/
+# ScreenToGif https://github.com/NickeManarin/ScreenToGif https://github.com/ShareX/ShareX/releases/tag/v14.0.1
+# Transmission https://github.com/transmission/transmission
+
 gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "$InstallDrive\YT-DLP" # YT-DLP
 
 # -------------------- Development Tools --------------------
 
 if ($confirmationMatLab -eq 'y') {
-    # MatLab
+    # MatLab https://www.mathworks.com/products/matlab.html
 }
 
 if ($confirmationMaple -eq 'y') {
-    # Maple
+    # Maple https://www.maplesoft.com/products/Maple/
 }
 
 if ($confirmationTex -eq 'y') {
-    # TexLive
+    # TexLive https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop
 }
 
 if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location "$InstallDrive\Docker" --accept-package-agreements }
@@ -312,12 +320,16 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName { $_.Name -repla
 DownloadZipToLocation -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location "$InstallDrive\JDK" # JDK
 
 winget install -e --id GitHub.GitHubDesktop --location "$InstallDrive\GitHub\Desktop" --accept-package-agreements
-# Insomnia
+
+# Insomnia https://insomnia.rest/download
 # Msys2 - MinGW-w64 # Download installer
+
 choco install -y nvm # nvm #ELEVATED
 nvm install latest # npm & node.jsnvm install latest #ELEVATED
-# R
+
+# R https://mirrors.dotsrc.org/cran/
 # Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
+
 choco install -y python3 # Python
 
 # -------------------- Fonts --------------------
