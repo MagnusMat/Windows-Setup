@@ -2,6 +2,22 @@
 
 Set-ExecutionPolicy RemoteSigned # Execute Scripts
 
+# Prompt for Install Drive
+do {
+    $ConfirmationDrive = Read-Host "Do you want to install software the C: or D: drive c/d"
+    if ($ConfirmationDrive -eq 'c') {
+        $InstallDrive = "C:\Program Files"
+    }
+    elseif ($ConfirmationDrive -eq 'd') {
+        $InstallDrive = "D:"
+    }
+    else {
+        "You need to pick a valid option"
+    }
+} while (
+    ($ConfirmationDrive -ne "c") -and ($ConfirmationDrive -ne "d")
+)
+
 # -------------------- Upgrade --------------------
 
 winget upgrade -h --all
@@ -14,26 +30,17 @@ gh auth login # GitHub Cli Login
 
 # -------------------- Functions --------------------
 
-function Read-Confirmation {
+function Set-Confirmation {
     param (
         $Confirmation,
-        [string]$Variable = $Confirmation,
         [string]$Question,
         [string]$FirstTerm = 'y',
-        [string]$SecondTerm = 'n',
-        [string]$FirstResult = $FirstTerm,
-        [string]$SecondResult = $SecondTerm
+        [string]$SecondTerm = 'n'
     )
     do {
         $Confirmation = Read-Host "$Question"
-        if ($Confirmation -eq "$FirstTerm") {
-            $Variable = $FirstResult
-        }
-        elseif ($confirmation -eq $SecondTerm) {
-            $Variable = $SecondResult
-        }
-        else {
-            'You need to pick a valid option'
+        if (($Confirmation -ne "$FirstTerm") -and ($Confirmation -ne "$SecondTerm")) {
+            "You need to pick a valid option"
         }
     } while (
         ($Confirmation -ne "$FirstTerm") -and ($Confirmation -ne "$SecondTerm")
@@ -84,18 +91,17 @@ function Install-GitHub {
 
 # -------------------- Confirmation Specific --------------------
 
-Read-Confirmation -Confirmation $confirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
-Read-Confirmation -Confirmation $confirmationDrive -Variable $InstallDrive -Question "Do you want to install software the C: or D: drive c/d" -FirstTerm 'c' -SecondTerm 'd' -FirstResult "C:\Program Files" -SecondResult "D:"
-Read-Confirmation -Confirmation $confirmationGames -Question "Do you want to install Games y/n"
-Read-Confirmation -Confirmation $confirmationEmulators -Question "Do you want to install Emulators y/n"
-Read-Confirmation -Confirmation $confirmationAmazon -Question "Do you want to install Amazon Send to Kindle y/n"
-Read-Confirmation -Confirmation $confirmationTex -Question "Do you want to install LaTeX y/n"
-Read-Confirmation -Confirmation $confirmationMaple -Question "Do you want to install Maple y/n"
-Read-Confirmation -Confirmation $confirmationMatLab -Question "Do you want to install MatLab y/n"
-Read-Confirmation -Confirmation $confirmationKmonad -Question "Do you want to install Kmonad y/n"
-Read-Confirmation -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
-Read-Confirmation -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
-Read-Confirmation -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
+Set-Confirmation -Confirmation $confirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
+Set-Confirmation -Confirmation $confirmationGames -Question "Do you want to install Games y/n"
+Set-Confirmation -Confirmation $confirmationEmulators -Question "Do you want to install Emulators y/n"
+Set-Confirmation -Confirmation $confirmationAmazon -Question "Do you want to install Amazon Send to Kindle y/n"
+Set-Confirmation -Confirmation $confirmationTex -Question "Do you want to install LaTeX y/n"
+Set-Confirmation -Confirmation $confirmationMaple -Question "Do you want to install Maple y/n"
+Set-Confirmation -Confirmation $confirmationMatLab -Question "Do you want to install MatLab y/n"
+Set-Confirmation -Confirmation $confirmationKmonad -Question "Do you want to install Kmonad y/n"
+Set-Confirmation -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
+Set-Confirmation -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
+Set-Confirmation -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
 
 # -------------------- Package Managers --------------------
 
@@ -126,8 +132,8 @@ if ($confirmationGames -eq 'y') {
     # Epic Games https://store.epicgames.com/en-US/
     # GOG Galaxy https://www.gog.com/galaxy
 
-    Install-GitHub -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location "$InstallDrive\Playnite" # Playnite
-    winget install -e --id Valve.Steam --location "$InstallDrive\Steam" --accept-package-agreements # Steam
+    Install-GitHub -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Playnite") # Playnite
+    winget install -e --id Valve.Steam --location (Join-Path -Path "$InstallDrive" -ChildPath "Steam") --accept-package-agreements # Steam
 
     # Ubisoft Connect https://ubisoftconnect.com/da-DK/?isSso=true&refreshStatus=noLoginData
     # Aliens vs. Predator 2 https://avpunknown.com/avp2aio/
@@ -137,7 +143,7 @@ if ($confirmationGames -eq 'y') {
 }
 
 if ($confirmationEmulators -eq 'y') {
-    Install-Zip -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location "$InstallDrive\Emulators" # Cemu
+    Install-Zip -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators") # Cemu
 
     # Citra https://citra-emu.org/download/#
     # Dolphin https://da.dolphin-emu.org/download/
@@ -149,7 +155,7 @@ if ($confirmationEmulators -eq 'y') {
     # QCMA https://github.com/codestation/qcma/releases
     # RetroArch https://www.retroarch.com/?page=platforms
 
-    Install-GitHub -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location "$InstallDrive\Emulators\RPCS3" -FileType "7z" # RPCS3
+    Install-GitHub -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPaths "RPCS3") -FileType "7z" # RPCS3
 
     # Ryujinx https://github.com/Ryujinx/release-channel-master/releases/tag/1.1.171
     # SNES9X https://www.snes9x.com/
@@ -164,8 +170,8 @@ if ($confirmationLaptopDesktop -eq 'd') {
     # ROG Xonar Phoebus https://www.asus.com/SupportOnly/ROG_Xonar_Phoebus/HelpDesk_Knowledge/
     # Flawless Widescreen https://www.flawlesswidescreen.org/#Download
 
-    Install-GitHub -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location "$InstallDrive\Global Steam Controller" -Version "0.0.7.0" # Global Steam Controller
-    Install-GitHub -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location "$InstallDrive\Locale Emulator" # Locale Emulator
+    Install-GitHub -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller") -Version "0.0.7.0" # Global Steam Controller
+    Install-GitHub -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator") # Locale Emulator
 
     # Hue Sync https://www.philips-hue.com/en-us/explore-hue/propositions/entertainment/sync-with-pc
 
@@ -191,7 +197,7 @@ switch ($arch) {
     '32-bit' { $opArch = '386'; break }
     Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
 }
-$installDir = Join-Path -Path "$InstallDrive\" -ChildPath '1Password CLI'
+$installDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
@@ -207,7 +213,7 @@ Remove-Item -Path op.zip
 #Remove-Item 1password.exe
 <# ---------- #>
 
-winget install -e --id 7zip.7zip --location "$InstallDrive\7-Zip" --accept-package-agreements # 7-Zip
+winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements # 7-Zip
 
 #gh release download -R microsoft/accessibility-insights-windows --pattern "*.msi" -D "$InstallDrive\" # Accessibility Insights for Windows
 
@@ -257,7 +263,7 @@ winget install -e --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 
 <# Open Hardware Monitor #>
 Install-Zip -Name "Open Hardware Monitor" -URL "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip" -Location "$InstallDrive\"
-Rename-Item $InstallDrive\OpenHardwareMonitor\ "Open Hardware Monitor"
+Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
 <# ---------- #>
 
 # ProtonVPN https://protonvpn.com/
@@ -295,9 +301,10 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName { $_.Name -replace $
 
 # Reduce PDF Size https://okular.kde.org/download/
 # ScreenToGif https://github.com/NickeManarin/ScreenToGif https://github.com/ShareX/ShareX/releases/tag/v14.0.1
-Install-GitHub -Name "Transmission" -Repo "transmission/transmission" -Pattern "*-x64.msi" -Location "$InstallDrive\Transmission" -FileType "msi"
 
-gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "$InstallDrive\YT-DLP" # YT-DLP
+Install-GitHub -Name "Transmission" -Repo "transmission/transmission" -Pattern "*-x64.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Transmission") -FileType "msi" # Transmission
+
+gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP") # YT-DLP
 
 # -------------------- Development Tools --------------------
 
@@ -313,16 +320,16 @@ if ($confirmationTex -eq 'y') {
     # TexLive https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop
 }
 
-if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location "$InstallDrive\Docker" --accept-package-agreements }
+if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location (Join-Path -Path "$InstallDrive" -ChildPath "Docker") --accept-package-agreements }
 
 <# ffmpeg #>
 Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip" -Location "$InstallDrive\"
 Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName { $_.Name -replace $_.Name, "ffmpeg" }
 <# ---------- #>
 
-Install-Zip -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location "$InstallDrive\JDK" # JDK
+Install-Zip -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location (Join-Path -Path "$InstallDrive" -ChildPath "JDK") # JDK
 
-winget install -e --id GitHub.GitHubDesktop --location "$InstallDrive\GitHub\Desktop" --accept-package-agreements
+winget install -e --id GitHub.GitHubDesktop --location (Join-Path -Path "$InstallDrive" -ChildPath "Github" -AdditionalChildPaths "Desktop") --accept-package-agreements
 
 # Insomnia https://insomnia.rest/download
 # Msys2 - MinGW-w64 # Download installer
@@ -378,7 +385,7 @@ Remove-Item Fonts -Recurse -Force -Confirm:$false
 # -------------------- Paths --------------------
 
 # [Environment]::SetEnvironmentVariable('DOTNET_CLI_TELEMETRY_OPTOUT', '1')
-# [Environment]::SetEnvironmentVariable("INCLUDE", $env:Path + ";$InstallDrive\YT-DLP", [System.EnvironmentVariableTarget]::User)
+# [Environment]::SetEnvironmentVariable(INCLUDE, $env:Path + ; $InstallDrive\YT-DLP, [System.EnvironmentVariableTarget]::User)
 # C:\Program Files\CMake\bin
 # $InstallDrive\NodeJS
 # $InstallDrive\NVM
