@@ -14,7 +14,7 @@ gh auth login # GitHub Cli Login
 
 # -------------------- Functions --------------------
 
-function ConfirmationPrompt {
+function Read-Confirmation {
     param (
         $Confirmation,
         [string]$Variable = $Confirmation,
@@ -40,7 +40,7 @@ function ConfirmationPrompt {
     )
 }
 
-function DownloadZipToLocation {
+function Install-Zip {
     param (
         [string]$Name,
         [string]$URL,
@@ -51,18 +51,18 @@ function DownloadZipToLocation {
     Remove-Item "$Name.zip"
 }
 
-function GitHubZipToLocation {
+function Install-GitHub {
     param (
         [string]$Name,
         [string]$Repo,
         [string]$Pattern,
         [string]$Location,
         [string]$Version,
-        [string]$ArchiveType = "zip"
+        [string]$FileType = "zip"
     )
     gh release download $Version -R $Repo --pattern $Pattern
-    Get-ChildItem *.$ArchiveType | Rename-Item -NewName { $_.Name -replace $_.Name, "$Name.$ArchiveType" }
-    if ($ArchiveType -eq "7z") {
+    Get-ChildItem *.$FileType | Rename-Item -NewName { $_.Name -replace $_.Name, "$Name.$FileType" }
+    if ($FileType -eq "7z") {
         if ($confirmationDrive -eq "c") {
             C:\Program Files\7-Zip\7z.exe x -o"$Location" "*.7z" -r
         }
@@ -70,29 +70,32 @@ function GitHubZipToLocation {
             D:\7-Zip\7z.exe x -o"$Location" "*.7z" -r
         }
     }
-    elseif ($ArchiveType -eq "zip") {
-        Expand-Archive "$Name.$ArchiveType" $Location
+    elseif ($FileType -eq "zip") {
+        Expand-Archive "$Name.$FileType" $Location
+    }
+    elseif ($FileType -eq "msi") {
+        msiexec.exe /package $Name.$FileType INSTALLDIR="$Location" TARGETDIR="$Location" /passive /norestart
     }
     else {
         Write-Output "Archive type not supported"
     }
-    Remove-Item "$Name.$ArchiveType"
+    Remove-Item "$Name.$FileType"
 }
 
 # -------------------- Confirmation Specific --------------------
 
-ConfirmationPrompt -Confirmation $confirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
-ConfirmationPrompt -Confirmation $confirmationDrive -Variable $InstallDrive -Question "Do you want to install software the C: or D: drive c/d" -FirstTerm 'c' -SecondTerm 'd' -FirstResult "C:\Program Files" -SecondResult "D:"
-ConfirmationPrompt -Confirmation $confirmationGames -Question "Do you want to install Games y/n"
-ConfirmationPrompt -Confirmation $confirmationEmulators -Question "Do you want to install Emulators y/n"
-ConfirmationPrompt -Confirmation $confirmationAmazon -Question "Do you want to install Amazon Send to Kindle y/n"
-ConfirmationPrompt -Confirmation $confirmationTex -Question "Do you want to install LaTeX y/n"
-ConfirmationPrompt -Confirmation $confirmationMaple -Question "Do you want to install Maple y/n"
-ConfirmationPrompt -Confirmation $confirmationMatLab -Question "Do you want to install MatLab y/n"
-ConfirmationPrompt -Confirmation $confirmationKmonad -Question "Do you want to install Kmonad y/n"
-ConfirmationPrompt -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
-ConfirmationPrompt -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
-ConfirmationPrompt -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
+Read-Confirmation -Confirmation $confirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
+Read-Confirmation -Confirmation $confirmationDrive -Variable $InstallDrive -Question "Do you want to install software the C: or D: drive c/d" -FirstTerm 'c' -SecondTerm 'd' -FirstResult "C:\Program Files" -SecondResult "D:"
+Read-Confirmation -Confirmation $confirmationGames -Question "Do you want to install Games y/n"
+Read-Confirmation -Confirmation $confirmationEmulators -Question "Do you want to install Emulators y/n"
+Read-Confirmation -Confirmation $confirmationAmazon -Question "Do you want to install Amazon Send to Kindle y/n"
+Read-Confirmation -Confirmation $confirmationTex -Question "Do you want to install LaTeX y/n"
+Read-Confirmation -Confirmation $confirmationMaple -Question "Do you want to install Maple y/n"
+Read-Confirmation -Confirmation $confirmationMatLab -Question "Do you want to install MatLab y/n"
+Read-Confirmation -Confirmation $confirmationKmonad -Question "Do you want to install Kmonad y/n"
+Read-Confirmation -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
+Read-Confirmation -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
+Read-Confirmation -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
 
 # -------------------- Package Managers --------------------
 
@@ -106,7 +109,7 @@ Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManage
 # -------------------- Personal GitHub Repos --------------------
 
 Set-Location $InstallDrive\
-mkdir GitHub
+New-Item GitHub -ItemType Directory
 Set-Location GitHub
 gh repo clone MagnusMat/Windows-Setup
 gh repo clone MagnusMat/Windows-Terminal-Setup
@@ -123,7 +126,7 @@ if ($confirmationGames -eq 'y') {
     # Epic Games https://store.epicgames.com/en-US/
     # GOG Galaxy https://www.gog.com/galaxy
 
-    GitHubZipToLocation -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location "$InstallDrive\Playnite" # Playnite
+    Install-GitHub -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location "$InstallDrive\Playnite" # Playnite
     winget install -e --id Valve.Steam --location "$InstallDrive\Steam" --accept-package-agreements # Steam
 
     # Ubisoft Connect https://ubisoftconnect.com/da-DK/?isSso=true&refreshStatus=noLoginData
@@ -134,7 +137,7 @@ if ($confirmationGames -eq 'y') {
 }
 
 if ($confirmationEmulators -eq 'y') {
-    DownloadZipToLocation -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location "$InstallDrive\Emulators" # Cemu
+    Install-Zip -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location "$InstallDrive\Emulators" # Cemu
 
     # Citra https://citra-emu.org/download/#
     # Dolphin https://da.dolphin-emu.org/download/
@@ -146,7 +149,7 @@ if ($confirmationEmulators -eq 'y') {
     # QCMA https://github.com/codestation/qcma/releases
     # RetroArch https://www.retroarch.com/?page=platforms
 
-    GitHubZipToLocation -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location "$InstallDrive\Emulators\RPCS3" -ArchiveType "7z" # RPCS3
+    Install-GitHub -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location "$InstallDrive\Emulators\RPCS3" -FileType "7z" # RPCS3
 
     # Ryujinx https://github.com/Ryujinx/release-channel-master/releases/tag/1.1.171
     # SNES9X https://www.snes9x.com/
@@ -161,8 +164,8 @@ if ($confirmationLaptopDesktop -eq 'd') {
     # ROG Xonar Phoebus https://www.asus.com/SupportOnly/ROG_Xonar_Phoebus/HelpDesk_Knowledge/
     # Flawless Widescreen https://www.flawlesswidescreen.org/#Download
 
-    GitHubZipToLocation -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location "$InstallDrive\Global Steam Controller" -Version "0.0.7.0" # Global Steam Controller
-    GitHubZipToLocation -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location "$InstallDrive\Locale Emulator" # Locale Emulator
+    Install-GitHub -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location "$InstallDrive\Global Steam Controller" -Version "0.0.7.0" # Global Steam Controller
+    Install-GitHub -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location "$InstallDrive\Locale Emulator" # Locale Emulator
 
     # Hue Sync https://www.philips-hue.com/en-us/explore-hue/propositions/entertainment/sync-with-pc
 
@@ -237,7 +240,7 @@ if ($confirmationKmonad -eq 'y') {
     git clone https://github.com/kmonad/kmonad.git
     Set-Location kmonad
     stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
-    Set-Location ..
+    Set-Location ~
 }
 <# ---------- #>
 
@@ -253,7 +256,7 @@ winget install -e --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 # OBS Studio https://github.com/obsproject/obs-studio/releases/tag/27.2.4
 
 <# Open Hardware Monitor #>
-DownloadZipToLocation -Name "Open Hardware Monitor" -URL "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip" -Location "$InstallDrive\"
+Install-Zip -Name "Open Hardware Monitor" -URL "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip" -Location "$InstallDrive\"
 Rename-Item $InstallDrive\OpenHardwareMonitor\ "Open Hardware Monitor"
 <# ---------- #>
 
@@ -286,13 +289,13 @@ Start-Process https://mail.proton.me/ # Proton Mail
 # Onion Share https://github.com/onionshare/onionshare/releases/tag/v2.5
 
 <# Pandoc #>
-GitHubZipToLocation -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip" -Location "$InstallDrive\"
+Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip" -Location "$InstallDrive\"
 Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName { $_.Name -replace $_.Name, "Pandoc" }
 <# ---------- #>
 
 # Reduce PDF Size https://okular.kde.org/download/
 # ScreenToGif https://github.com/NickeManarin/ScreenToGif https://github.com/ShareX/ShareX/releases/tag/v14.0.1
-# Transmission https://github.com/transmission/transmission
+Install-GitHub -Name "Transmission" -Repo "transmission/transmission" -Pattern "*-x64.msi" -Location "$InstallDrive\Transmission" -FileType "msi"
 
 gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D "$InstallDrive\YT-DLP" # YT-DLP
 
@@ -313,11 +316,11 @@ if ($confirmationTex -eq 'y') {
 if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location "$InstallDrive\Docker" --accept-package-agreements }
 
 <# ffmpeg #>
-GitHubZipToLocation -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip" -Location "$InstallDrive\"
+Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip" -Location "$InstallDrive\"
 Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName { $_.Name -replace $_.Name, "ffmpeg" }
 <# ---------- #>
 
-DownloadZipToLocation -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location "$InstallDrive\JDK" # JDK
+Install-Zip -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location "$InstallDrive\JDK" # JDK
 
 winget install -e --id GitHub.GitHubDesktop --location "$InstallDrive\GitHub\Desktop" --accept-package-agreements
 
@@ -334,10 +337,10 @@ choco install -y python3 # Python
 
 # -------------------- Fonts --------------------
 
-mkdir Fonts
+New-Item Fonts -ItemType Directory
 
 <# Fira Code #>
-GitHubZipToLocation -Name "FiraCode" -Repo "tonsky/FiraCode" -Pattern "*.zip" -Location ".\"
+Install-GitHub -Name "FiraCode" -Repo "tonsky/FiraCode" -Pattern "*.zip" -Location ".\"
 Get-ChildItem -Path FiraCode\ttf -Recurse -File | Move-Item -Destination Fonts
 Remove-Item FiraCode -Recurse -Force -Confirm:$false
 <# ---------- #>
@@ -349,8 +352,8 @@ Remove-Item FiraCodeiScript -Recurse -Force -Confirm:$false
 <# ---------- #>
 
 <# Fira Code Nerd Font #>
-GitHubZipToLocation -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraCode.zip" -Location ".\"
-GitHubZipToLocation -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraMono.zip" -Location ".\"
+Install-GitHub -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraCode.zip" -Location ".\"
+Install-GitHub -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraMono.zip" -Location ".\"
 Get-ChildItem -Path FiraCode -Recurse -File | Move-Item -Destination Fonts
 Get-ChildItem -Path FiraMono -Recurse -File | Move-Item -Destination Fonts
 Remove-Item FiraCode, FiraMono
