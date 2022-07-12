@@ -74,7 +74,7 @@ function Install-GitHub {
         Expand-Archive "$Name.$FileType" $Location
     }
     elseif ($FileType -eq "msi") {
-        msiexec.exe /package $Name.$FileType INSTALLDIR="$Location" TARGETDIR="$Location" /passive /norestart
+        Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.$FileType`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "/passive", "/norestart"
     }
     else {
         Write-Output "Archive type not supported"
