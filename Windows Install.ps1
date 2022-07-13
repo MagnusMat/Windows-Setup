@@ -18,16 +18,6 @@ do {
     ($ConfirmationDrive -ne "c") -and ($ConfirmationDrive -ne "d")
 )
 
-# -------------------- Upgrade --------------------
-
-winget upgrade -h --all
-
-# -------------------- Dependencies --------------------
-
-winget install -e --id Git.Git --accept-package-agreements # Git
-winget install -e --id GitHub.cli --accept-package-agreements # GitHub CLI
-gh auth login # GitHub Cli Login
-
 # -------------------- Functions --------------------
 
 function Set-Confirmation {
@@ -58,12 +48,34 @@ function Install-Zip {
     Remove-Item "$Name.zip"
 }
 
+function Install-MSI {
+    param (
+        [string]$Name,
+        [string]$URL,
+        [string]$Location
+    )
+    Invoke-WebRequest $URL -OutFile "$Name.msi"
+    Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.msi`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "/passive", "/norestart"
+    Remove-Item "$Name.msi"
+}
+
+function Install-EXE {
+    param (
+        [string]$Name,
+        [string]$URL,
+        [string]$Location
+    )
+    Invoke-WebRequest $URL -OutFile "$Name.exe"
+
+    Remove-Item "$Name.exe"
+}
+
 function Install-GitHub {
     param (
         [string]$Name,
         [string]$Repo,
-        [string]$Pattern,
-        [string]$Location,
+        [string]$Pattern = "*.zip",
+        [string]$Location = "$InstallDrive\",
         [string]$Version,
         [string]$FileType = "zip"
     )
@@ -81,7 +93,7 @@ function Install-GitHub {
         Expand-Archive "$Name.$FileType" $Location
     }
     elseif ($FileType -eq "msi") {
-        Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.$FileType`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "/passive", "/norestart"
+        Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.$FileType`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "INSTALL_DIRECTORY_PATH=`"$Location`"" , "/passive", "/norestart"
     }
     else {
         Write-Output "Archive type not supported"
@@ -89,7 +101,7 @@ function Install-GitHub {
     Remove-Item "$Name.$FileType"
 }
 
-# -------------------- Confirmation Specific --------------------
+# -------------------- Confirmations --------------------
 
 Set-Confirmation -Confirmation $confirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
 Set-Confirmation -Confirmation $confirmationGames -Question "Do you want to install Games y/n"
@@ -102,6 +114,16 @@ Set-Confirmation -Confirmation $confirmationKmonad -Question "Do you want to ins
 Set-Confirmation -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
 Set-Confirmation -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
 Set-Confirmation -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
+
+# -------------------- Upgrade --------------------
+
+winget upgrade -h --all
+
+# -------------------- Dependencies --------------------
+
+winget install -e --id Git.Git --accept-package-agreements # Git
+winget install -e --id GitHub.cli --accept-package-agreements # GitHub CLI
+gh auth login # GitHub Cli Login
 
 # -------------------- Package Managers --------------------
 
@@ -129,11 +151,13 @@ Set-Location ~
 if ($confirmationGames -eq 'y') {
     # Battle.net https://www.blizzard.com/en-sg/apps/battle.net/desktop
     # EA Desktop https://www.ea.com/ea-app-beta
-    # Epic Games https://store.epicgames.com/en-US/
+
+    Install-MSI -Name "Epic Games" -URL "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Win32/EpicInstaller-13.3.0.msi?launcherfilename=EpicInstaller-13.3.0.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Epic Games") # Epic Games
+
     # GOG Galaxy https://www.gog.com/galaxy
 
-    Install-GitHub -Name "Playnite" -Repo JosefNemec/Playnite -Pattern "*.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Playnite") # Playnite
-    winget install -e --id Valve.Steam --location (Join-Path -Path "$InstallDrive" -ChildPath "Steam") --accept-package-agreements # Steam
+    Install-GitHub -Name "Playnite" -Repo JosefNemec/Playnite -Location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Playnite") # Playnite
+    winget install -e --id Valve.Steam --location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Steam") --accept-package-agreements # Steam
 
     # Ubisoft Connect https://ubisoftconnect.com/da-DK/?isSso=true&refreshStatus=noLoginData
     # Aliens vs. Predator 2 https://avpunknown.com/avp2aio/
@@ -143,35 +167,45 @@ if ($confirmationGames -eq 'y') {
 }
 
 if ($confirmationEmulators -eq 'y') {
-    Install-Zip -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators") # Cemu
+    Install-Zip -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Cemu") # Cemu
 
-    # Citra https://citra-emu.org/download/#
-    # Dolphin https://da.dolphin-emu.org/download/
-    # NoPayStation https://nopaystation.com/
-    # PCSX2 https://pcsx2.net/downloads/
-    # PCSXR https://emulation.gametechwiki.com/index.php/PCSX-Reloaded
-    # PPSSPP https://www.ppsspp.org/downloads.html
-    # Project64 https://www.pj64-emu.com/public-releases
+    # Citra https://citra-emu.org/download/
+
+    Install-MSI -Name "Dolphin" -URL "https://dl.dolphin-emu.org/builds/0c/ca/dolphin-master-5.0-16793-x64.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Dolphin") # Dolphin
+
+    <# NoPayStation #>
+    Invoke-WebRequest "https://nopaystation.com/vita/npsReleases/NPS_Browser_0.94.exe" -OutFile NoPayStation.exe
+    Move-Item NoPayStation.exe (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "NoPayStation")
+    gh release download -R mmozeiko/pkg2zip --pattern "pkg2zip_64bit.zip"
+    Expand-Archive "pkg2zip_64bit.zip" (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "NoPayStation")
+    <# ---------- #>
+
+    Install-Zip -Name "PCSXR" -URL "https://doc-04-7k-docs.googleusercontent.com/docs/securesc/ecq0a8qqs25h8o2tcb0lnareatt3292s/vjg8o6edbh6iucm8c59hk0bdpp5i3fp7/1657727400000/06771232046367458076/05057713440002365443/1mLmNoRIeswoPy2GT78PKk0uig2a65jyC?e=download&ax=ACxEAsbeLFMyQwcpa6aKRjY2QhwN9qLhb72MeXCppKHIVJmNOzXeL6keX0E9I2kuasSz-rIWhmTqSGU-WkJiDGS1yiO5_8V9EpDoqUleyJ6h9oY4fWmED1jcwgcYvm9iEBzuvn5ft-Kr6feB3UB6F7bbQ5pRe0FAFXQlXqDbGDpfRu-1HBv_VGUnHDcn2Pt4ytDQ_Sp25KNTnZ5GM3qJjwStz_iNlxF3vbwhF4lbwtmkRmaF8SjYwrw5ljKRhJpW7hXMmxs0W82MqBPdkDbqyUA7A9c5B6UXidB1LXNQUqDzjc0Ew6hZh3BKhIeeeC4h_HEmo99QZjfF2kdjuHK8NKCQLI1jwygeDGPDvJq0Y86FgjN5tewgiVCfDGvAytkwgYRT_R7fUirk8-boCLVwX-Nr-97loYKJkMgjQp3PBY0hg2cQxeqzdcJZHB4wTOEjIWnh9ow_l9yqva1utHMr04F_GrMObxj5POO4XhxFIzTl52d6Ciqa86BN2WzwuP1b2eTg-iaMFEKXssYgSUOW-bYEPz7_YnKTYbfu5FOnsUR5worM2VQQ27C6KTPcBaycrf1pwdTNkz8eRoBPBH-uHyhMRsksBSWOzRbCwqVDQkB72WBKvXrop54qk4J8jZMTUjxuSdFJCkgsoPu16ZhwPXGzL-5RJnAo9bO9zItma-hCoDTwn-HKRzplAeOPxXV5WZcQjm71D-qPsr2tOgktF7RihlrGLM9crtIfwxRE6PZS-_-1K6I000RHmNa_BMciv9tnCeoR5v04Pjrr69s3RqGAKyc&uuid=4b06f5cb-861d-4546-a5f4-e4f90058e466&authuser=0&nonce=8vp23uqdplcoa&user=05057713440002365443&hash=q4k56sa03ibsqu7lp3rcgd5eu32va0au" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PCSXR") # PCSXR
+    Install-GitHub -Name "PCSX2" -Repo "PCSX2/pcsx2" -Pattern "*.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PCSX2") -FileType "7z" # PCSX2
+    Install-Zip -Name "PPSSPP" -URL "https://www.ppsspp.org/files/1_12_3/ppsspp_win.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PPSSPP") # PPSSPP
+    Install-Zip -Name "Project64" -URL "https://www.pj64-emu.com/file/project64-3-0-0-5632-f83bee9/" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Project64") # Project64
+
     # QCMA https://github.com/codestation/qcma/releases
-    # RetroArch https://www.retroarch.com/?page=platforms
 
+    Install-Zip -Name "RetroArch" -URL "https://buildbot.libretro.com/stable/1.10.3/windows/x86_64/RetroArch.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "RetroArch") # RetroArch
     Install-GitHub -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPaths "RPCS3") -FileType "7z" # RPCS3
+    Install-GitHub -Name "Ryujinx" -Repo "Ryujinx/release-channel-master" -Pattern "ryujinx-*-win_x64.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPaths "Ryujinx") # Ryujinx
 
-    # Ryujinx https://github.com/Ryujinx/release-channel-master/releases/tag/1.1.171
-    # SNES9X https://www.snes9x.com/
-    # Visual Boy Advance https://www.emulator-zone.com/doc.php/gba/vboyadvance.html
+    Install-Zip -Name "SNES9X" -URL "https://dl.emulator-zone.com/download.php/emulators/snes/snes9x/snes9x-1.60-win32-x64.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "SNES9X") # SNES9X
+    Install-Zip -Name "Visual Boy Advance" -URL "https://dl.emulator-zone.com/download.php/emulators/gba/vboyadvance/VisualBoyAdvance-1.8.0-beta3.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Visual Boy Advance") # Visual Boy Advance
 }
 
 # -------------------- Miscellaneous --------------------
 
 if ($confirmationLaptopDesktop -eq 'd') {
     # Aorus Engine https://www.gigabyte.com/Support/Utility
-    # Archi Steam Farm https://github.com/JustArchiNET/ArchiSteamFarm/releases/tag/5.2.7.7
-    # ROG Xonar Phoebus https://www.asus.com/SupportOnly/ROG_Xonar_Phoebus/HelpDesk_Knowledge/
-    # Flawless Widescreen https://www.flawlesswidescreen.org/#Download
 
-    Install-GitHub -Name "GloSC" -Repo "Alia5/GlosSI" -Pattern "*.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller") -Version "0.0.7.0" # Global Steam Controller
-    Install-GitHub -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Pattern "*.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator") # Locale Emulator
+    Install-GitHub -Name "Archi Steam Farm" -Repo "JustArchiNET/ArchiSteamFarm" -Pattern "ASF-win-x64.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Archi Steam Farm") # Archi Steam Farm
+
+    # ROG Xonar Phoebus https://www.asus.com/SupportOnly/ROG_Xonar_Phoebus/HelpDesk_Knowledge/
+
+    Install-GitHub -Name "GloSC" -Repo "Alia5/GlosSI" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller") -Version "0.0.7.0" # Global Steam Controller
+    Install-GitHub -Name "Locale Emulator" -Repo "xupefei/Locale-Emulator" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator") # Locale Emulator
 
     # Hue Sync https://www.philips-hue.com/en-us/explore-hue/propositions/entertainment/sync-with-pc
 
@@ -202,42 +236,38 @@ Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_wi
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
 if ($envMachinePath -split ';' -notcontains $installDir) {
-    [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
+    [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath; $installDir", 'Machine')
 }
 Remove-Item -Path op.zip
 <# ---------- #>
 
 <# 1Password #>
 #Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe -OutFile 1password.exe
-#Needs to do something
-#Remove-Item 1password.exe
 <# ---------- #>
 
 winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements # 7-Zip
-
-#gh release download -R microsoft/accessibility-insights-windows --pattern "*.msi" -D "$InstallDrive\" # Accessibility Insights for Windows
-
+Install-GitHub -Name "Accessibility Insights for Windows" -Repo "microsoft/accessibility-insights-windows" -Pattern "* .msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Accessibility Insights for Windows") -FileType "msi"
 winget install -e --id BlenderFoundation.Blender --accept-package-agreements # Blender
 winget install -e --id calibre.calibre --accept-package-agreements # Calibre
+Install-Zip -Name "CPU-Z" -URL "https://download.cpuid.com/cpu-z/cpu-z_2.01-en.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "CPU-Z") # CPU-Z
+Install-GitHub -Name "Cryptomator" -Repo "cryptomator/cryptomator" -Pattern "*.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Cryptomator") -FileType "msi" # Cryptomator
+winget install -e --id Discord.Discord --accept-package-agreements # Discord
+Install-GitHub -Name "DrawIO" -Repo "jgraph/drawio-desktop" -Pattern "*.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") -FileType "msi" # Draw.io
 
-# CPU-Z https://www.cpuid.com/softwares/cpu-z.html
+# DroidCam https://www.dev47apps.com/
 
-<# Cryptomator #>
-#gh release download -R cryptomator/cryptomator --pattern "*.msi" -D "$InstallDrive\" # Cryptomator
+Install-MSI -Name "EM Client" -URL "https://cdn-dist.emclient.com/dist/v9.0.1708/setup.msi?sp=r&st=2020-05-06T07:52:16Z&se=3000-05-07T07:52:00Z&sv=2019-10-10&sr=c&sig=XTseyj3q1sYO2avsYPMzj5b8MMTOWRpL1KN92wU5HR4%3D" -Location (Join-Path -Path "$InstallDrive" -ChildPath "EM Client") # eM Client
+winget install -e --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
+Install-Zip -Name "FileZilla" -URL "https://dl3.cdn.filezilla-project.org/client/FileZilla_3.60.1_win64.zip?h=vDeiZ54lWjJOb0sS_f8mWg&x=1657730266" -Location (Join-Path -Path "$InstallDrive" -ChildPath "FileZilla") # FileZilla
+Install-MSI -Name "Mozilla Firefox" -URL "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Mozilla Firefox") # Mozilla Firefox
+
+<# Google Drive #>
+Invoke-WebRequest "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe" -OutFile GoogleDrive.exe
+.\GoogleDrive.exe --silent --gsuite_shortcuts=false
+Remove-Item GoogleDrive.exe
 <# ---------- #>
 
-winget install -e --id Discord.Discord --accept-package-agreements # Discord
-
-# Draw.io https://github.com/jgraph/drawio-desktop/releases/tag/v19.0.3
-# DroidCam https://www.dev47apps.com/
-# eM Client https://www.emclient.com/
-
-winget install -e --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
-
-# FileZilla https://filezilla-project.org/download.php?show_all=1
-# Mozilla Firefox https://gmusumeci.medium.com/unattended-install-of-firefox-browser-using-powershell-6841a7742f9a
-# Google Drive https://www.google.com/intl/da/drive/download/
-# Inkscape https://inkscape.org/release/1.2/windows/64-bit/
+Install-MSI -Name "Inkscape" -URL "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Inkscape") # Inkscape
 
 <# Kmonad #>
 scoop install stack # install stack
@@ -259,22 +289,32 @@ winget install -e --id 9WZDNCRF0083 --accept-package-agreements # Messenger
 # Notion https://www.notion.so/desktop
 # Nvidia Geforce Experience https://www.nvidia.com/da-dk/geforce/geforce-experience/
 # Nvidia RTX Voice https://www.nvidia.com/da-dk/geforce/guides/nvidia-rtx-voice-setup-guide/
-# OBS Studio https://github.com/obsproject/obs-studio/releases/tag/27.2.4
+
+Install-GitHub -Name "OBS Studio" -Repo "obsproject/obs-studio" -Pattern "*-x64.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "OBS Studio") # OBS Studio
 
 <# Open Hardware Monitor #>
-Install-Zip -Name "Open Hardware Monitor" -URL "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip" -Location "$InstallDrive\"
+Install-Zip -Name "Open Hardware Monitor" -URL "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip"
 Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
 <# ---------- #>
 
 # ProtonVPN https://protonvpn.com/
-# Shotcut https://github.com/mltframework/shotcut/releases/tag/v22.06.23
-# TeamViewer https://www.teamviewer.com/da/
+
+Install-GitHub -Name "Shotcut" -Repo "mltframework/shotcut" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Shotcut") # Shotcut
+Install-Zip -Name "TeamViewer" -URL "https://download.teamviewer.com/download/TeamViewerPortable.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "TeamViewer") # TeamViewer
+
 # TeraCopy https://www.codesector.com/downloads
 # Tor https://www.torproject.org/
-# Unity Hub https://unity3d.com/get-unity/download
-# VeraCrypt https://www.veracrypt.fr/code/VeraCrypt/
-# WizTree https://diskanalyzer.com/download
-# Yubikey Manager https://docs.yubico.com/software/yubikey/tools/ykman/Install_ykman.html#windows https://www.yubico.com/support/download/yubikey-manager/#h-downloads
+# Unity Hub Visual Studio?
+
+Install-MSI -Name "VeraCrypt" -URL "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt_Setup_x64_1.25.9.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "VeraCrypt") # VeraCrypt
+Install-Zip -Name "WizTree" -URL "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "WizTree") # WizTree
+
+<# Yubikey Manager #>
+Invoke-WebRequest "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe" -OutFile Yubikey.exe
+.\Yubikey.exe /S # Yubikey Manager
+Remove-Item Yubikey.exe
+<# ----------#>
+
 # PhotoShop # Download from Drive
 
 # -------------------- Progressive Web Apps --------------------
@@ -292,18 +332,16 @@ Start-Process https://mail.proton.me/ # Proton Mail
 
 # Figma https://www.figma.com/downloads/
 # Mendeley https://www.mendeley.com/search/
-# Onion Share https://github.com/onionshare/onionshare/releases/tag/v2.5
+
+Install-GitHub -Name "Onion Share" -Repo "onionshare/onionshare" -Pattern "*.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Onion Share") -FileType "msi" # Onion Share
 
 <# Pandoc #>
-Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip" -Location "$InstallDrive\"
+Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
 Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName { $_.Name -replace $_.Name, "Pandoc" }
 <# ---------- #>
 
-# Reduce PDF Size https://okular.kde.org/download/
-# ScreenToGif https://github.com/NickeManarin/ScreenToGif https://github.com/ShareX/ShareX/releases/tag/v14.0.1
-
+Install-GitHub -Name "ShareX" -Repo "ShareX/ShareX" -Location (Join-Path -Path "$InstallDrive" -ChildPath "ShareX") # ShareX
 Install-GitHub -Name "Transmission" -Repo "transmission/transmission" -Pattern "*-x64.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Transmission") -FileType "msi" # Transmission
-
 gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP") # YT-DLP
 
 # -------------------- Development Tools --------------------
@@ -317,13 +355,18 @@ if ($confirmationMaple -eq 'y') {
 }
 
 if ($confirmationTex -eq 'y') {
-    # TexLive https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop
+    <# TexLive #> # ELEVATED
+    Install-Zip -Name "Tex Live" -URL "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip" -Location ".\"
+    Get-ChildItem "install-tl-*" | Rename-Item -NewName { $_.Name -replace $_.Name, "install-tl" }
+    .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
+    Remove-Item "install-tl", "install-tl.zip" -Recurse -Force -Confirm:$false
+    <# ----------#>
 }
 
 if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location (Join-Path -Path "$InstallDrive" -ChildPath "Docker") --accept-package-agreements }
 
 <# ffmpeg #>
-Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip" -Location "$InstallDrive\"
+Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
 Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName { $_.Name -replace $_.Name, "ffmpeg" }
 <# ---------- #>
 
@@ -338,7 +381,12 @@ choco install -y nvm # nvm #ELEVATED
 nvm install latest # npm & node.jsnvm install latest #ELEVATED
 
 # R https://mirrors.dotsrc.org/cran/
-# Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022
+
+
+<# Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022 #>
+Invoke-WebRequest "https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Enterprise&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false" -OutFile vs_enterprise.exe
+.\vs_enterprise.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Visual Studio 2022") --passive --norestart #--config <path>
+<# ---------- #>
 
 choco install -y python3 # Python
 
@@ -347,7 +395,7 @@ choco install -y python3 # Python
 New-Item Fonts -ItemType Directory
 
 <# Fira Code #>
-Install-GitHub -Name "FiraCode" -Repo "tonsky/FiraCode" -Pattern "*.zip" -Location ".\"
+Install-GitHub -Name "FiraCode" -Repo "tonsky/FiraCode" -Location ".\"
 Get-ChildItem -Path FiraCode\ttf -Recurse -File | Move-Item -Destination Fonts
 Remove-Item FiraCode -Recurse -Force -Confirm:$false
 <# ---------- #>
