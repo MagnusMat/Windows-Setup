@@ -125,6 +125,24 @@ winget install -e --id Git.Git --accept-package-agreements # Git
 winget install -e --id GitHub.cli --accept-package-agreements # GitHub CLI
 gh auth login # GitHub Cli Login
 
+<# DotNet #>
+Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1';
+./dotnet-install.ps1 -Channel "Current" -Runtime "dotnet"
+Invoke-WebRequest "https://download.visualstudio.microsoft.com/download/pr/dc0e0e83-0115-4518-8b6a-590ed594f38a/65b63e41f6a80decb37fa3c5af79a53d/windowsdesktop-runtime-6.0.7-win-x64.exe" -OutFile "desktopRuntime.exe"
+./desktopRuntime.exe /install /quiet /norestart
+<# ---------- #>
+
+<# Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022 #>
+Invoke-WebRequest "https://aka.ms/vs/17/release/vs_enterprise.exe" -OutFile VSEnterprise.exe
+.\VSEnterprise.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Visual Studio 2022") --passive --norestart
+Remove-Item VSEnterprise.exe
+Invoke-WebRequest "https://download.visualstudio.microsoft.com/download/pr/d59287e5-e208-462b-8894-db3142c39eca/c6d14e46b035dd68b0e813768ca5d8d4fb712a2930cc009a2fc68873e37f0e42/vs_BuildTools.exe" -OutFile BuildTools.exe
+.\BuildTools.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Build Tools 2022") --passive --norestart
+Remove-Item BuildTools.exe
+<# ---------- #>
+
+choco install -y python3 # Python
+
 # -------------------- Package Managers --------------------
 
 Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression # Scoop
@@ -381,14 +399,6 @@ choco install -y nvm # nvm #ELEVATED
 nvm install latest # npm & node.jsnvm install latest #ELEVATED
 
 # R https://mirrors.dotsrc.org/cran/
-
-
-<# Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022 #>
-Invoke-WebRequest "https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=Enterprise&channel=Release&version=VS2022&source=VSLandingPage&cid=2030&passive=false" -OutFile vs_enterprise.exe
-.\vs_enterprise.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Visual Studio 2022") --passive --norestart #--config <path>
-<# ---------- #>
-
-choco install -y python3 # Python
 
 # -------------------- Fonts --------------------
 
