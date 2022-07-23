@@ -463,6 +463,7 @@ winget install -e --id 9N26S50LN705 --accept-package-agreements # Windows File R
 winget install -e --id 9WZDNCRFHWLH --accept-package-agreements # HP Smart
 winget install -e --id 9WZDNCRFHWM4 --accept-package-agreements # Wikipedia
 winget install -e --id 9NBLGGH42THS --accept-package-agreements # 3d Viewer
+winget install -e --id 9NBLGGH30XJ3 --accept-package-agreements # Xbox Accessories
 
 # -------------------- Configurations --------------------
 
