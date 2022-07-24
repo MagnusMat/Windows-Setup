@@ -40,8 +40,8 @@ function Set-Confirmation {
 function Install-Zip {
     param (
         [string]$Name,
-        [string]$URL,
-        [string]$Location
+        [string]$Location,
+        [string]$URL
     )
     Invoke-WebRequest $URL -OutFile "$Name.zip"
     Expand-Archive "$Name.zip" $Location
@@ -51,8 +51,8 @@ function Install-Zip {
 function Install-MSI {
     param (
         [string]$Name,
-        [string]$URL,
-        [string]$Location
+        [string]$Location = "$InstallDrive\",
+        [string]$URL
     )
     Invoke-WebRequest $URL -OutFile "$Name.msi"
     Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.msi`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "/passive", "/norestart"
@@ -62,11 +62,12 @@ function Install-MSI {
 function Install-EXE {
     param (
         [string]$Name,
-        [string]$URL,
-        [string]$Location
+        [string]$Arguments = "/S",
+        [string]$Location = "$InstallDrive\",
+        [string]$URL
     )
     Invoke-WebRequest $URL -OutFile "$Name.exe"
-
+    ".\$Name.exe $Arguments"
     Remove-Item "$Name.exe"
 }
 
@@ -124,21 +125,29 @@ winget upgrade -h --all
 winget install -e --id Git.Git --accept-package-agreements # Git
 winget install -e --id GitHub.cli --accept-package-agreements # GitHub CLI
 gh auth login # GitHub Cli Login
+# Msys2 - MinGW-w64 # Download installer
 
 <# DotNet #>
 Invoke-WebRequest 'https://dot.net/v1/dotnet-install.ps1' -OutFile 'dotnet-install.ps1';
 ./dotnet-install.ps1 -Channel "Current" -Runtime "dotnet"
-Invoke-WebRequest "https://download.visualstudio.microsoft.com/download/pr/dc0e0e83-0115-4518-8b6a-590ed594f38a/65b63e41f6a80decb37fa3c5af79a53d/windowsdesktop-runtime-6.0.7-win-x64.exe" -OutFile "desktopRuntime.exe"
-./desktopRuntime.exe /install /quiet /norestart
+
+Install-EXE -Name "DesktopRuntime" -Arguments "/install /quiet /norestart" -URL "https://download.visualstudio.microsoft.com/download/pr/dc0e0e83-0115-4518-8b6a-590ed594f38a/65b63e41f6a80decb37fa3c5af79a53d/windowsdesktop-runtime-6.0.7-win-x64.exe" # .Net Desktop Runtime Maybe
+
+# Invoke-WebRequest "https://download.visualstudio.microsoft.com/download/pr/dc0e0e83-0115-4518-8b6a-590ed594f38a/65b63e41f6a80decb37fa3c5af79a53d/windowsdesktop-runtime-6.0.7-win-x64.exe" -OutFile "desktopRuntime.exe"
+# ./desktopRuntime.exe /install /quiet /norestart
 <# ---------- #>
 
-<# Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022 #>
-Invoke-WebRequest "https://aka.ms/vs/17/release/vs_enterprise.exe" -OutFile VSEnterprise.exe
-.\VSEnterprise.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Visual Studio 2022") --passive --norestart
-Remove-Item VSEnterprise.exe
-Invoke-WebRequest "https://download.visualstudio.microsoft.com/download/pr/d59287e5-e208-462b-8894-db3142c39eca/c6d14e46b035dd68b0e813768ca5d8d4fb712a2930cc009a2fc68873e37f0e42/vs_BuildTools.exe" -OutFile BuildTools.exe
-.\BuildTools.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Build Tools 2022") --passive --norestart
-Remove-Item BuildTools.exe
+<# Visual Studio https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022 #>¨
+Install-EXE -Name "VSEnterprise" -Arguments "--installPath $Location --passive --norestart" -Location "(Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Visual Studio 2022")" -URL "https://aka.ms/vs/17/release/vs_enterprise.exe"
+
+Install-EXE -Name "BuildTools" -Arguments "--installPath $Location --passive --norestart" -Location "(Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Build Tools 2022")" -URL "https://download.visualstudio.microsoft.com/download/pr/d59287e5-e208-462b-8894-db3142c39eca/c6d14e46b035dd68b0e813768ca5d8d4fb712a2930cc009a2fc68873e37f0e42/vs_BuildTools.exe"
+
+# Invoke-WebRequest "https://aka.ms/vs/17/release/vs_enterprise.exe" -OutFile VSEnterprise.exe
+# .\VSEnterprise.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Visual Studio 2022") --passive --norestart
+# Remove-Item VSEnterprise.exe
+# Invoke-WebRequest "https://download.visualstudio.microsoft.com/download/pr/d59287e5-e208-462b-8894-db3142c39eca/c6d14e46b035dd68b0e813768ca5d8d4fb712a2930cc009a2fc68873e37f0e42/vs_BuildTools.exe" -OutFile BuildTools.exe
+# .\BuildTools.exe --installPath (Join-Path -Path "$InstallDrive" -ChildPath "Visual Studio" -AdditionalChildPath "Build Tools 2022") --passive --norestart
+# Remove-Item BuildTools.exe
 <# ---------- #>
 
 choco install -y python3 # Python
@@ -170,7 +179,7 @@ if ($confirmationGames -eq 'y') {
     # Battle.net https://www.blizzard.com/en-sg/apps/battle.net/desktop
     # EA Desktop https://www.ea.com/ea-app-beta
 
-    Install-MSI -Name "Epic Games" -URL "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Win32/EpicInstaller-13.3.0.msi?launcherfilename=EpicInstaller-13.3.0.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Epic Games") # Epic Games
+    Install-MSI -Name "Epic Games" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Epic Games") -URL "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Win32/EpicInstaller-13.3.0.msi?launcherfilename=EpicInstaller-13.3.0.msi" # Epic Games
 
     # GOG Galaxy https://www.gog.com/galaxy
 
@@ -180,16 +189,15 @@ if ($confirmationGames -eq 'y') {
     # Ubisoft Connect https://ubisoftconnect.com/da-DK/?isSso=true&refreshStatus=noLoginData
     # Aliens vs. Predator 2 https://avpunknown.com/avp2aio/
     # Aliens vs. Predator 2 - Primal Hunt https://avpunknown.com/avp2aio/
-    # Blur
     # Silent Hill - The Arcade https://collectionchamber.blogspot.com/2015/09/silent-hill-arcade.html
 }
 
 if ($confirmationEmulators -eq 'y') {
-    Install-Zip -Name "Cemu" -URL "https://cemu.info/releases/cemu_1.26.2.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Cemu") # Cemu
+    Install-Zip -Name "Cemu" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Cemu") -URL "https://cemu.info/releases/cemu_1.26.2.zip" # Cemu
 
-    # Citra https://citra-emu.org/download/
+    # Citra https://citra-emu.org/download/ https://github.com/citra-emu/citra/wiki/Building-For-Windows
 
-    Install-MSI -Name "Dolphin" -URL "https://dl.dolphin-emu.org/builds/0c/ca/dolphin-master-5.0-16793-x64.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Dolphin") # Dolphin
+    Install-MSI -Name "Dolphin" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Dolphin") -URL "https://dl.dolphin-emu.org/builds/0c/ca/dolphin-master-5.0-16793-x64.7z" # Dolphin
 
     <# NoPayStation #>
     Invoke-WebRequest "https://nopaystation.com/vita/npsReleases/NPS_Browser_0.94.exe" -OutFile NoPayStation.exe
@@ -198,19 +206,19 @@ if ($confirmationEmulators -eq 'y') {
     Expand-Archive "pkg2zip_64bit.zip" (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "NoPayStation")
     <# ---------- #>
 
-    Install-Zip -Name "PCSXR" -URL "https://doc-04-7k-docs.googleusercontent.com/docs/securesc/ecq0a8qqs25h8o2tcb0lnareatt3292s/vjg8o6edbh6iucm8c59hk0bdpp5i3fp7/1657727400000/06771232046367458076/05057713440002365443/1mLmNoRIeswoPy2GT78PKk0uig2a65jyC?e=download&ax=ACxEAsbeLFMyQwcpa6aKRjY2QhwN9qLhb72MeXCppKHIVJmNOzXeL6keX0E9I2kuasSz-rIWhmTqSGU-WkJiDGS1yiO5_8V9EpDoqUleyJ6h9oY4fWmED1jcwgcYvm9iEBzuvn5ft-Kr6feB3UB6F7bbQ5pRe0FAFXQlXqDbGDpfRu-1HBv_VGUnHDcn2Pt4ytDQ_Sp25KNTnZ5GM3qJjwStz_iNlxF3vbwhF4lbwtmkRmaF8SjYwrw5ljKRhJpW7hXMmxs0W82MqBPdkDbqyUA7A9c5B6UXidB1LXNQUqDzjc0Ew6hZh3BKhIeeeC4h_HEmo99QZjfF2kdjuHK8NKCQLI1jwygeDGPDvJq0Y86FgjN5tewgiVCfDGvAytkwgYRT_R7fUirk8-boCLVwX-Nr-97loYKJkMgjQp3PBY0hg2cQxeqzdcJZHB4wTOEjIWnh9ow_l9yqva1utHMr04F_GrMObxj5POO4XhxFIzTl52d6Ciqa86BN2WzwuP1b2eTg-iaMFEKXssYgSUOW-bYEPz7_YnKTYbfu5FOnsUR5worM2VQQ27C6KTPcBaycrf1pwdTNkz8eRoBPBH-uHyhMRsksBSWOzRbCwqVDQkB72WBKvXrop54qk4J8jZMTUjxuSdFJCkgsoPu16ZhwPXGzL-5RJnAo9bO9zItma-hCoDTwn-HKRzplAeOPxXV5WZcQjm71D-qPsr2tOgktF7RihlrGLM9crtIfwxRE6PZS-_-1K6I000RHmNa_BMciv9tnCeoR5v04Pjrr69s3RqGAKyc&uuid=4b06f5cb-861d-4546-a5f4-e4f90058e466&authuser=0&nonce=8vp23uqdplcoa&user=05057713440002365443&hash=q4k56sa03ibsqu7lp3rcgd5eu32va0au" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PCSXR") # PCSXR
+    Install-Zip -Name "PCSXR" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PCSXR") -URL "https://doc-04-7k-docs.googleusercontent.com/docs/securesc/ecq0a8qqs25h8o2tcb0lnareatt3292s/vjg8o6edbh6iucm8c59hk0bdpp5i3fp7/1657727400000/06771232046367458076/05057713440002365443/1mLmNoRIeswoPy2GT78PKk0uig2a65jyC?e=download&ax=ACxEAsbeLFMyQwcpa6aKRjY2QhwN9qLhb72MeXCppKHIVJmNOzXeL6keX0E9I2kuasSz-rIWhmTqSGU-WkJiDGS1yiO5_8V9EpDoqUleyJ6h9oY4fWmED1jcwgcYvm9iEBzuvn5ft-Kr6feB3UB6F7bbQ5pRe0FAFXQlXqDbGDpfRu-1HBv_VGUnHDcn2Pt4ytDQ_Sp25KNTnZ5GM3qJjwStz_iNlxF3vbwhF4lbwtmkRmaF8SjYwrw5ljKRhJpW7hXMmxs0W82MqBPdkDbqyUA7A9c5B6UXidB1LXNQUqDzjc0Ew6hZh3BKhIeeeC4h_HEmo99QZjfF2kdjuHK8NKCQLI1jwygeDGPDvJq0Y86FgjN5tewgiVCfDGvAytkwgYRT_R7fUirk8-boCLVwX-Nr-97loYKJkMgjQp3PBY0hg2cQxeqzdcJZHB4wTOEjIWnh9ow_l9yqva1utHMr04F_GrMObxj5POO4XhxFIzTl52d6Ciqa86BN2WzwuP1b2eTg-iaMFEKXssYgSUOW-bYEPz7_YnKTYbfu5FOnsUR5worM2VQQ27C6KTPcBaycrf1pwdTNkz8eRoBPBH-uHyhMRsksBSWOzRbCwqVDQkB72WBKvXrop54qk4J8jZMTUjxuSdFJCkgsoPu16ZhwPXGzL-5RJnAo9bO9zItma-hCoDTwn-HKRzplAeOPxXV5WZcQjm71D-qPsr2tOgktF7RihlrGLM9crtIfwxRE6PZS-_-1K6I000RHmNa_BMciv9tnCeoR5v04Pjrr69s3RqGAKyc&uuid=4b06f5cb-861d-4546-a5f4-e4f90058e466&authuser=0&nonce=8vp23uqdplcoa&user=05057713440002365443&hash=q4k56sa03ibsqu7lp3rcgd5eu32va0au" # PCSXR
     Install-GitHub -Name "PCSX2" -Repo "PCSX2/pcsx2" -Pattern "*.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PCSX2") -FileType "7z" # PCSX2
-    Install-Zip -Name "PPSSPP" -URL "https://www.ppsspp.org/files/1_12_3/ppsspp_win.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PPSSPP") # PPSSPP
-    Install-Zip -Name "Project64" -URL "https://www.pj64-emu.com/file/project64-3-0-0-5632-f83bee9/" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Project64") # Project64
+    Install-Zip -Name "PPSSPP" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PPSSPP") -URL "https://www.ppsspp.org/files/1_12_3/ppsspp_win.zip" # PPSSPP
+    Install-Zip -Name "Project64" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Project64") -URL "https://www.pj64-emu.com/file/project64-3-0-0-5632-f83bee9/" # Project64
 
     # QCMA https://github.com/codestation/qcma/releases
 
-    Install-Zip -Name "RetroArch" -URL "https://buildbot.libretro.com/stable/1.10.3/windows/x86_64/RetroArch.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "RetroArch") # RetroArch
+    Install-Zip -Name "RetroArch" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "RetroArch") -URL "https://buildbot.libretro.com/stable/1.10.3/windows/x86_64/RetroArch.7z" # RetroArch
     Install-GitHub -Name "RPCS3" -Repo "RPCS3/rpcs3-binaries-win" -Pattern "*.7z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPaths "RPCS3") -FileType "7z" # RPCS3
     Install-GitHub -Name "Ryujinx" -Repo "Ryujinx/release-channel-master" -Pattern "ryujinx-*-win_x64.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPaths "Ryujinx") # Ryujinx
 
-    Install-Zip -Name "SNES9X" -URL "https://dl.emulator-zone.com/download.php/emulators/snes/snes9x/snes9x-1.60-win32-x64.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "SNES9X") # SNES9X
-    Install-Zip -Name "Visual Boy Advance" -URL "https://dl.emulator-zone.com/download.php/emulators/gba/vboyadvance/VisualBoyAdvance-1.8.0-beta3.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Visual Boy Advance") # Visual Boy Advance
+    Install-Zip -Name "SNES9X" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "SNES9X") -URL "https://dl.emulator-zone.com/download.php/emulators/snes/snes9x/snes9x-1.60-win32-x64.zip" # SNES9X
+    Install-Zip -Name "Visual Boy Advance" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Visual Boy Advance") -URL "https://dl.emulator-zone.com/download.php/emulators/gba/vboyadvance/VisualBoyAdvance-1.8.0-beta3.zip" # Visual Boy Advance
 }
 
 # -------------------- Miscellaneous --------------------
@@ -259,33 +267,34 @@ if ($envMachinePath -split ';' -notcontains $installDir) {
 Remove-Item -Path op.zip
 <# ---------- #>
 
-<# 1Password #>
-#Invoke-WebRequest https://downloads.1password.com/win/1PasswordSetup-latest.exe -OutFile 1password.exe
-<# ---------- #>
+Install-EXE -Name "1Password" -Arguments "/S" -URL "https://downloads.1password.com/win/1PasswordSetup-latest.exe" # 1Password Maybe
 
 winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements # 7-Zip
 Install-GitHub -Name "Accessibility Insights for Windows" -Repo "microsoft/accessibility-insights-windows" -Pattern "* .msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Accessibility Insights for Windows") -FileType "msi"
 winget install -e --id BlenderFoundation.Blender --accept-package-agreements # Blender
 winget install -e --id calibre.calibre --accept-package-agreements # Calibre
-Install-Zip -Name "CPU-Z" -URL "https://download.cpuid.com/cpu-z/cpu-z_2.01-en.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "CPU-Z") # CPU-Z
+Install-Zip -Name "CPU-Z" -Location (Join-Path -Path "$InstallDrive" -ChildPath "CPU-Z") -URL "https://download.cpuid.com/cpu-z/cpu-z_2.01-en.zip" # CPU-Z
 Install-GitHub -Name "Cryptomator" -Repo "cryptomator/cryptomator" -Pattern "*.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Cryptomator") -FileType "msi" # Cryptomator
 winget install -e --id Discord.Discord --accept-package-agreements # Discord
 Install-GitHub -Name "DrawIO" -Repo "jgraph/drawio-desktop" -Pattern "*.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") -FileType "msi" # Draw.io
 
 # DroidCam https://www.dev47apps.com/
 
-Install-MSI -Name "EM Client" -URL "https://cdn-dist.emclient.com/dist/v9.0.1708/setup.msi?sp=r&st=2020-05-06T07:52:16Z&se=3000-05-07T07:52:00Z&sv=2019-10-10&sr=c&sig=XTseyj3q1sYO2avsYPMzj5b8MMTOWRpL1KN92wU5HR4%3D" -Location (Join-Path -Path "$InstallDrive" -ChildPath "EM Client") # eM Client
+Install-MSI -Name "EM Client" -Location (Join-Path -Path "$InstallDrive" -ChildPath "EM Client") -URL "https://cdn-dist.emclient.com/dist/v9.0.1708/setup.msi?sp=r&st=2020-05-06T07:52:16Z&se=3000-05-07T07:52:00Z&sv=2019-10-10&sr=c&sig=XTseyj3q1sYO2avsYPMzj5b8MMTOWRpL1KN92wU5HR4%3D" # eM Client
 winget install -e --id Microsoft.Teams --accept-package-agreements # Microsoft Teams
-Install-Zip -Name "FileZilla" -URL "https://dl3.cdn.filezilla-project.org/client/FileZilla_3.60.1_win64.zip?h=vDeiZ54lWjJOb0sS_f8mWg&x=1657730266" -Location (Join-Path -Path "$InstallDrive" -ChildPath "FileZilla") # FileZilla
-Install-MSI -Name "Mozilla Firefox" -URL "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Mozilla Firefox") # Mozilla Firefox
+Install-Zip -Name "FileZilla" -Location (Join-Path -Path "$InstallDrive" -ChildPath "FileZilla") -URL "https://dl3.cdn.filezilla-project.org/client/FileZilla_3.60.1_win64.zip?h=vDeiZ54lWjJOb0sS_f8mWg&x=1657730266" # FileZilla
+Install-MSI -Name "Mozilla Firefox" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Mozilla Firefox") -URL "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da" # Mozilla Firefox
 
 <# Google Drive #>
-Invoke-WebRequest "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe" -OutFile GoogleDrive.exe
-.\GoogleDrive.exe --silent --gsuite_shortcuts=false
-Remove-Item GoogleDrive.exe
+Install-EXE -Name "Google Drive" -Arguments "--silent --gsuite_shortcuts=false" -URL "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe" # Google Drive Maybe
+
+# Invoke-WebRequest "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe" -OutFile GoogleDrive.exe
+# .\GoogleDrive.exe --silent --gsuite_shortcuts=false
+# Remove-Item GoogleDrive.exe
 <# ---------- #>
 
-Install-MSI -Name "Inkscape" -URL "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Inkscape") # Inkscape
+Install-GitHub -Name "HandBrake" -Repo "HandBrake/HandBrake" -Pattern "*-x86_64-Win_GUI.zip" # Handbrake
+Install-MSI -Name "Inkscape" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Inkscape") -URL "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi" # Inkscape
 
 <# Kmonad #>
 scoop install stack # install stack
@@ -298,7 +307,7 @@ if ($confirmationKmonad -eq 'y') {
 }
 <# ---------- #>
 
-# Mathpix https://mathpix.com/
+# Mathpix https://mathpix.com/ https://github.com/lukas-blecher/LaTeX-OCR
 # MegaSync https://mega.io/desktop
 
 winget install -e --id 9WZDNCRF0083 --accept-package-agreements # Messenger
@@ -318,19 +327,21 @@ Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "
 # ProtonVPN https://protonvpn.com/
 
 Install-GitHub -Name "Shotcut" -Repo "mltframework/shotcut" -Location (Join-Path -Path "$InstallDrive" -ChildPath "Shotcut") # Shotcut
-Install-Zip -Name "TeamViewer" -URL "https://download.teamviewer.com/download/TeamViewerPortable.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "TeamViewer") # TeamViewer
+Install-Zip -Name "TeamViewer" -Location (Join-Path -Path "$InstallDrive" -ChildPath "TeamViewer") -URL "https://download.teamviewer.com/download/TeamViewerPortable.zip" # TeamViewer
 
 # TeraCopy https://www.codesector.com/downloads
 # Tor https://www.torproject.org/
 # Unity Hub Visual Studio?
 
-Install-MSI -Name "VeraCrypt" -URL "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt_Setup_x64_1.25.9.msi" -Location (Join-Path -Path "$InstallDrive" -ChildPath "VeraCrypt") # VeraCrypt
-Install-Zip -Name "WizTree" -URL "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip" -Location (Join-Path -Path "$InstallDrive" -ChildPath "WizTree") # WizTree
+Install-MSI -Name "VeraCrypt" -Location (Join-Path -Path "$InstallDrive" -ChildPath "VeraCrypt") -URL "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt_Setup_x64_1.25.9.msi" # VeraCrypt
+Install-Zip -Name "WizTree" -Location (Join-Path -Path "$InstallDrive" -ChildPath "WizTree") -URL "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip" # WizTree
 
 <# Yubikey Manager #>
-Invoke-WebRequest "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe" -OutFile Yubikey.exe
-.\Yubikey.exe /S # Yubikey Manager
-Remove-Item Yubikey.exe
+Install-EXE -Name "Yubikey Manager" -Arguments "/S" -URL "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe" # Yubikey Manager Maybe
+
+# Invoke-WebRequest "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe" -OutFile Yubikey.exe
+# .\Yubikey.exe /S
+# Remove-Item Yubikey.exe
 <# ----------#>
 
 # PhotoShop # Download from Drive
@@ -338,7 +349,7 @@ Remove-Item Yubikey.exe
 # -------------------- Progressive Web Apps --------------------
 
 Start-Process https://app.dinero.dk/ # Dinere
-Start-Process https://calendar.google.com/ # Google Calendar
+Start-Process https://calendar.proton.me/ # Proton Calendar
 Start-Process https://photos.google.com/ # Google Photos
 Start-Process https://www.overleaf.com/ # Overleaf
 Start-Process https://remove.bg/ # Remove.bg
@@ -365,7 +376,7 @@ gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path 
 # -------------------- Development Tools --------------------
 
 if ($confirmationMatLab -eq 'y') {
-    # MatLab https://www.mathworks.com/products/matlab.html
+    # MatLab https://www.mathworks.com/products/matlab.html https://se.mathworks.com/help/install/ug/install-noninteractively-silent-installation.html
 }
 
 if ($confirmationMaple -eq 'y') {
@@ -374,26 +385,26 @@ if ($confirmationMaple -eq 'y') {
 
 if ($confirmationTex -eq 'y') {
     <# TexLive #> # ELEVATED
-    Install-Zip -Name "Tex Live" -URL "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip" -Location ".\"
+    Install-Zip -Name "Tex Live" -Location ".\" -URL "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip"
     Get-ChildItem "install-tl-*" | Rename-Item -NewName { $_.Name -replace $_.Name, "install-tl" }
     .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
     Remove-Item "install-tl", "install-tl.zip" -Recurse -Force -Confirm:$false
     <# ----------#>
 }
 
-if ($confirmationDocker -eq 'y') { winget install -e --id Docker.DockerDesktop --location (Join-Path -Path "$InstallDrive" -ChildPath "Docker") --accept-package-agreements }
+if ($confirmationDocker -eq 'y') {
+    winget install -e --id Docker.DockerDesktop --location (Join-Path -Path "$InstallDrive" -ChildPath "Docker") --accept-package-agreements
+}
 
 <# ffmpeg #>
 Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
 Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName { $_.Name -replace $_.Name, "ffmpeg" }
 <# ---------- #>
 
-Install-Zip -Name "JDK" -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" -Location (Join-Path -Path "$InstallDrive" -ChildPath "JDK") # JDK
-
+Install-Zip -Name "JDK" -Location (Join-Path -Path "$InstallDrive" -ChildPath "JDK") -URL "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream" # JDK
 winget install -e --id GitHub.GitHubDesktop --location (Join-Path -Path "$InstallDrive" -ChildPath "Github" -AdditionalChildPaths "Desktop") --accept-package-agreements
 
 # Insomnia https://insomnia.rest/download
-# Msys2 - MinGW-w64 # Download installer
 
 choco install -y nvm # nvm #ELEVATED
 nvm install latest # npm & node.jsnvm install latest #ELEVATED
