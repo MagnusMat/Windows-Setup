@@ -462,9 +462,6 @@ if ($confirmationLaptopDesktop -eq 'd') {
         URL          = "https://firmware.meethue.com/storage/huesyncwin/28/67a57475-89a5-4e08-af01-e2f2299d458f/HueSyncInstaller_1.8.1.28.exe"
     }
     Install-EXE @HueSyncParams
-
-    # Notes for Game Bar
-    winget install -e --id 9NG4TL7TX1KW --accept-package-agreements
 }
 
 # HP Support Assistant
@@ -646,7 +643,7 @@ if ($confirmationKmonad -eq 'y') {
 }
 
 # LaTeX-OCR
-pip3 install torch torchvision torchaudio
+pip install torch torchvision torchaudio
 pip install pix2tex[gui]
 
 # MegaSync
