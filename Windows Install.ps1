@@ -142,8 +142,6 @@ Set-Confirmation -Confirmation $confirmationGames -Question "Do you want to inst
 Set-Confirmation -Confirmation $confirmationEmulators -Question "Do you want to install Emulators y/n"
 Set-Confirmation -Confirmation $confirmationAmazon -Question "Do you want to install Amazon Send to Kindle y/n"
 Set-Confirmation -Confirmation $confirmationTex -Question "Do you want to install LaTeX y/n"
-Set-Confirmation -Confirmation $confirmationMaple -Question "Do you want to install Maple y/n"
-Set-Confirmation -Confirmation $confirmationMatLab -Question "Do you want to install MatLab y/n"
 Set-Confirmation -Confirmation $confirmationKmonad -Question "Do you want to install Kmonad y/n"
 Set-Confirmation -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
 Set-Confirmation -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
