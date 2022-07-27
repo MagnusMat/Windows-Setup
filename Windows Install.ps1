@@ -1,7 +1,8 @@
 # Windows Install Script
 
 Start-Process -FilePath pwsh.exe -ArgumentList {
-    Set-ExecutionPolicy RemoteSigned # Execute Scripts # Maybe # Elevation not working
+    # Execution Permission
+    Set-ExecutionPolicy RemoteSigned # Maybe # Elevation not working
 } -Verb RunAs
 
 # Prompt for Install Drive
@@ -155,6 +156,7 @@ Set-Confirmation -Confirmation $confirmationDebian -Question "Do you want to ins
 
 # Upgade all packages
 winget source update
+
 winget upgrade --all --accept-package-agreements --accept-source-agreements
 
 # Git
@@ -196,7 +198,7 @@ winget install -e --id 9NBLGGH30XJ3 --accept-package-agreements --accept-source-
 # 3d Viewer
 winget install -e --id 9NBLGGH42THS --accept-package-agreements --accept-source-agreements
 
-# Maybe # Needs refresh # Join-Path Needs PowerShell 7
+# Maybe # Needs refresh of terminal before gh auth
 
 # GitHub Cli Login
 gh auth login
@@ -314,11 +316,11 @@ Remove-Item msys2.exe, InstallationLog.txt
 
 Set-Location "$InstallDrive\Msys2-64"
 .\msys2.exe bash -l -c "pacman -Syu --noconfirm"
-Start-Sleep(30)
+Start-Sleep(60)
 .\msys2_shell.cmd -l -c "pacman -Syu --noconfirm"
-Start-Sleep(30)
+Start-Sleep(60)
 .\msys2.exe bash -l -c "pacman -S --needed base-devel mingw-w64-x86_64-toolchain --noconfirm"
-Start-Sleep(30)
+Start-Sleep(60)
 
 Set-Location ~
 
@@ -355,7 +357,7 @@ Install-EXE @VisualStudio2019BuildToolsParams
 # Python
 winget install -e --id Python.Python.3 --accept-package-agreements --accept-source-agreements
 
-# Maybe # Refresh
+# Maybe # Needs refresh of terminal after Python install
 
 python.exe -m pip install --upgrade pip --user
 
@@ -364,7 +366,7 @@ python.exe -m pip install --upgrade pip --user
 # Scoop
 Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression
 
-# Chocolatey # Maybe # Auto Accept prompt
+# Chocolatey # Maybe # Auto Accept prompt # Maybe remove entirely
 Start-Process -FilePath pwsh.exe -ArgumentList {
     Set-ExecutionPolicy Bypass -Scope Process
     Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
@@ -387,22 +389,6 @@ Set-Location ~
 # -------------------------- Games --------------------
 
 if ($confirmationGames -eq 'y') {
-    # Battle.net # Maybe # Not silent
-    $BattleNetParams = @{
-        Name         = "BattleNet"
-        ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-        URL          = "https://eu.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe&id=undefined"
-    }
-    Install-EXE @BattleNetParams
-
-    # EA Desktop # Maybe # Installs but restarts and location not working
-    $EADesktopParams = @{
-        Name         = "EADesktop"
-        ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-        URL          = "https://origin-a.akamaihd.net/EA-Desktop-Client-Download/installer-releases/EAappInstaller.exe"
-    }
-    Install-EXE @EADesktopParams
-
     # Epic Games
     $EpicGamesParams = @{
         Name     = "Epic Games"
@@ -411,13 +397,8 @@ if ($confirmationGames -eq 'y') {
     }
     Install-MSI @EpicGamesParams
 
-    # GOG Galaxy # Maybe # Not Silent
-    $GOGParams = @{
-        Name         = "GOG"
-        ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART")
-        URL          = "https://webinstallers.gog-statics.com/download/GOG_Galaxy_2.0.exe?payload=-pDvfQCpG8P9YBHyMv6HtcPD-BtNgQymtd9H0KBdPUr1h9uW1LKDjc5Kh1-fFSyEesU5Ic5tf5WXX6AQXsbLD6-jOUEjJWbrIhJm-HKVMq7Lb5gvM2y8xZgl_P9zHlF25dzeJK_w2jqnZgyzyi33pvhyt8L-rTz58B5-oCc03OUb4BbSFrNqOiCC5Ld61Td_76QdEa5XXw0FYvKiROta7cwLBat56Pfg071C3jRlQSOdX7wLhof7UNbI-PJhMZT6Q6PWSYDfQeBzQJoHxvemMjO-gLtE2VRg2ymeJfX6wN4SvMY7oATjltWHEPgBr28FusGf7o_n1mvGCg_VXqthYxGal17ezyMV9TcMd2ias0tnJgJjItfoVXtCLmmH9SNIYrjl-dr7JzR-j1PjFgV6mUIHOx5QCuLVhKL6mXyT2UniuoJM22F1Lu3M_DIjFUIhCb2RCG542_Hu9CcyxCR5umuHlBPEKsFPTRy7Xy5PzLlkLntVUNj6Z9N5r1ZR-w2_UIQKGgDhPS3NKG4IRkHxWtMAJV4_9vqLymgbiO5DQAZg0dnlCJZvc4EWC_87Ri71kriCQ7DfX-HjSfOOY8EQyx3FXHSpLvNtyR1bkXdVCYUTHQRIaBdPlkxmzTUARhquOHGRScqqbT3Qy4Af0vXx1vA1GCka3F59174nkYbW84s8019WCiVsPeXHCC8_YjaZMefsTnS5_1Qu7uMHT5ixqqrUEMxh2rHRux34l4uPpYH73SIC5rUmwcff2ASmLSv_mELqW5RpcXqjO2dRVEYkrZkCt1uPfVrH1_RMOa7oHE34G6oP3E4JjaYdxMj-3iEiZ-F6jtxe"
-    }
-    Install-EXE @GOGParams
+    # GOG Galaxy
+    winget install -e --id GOG.Galaxy --location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "GOG Galaxy") --accept-package-agreements --accept-source-agreements
 
     # Playnite
     $PlayniteParams = @{
@@ -430,13 +411,11 @@ if ($confirmationGames -eq 'y') {
     # Steam
     winget install -e --id Valve.Steam --location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Steam") --accept-package-agreements --accept-source-agreements
 
-    # Ubisoft Connect # Maybe # Location not working
-    $UbisoftConnectParams = @{
-        Name         = "Ubisoft Connect"
-        ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-        URL          = "https://ubistatic3-a.akamaihd.net/orbit/launcher_installer/UbisoftConnectInstaller.exe"
-    }
-    Install-EXE @UbisoftConnectParams
+    # Ubisoft Connect
+    winget install -e --id Ubisoft.Connect --location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Ubisoft Connect") --accept-package-agreements --accept-source-agreements
+
+    # Xbox
+    winget install -e --id 9MV0B5HZVK9Z --accept-package-agreements --accept-source-agreements
 }
 
 if ($confirmationEmulators -eq 'y') {
@@ -454,21 +433,35 @@ if ($confirmationEmulators -eq 'y') {
     }
     Set-location ~
 
-    # Citra # Maybe # Not Installing
-    $CitraParams = @{
-        Name         = "Citra"
-        ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-        URL          = "https://github.com/citra-emu/citra-web/releases/download/1.0/citra-setup-windows.exe"
-    }
-    Install-MSI @CitraParams
+    # Citra
+    Invoke-WebRequest "https://github.com/citra-emu/citra-nightly/releases/download/nightly-1775/citra-windows-mingw-20220723-357025d.7z" -OutFile "Citra.7z"
 
-    # Dolphin # Maybe # Not Installing
-    $DolphinParams = @{
-        Name     = "Dolphin"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Dolphin")
-        URL      = "https://dl.dolphin-emu.org/builds/0c/ca/dolphin-master-5.0-16793-x64.7z"
+    if ($confirmationDrive -eq "c") {
+        C:\Program Files\7-Zip\7z.exe x -o".\" "Citra.7z" -r
     }
-    Install-MSI @DolphinParams
+    if ($confirmationDrive -eq "d") {
+        D:\7-Zip\7z.exe x -o".\" "Citra.7z" -r
+    }
+
+    Rename-Item nightly-mingw Citra
+    Move-Item Citra (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
+    Remove-Item Citra.7z
+
+    # Dolphin
+    Invoke-WebRequest "https://dl.dolphin-emu.org/builds/0c/ca/dolphin-master-5.0-16793-x64.7z" -OutFile "Dolphin.7z"
+
+    if ($confirmationDrive -eq "c") {
+        C:\Program Files\7-Zip\7z.exe x -o".\" "Dolphin.7z" -r
+    }
+    if ($confirmationDrive -eq "d") {
+        D:\7-Zip\7z.exe x -o".\" "Dolphin.7z" -r
+    }
+
+    Rename-Item Dolphin-x64 Dolphin
+    Move-Item Dolphin (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
+    Remove-Item Dolphin.7z
+
+    (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Dolphin")
 
     # NoPayStation
     Invoke-WebRequest "https://nopaystation.com/vita/npsReleases/NPS_Browser_0.94.exe" -OutFile NoPayStation.exe
@@ -480,23 +473,21 @@ if ($confirmationEmulators -eq 'y') {
     Expand-Archive "pkg2zip_64bit.zip" (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "NoPayStation")
     Remove-item pkg2zip_64bit.zip
 
-    # PCSXR # Maybe # Not Working
-    $PCSXRParams = @{
-        Name     = "PCSXR"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PCSXR")
-        URL      = "https://doc-04-7k-docs.googleusercontent.com/docs/securesc/ecq0a8qqs25h8o2tcb0lnareatt3292s/vjg8o6edbh6iucm8c59hk0bdpp5i3fp7/1657727400000/06771232046367458076/05057713440002365443/1mLmNoRIeswoPy2GT78PKk0uig2a65jyC?e=download&ax=ACxEAsbeLFMyQwcpa6aKRjY2QhwN9qLhb72MeXCppKHIVJmNOzXeL6keX0E9I2kuasSz-rIWhmTqSGU-WkJiDGS1yiO5_8V9EpDoqUleyJ6h9oY4fWmED1jcwgcYvm9iEBzuvn5ft-Kr6feB3UB6F7bbQ5pRe0FAFXQlXqDbGDpfRu-1HBv_VGUnHDcn2Pt4ytDQ_Sp25KNTnZ5GM3qJjwStz_iNlxF3vbwhF4lbwtmkRmaF8SjYwrw5ljKRhJpW7hXMmxs0W82MqBPdkDbqyUA7A9c5B6UXidB1LXNQUqDzjc0Ew6hZh3BKhIeeeC4h_HEmo99QZjfF2kdjuHK8NKCQLI1jwygeDGPDvJq0Y86FgjN5tewgiVCfDGvAytkwgYRT_R7fUirk8-boCLVwX-Nr-97loYKJkMgjQp3PBY0hg2cQxeqzdcJZHB4wTOEjIWnh9ow_l9yqva1utHMr04F_GrMObxj5POO4XhxFIzTl52d6Ciqa86BN2WzwuP1b2eTg-iaMFEKXssYgSUOW-bYEPz7_YnKTYbfu5FOnsUR5worM2VQQ27C6KTPcBaycrf1pwdTNkz8eRoBPBH-uHyhMRsksBSWOzRbCwqVDQkB72WBKvXrop54qk4J8jZMTUjxuSdFJCkgsoPu16ZhwPXGzL-5RJnAo9bO9zItma-hCoDTwn-HKRzplAeOPxXV5WZcQjm71D-qPsr2tOgktF7RihlrGLM9crtIfwxRE6PZS-_-1K6I000RHmNa_BMciv9tnCeoR5v04Pjrr69s3RqGAKyc&uuid=4b06f5cb-861d-4546-a5f4-e4f90058e466&authuser=0&nonce=8vp23uqdplcoa&user=05057713440002365443&hash=q4k56sa03ibsqu7lp3rcgd5eu32va0au"
-    }
-    Install-Zip @PCSXRParams
-
-    # PCSX2 # Maybe # Not Working
+    # PCSX2
     $PCSX2Params = @{
         Name     = "PCSX2"
         Repo     = "PCSX2/pcsx2"
         Pattern  = "*.7z"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PCSX2")
+        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
         FileType = "7z"
     }
     Install-GitHub @PCSX2Params
+
+    Set-Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
+    Get-ChildItem "PCSX2 *" | Rename-Item -NewName {
+        $_.Name -replace $_.Name, "PCSX2"
+    }
+    Set-Location ~
 
     # PPSSPP
     $PPSSPPParams = @{
@@ -523,15 +514,21 @@ if ($confirmationEmulators -eq 'y') {
     Start-Process -FilePath .\Qcma.exe -Wait -ArgumentList "INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S"
     Remove-Item Qcma.exe
 
-    # RetroArch # Maybe # Not Valid Zip Archive
-    $RetroArchParams = @{
-        Name     = "RetroArch"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "RetroArch")
-        URL      = "https://buildbot.libretro.com/stable/1.10.3/windows/x86_64/RetroArch.7z"
-    }
-    Install-Zip @RetroArchParams
+    # RetroArch
+    Invoke-WebRequest "https://buildbot.libretro.com/stable/1.10.3/windows/x86_64/RetroArch.7z" -OutFile "RetroArch.7z"
 
-    # RPCS3 # Maybe # Not Working
+    if ($confirmationDrive -eq "c") {
+        C:\Program Files\7-Zip\7z.exe x -o".\" "*.7z" -r
+    }
+    if ($confirmationDrive -eq "d") {
+        D:\7-Zip\7z.exe x -o".\" "*.7z" -r
+    }
+
+    Rename-Item RetroArch-Win64 RetroArch
+    Move-Item RetroArch (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
+    Remove-Item RetroArch.7z
+
+    # RPCS3
     $RPCS3Params = @{
         Name     = "RPCS3"
         Repo     = "RPCS3/rpcs3-binaries-win"
@@ -570,14 +567,6 @@ if ($confirmationEmulators -eq 'y') {
 # -------------------- Miscellaneous --------------------
 
 if ($confirmationLaptopDesktop -eq 'd') {
-    # Aorus Engine # Maybe # Not Silent
-    $AorusParams = @{
-        Name         = "Aorus"
-        ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-        URL          = "https://download.gigabyte.com/FileList/Utility/AORUS_ENGINE_SETUP_V2.1.8_B220627_x86.exe?v=e95db161109e2514a9d69c5b9f2d1bb6"
-    }
-    Install-EXE @AorusParams
-
     # Archi Steam Farm
     $ArchiSteamFarmParams = @{
         Name     = "Archi Steam Farm"
@@ -604,16 +593,11 @@ if ($confirmationLaptopDesktop -eq 'd') {
     }
     Install-GitHub @LocaleEmulatorParams
 
-    # Hue Sync # Maybe # Not Working
-    $HueSyncParams = @{
-        Name         = "Hue Sync"
-        ArgumentList = @("/LANG=ENGLISH", "/NORESTART", "/SILENT", "/SUPPRESSMSGBOXES", "/DIR=`"$InstallDrive\Hue Sync`"")
-        URL          = "https://firmware.meethue.com/storage/huesyncwin/28/67a57475-89a5-4e08-af01-e2f2299d458f/HueSyncInstaller_1.8.1.28.exe"
-    }
-    Install-EXE @HueSyncParams
+    # Hue Sync
+    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
 }
 
-# HP Support Assistant # Maybe # Not Working
+# HP Support Assistant
 if ($confirmationLaptopDesktop -eq 'l') {
     $HPParams = @{
         Name         = "HP"
@@ -633,13 +617,6 @@ if ($confirmationAmazon -eq 'y') {
     Install-EXE @AmazonParams
 }
 
-# Samsung Magician # Maybe # Not Silent
-if ($confirmationSamsung -eq 'y') {
-    Start-Process -FilePath pwsh.exe -ArgumentList {
-        choco install -y samsung-magician
-    } -verb RunAs
-}
-
 # 1Password CLI
 $arch = "64-bit"
 
@@ -654,20 +631,17 @@ $installDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 
-Start-Process -FilePath pwsh.exe -ArgumentList {
-    $envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
-
-    if ($envMachinePath -split ';' -notcontains $installDir) {
-        [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath; $installDir", 'Machine')
-    }
-} -verb RunAs
+$envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
+if ($envMachinePath -split ';' -notcontains $installDir) {
+    [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
+}
 
 Remove-Item -Path op.zip
 
-# 1Password # Maybe # Not Working
+# 1Password
 $1PasswordParams = @{
     Name         = "1Password"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/S", "--silent")
+    ArgumentList = @("--silent")
     URL          = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
 }
 Install-EXE @1PasswordParams
@@ -675,12 +649,11 @@ Install-EXE @1PasswordParams
 # 7-Zip
 winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
 
-# Accessibility Insights for Windows # Maybe # Location Not Working
+# Accessibility Insights for Windows
 $AccessibilityInsightsforWindowsParams = @{
     Name     = "Accessibility Insights for Windows"
     Repo     = "microsoft/accessibility-insights-windows"
     Pattern  = "*.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Accessibility Insights for Windows")
     FileType = "msi"
 }
 Install-GitHub @AccessibilityInsightsforWindowsParams
@@ -710,19 +683,12 @@ $CryptomatorParams = @{
 Install-GitHub @CryptomatorParams
 
 # Discord
-winget install -e --id Discord.Discord --accept-package-agreements --accept-source-agreements
+winget install -e --id Discord.Discord --location (Join-Path -Path "$InstallDrive" -ChildPath "Discord") --accept-package-agreements --accept-source-agreements
 
-# Draw.io # Maybe # Location Not Working
-$DrawIOParams = @{
-    Name     = "DrawIO"
-    Repo     = "jgraph/drawio-desktop"
-    Pattern  = "*.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO")
-    FileType = "msi"
-}
-Install-GitHub @DrawIOParams
+# Draw.io
+winget install -e --id JGraph.Draw --location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") --accept-package-agreements --accept-source-agreements
 
-# DroidCam # Maybe # Location Not Working
+# DroidCam
 $DroidCamParams = @{
     Name         = "DroidCam"
     ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
@@ -730,30 +696,30 @@ $DroidCamParams = @{
 }
 Install-EXE @DroidCamParams
 
-# eM Client # Maybe # Location Not Working
-$EMClientParams = @{
-    Name     = "EM Client"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "EM Client")
-    URL      = "https://cdn-dist.emclient.com/dist/v9.0.1708/setup.msi?sp=r&st=2020-05-06T07:52:16Z&se=3000-05-07T07:52:00Z&sv=2019-10-10&sr=c&sig=XTseyj3q1sYO2avsYPMzj5b8MMTOWRpL1KN92wU5HR4%3D"
-}
-Install-MSI @EMClientParams
+# eM Client
+winget install -e --id eMClient.eMClient --accept-package-agreements --accept-source-agreements
 
 # Microsoft Teams
 winget install -e --id Microsoft.Teams --accept-package-agreements --accept-source-agreements
 
-# FileZilla # Maybe # Not Valid Archive
+# FileZilla
 $FileZillaParams = @{
     Name     = "FileZilla"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "FileZilla")
-    URL      = "https://dl3.cdn.filezilla-project.org/client/FileZilla_3.60.1_win64.zip?h=vDeiZ54lWjJOb0sS_f8mWg&x=1657730266"
+    Location = "$InstallDrive\"
+    URL      = "https://dl1.cdn.filezilla-project.org/client/FileZilla_3.60.2_win64.zip?h=v0HJLEZWw0IRmgWMoieAfw&x=1658880574"
 }
 Install-Zip @FileZillaParams
 
-# Mozilla Firefox # Maybe # Location Not Working
+Set-Location $InstallDrive\
+Get-ChildItem "FileZilla-*" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "FileZilla"
+}
+Set-location ~
+
+# Mozilla Firefox
 $FirefoxParams = @{
-    Name     = "Mozilla Firefox"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Mozilla Firefox")
-    URL      = "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da"
+    Name = "Mozilla Firefox"
+    URL  = "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da"
 }
 Install-MSI @FirefoxParams
 
@@ -765,7 +731,7 @@ $GoogleDriveParams = @{
 }
 Install-EXE @GoogleDriveParams
 
-# Handbrake # Maybe # Not Valid Zip Archive
+# Handbrake
 $HandBrakeParams = @{
     Name    = "HandBrake"
     Repo    = "HandBrake/HandBrake"
@@ -773,11 +739,10 @@ $HandBrakeParams = @{
 }
 Install-GitHub @HandBrakeParams
 
-# Inkscape # Maybe # Location not Working
+# Inkscape
 $InkscapeParams = @{
-    Name     = "Inkscape"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Inkscape")
-    URL      = "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi"
+    Name = "Inkscape"
+    URL  = "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi"
 }
 Install-MSI @InkscapeParams
 
@@ -797,22 +762,17 @@ if ($confirmationKmonad -eq 'y') {
 pip install torch torchvision torchaudio
 pip install pix2tex[gui]
 
-# MegaSync # Maybe # Not Working
-$MegaSyncParams = @{
-    Name         = "MegaSync"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-    URL          = "https://mega.nz/MEGAsyncSetup64.exe"
-}
-Install-EXE @MegaSyncParams
+# MegaSync
+winget install -e --id Mega.MEGASync --accept-package-agreements --accept-source-agreements
 
 # Messenger
 winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-agreements
 
-# MiniBin # Maybe # Not valid archive
+# MiniBin
 $MiniBinParams = @{
     Name     = "MiniBin"
     Location = ".\"
-    URL      = "https://dw11.uptodown.com/dwn/NMb64HUUsy0TDuk_tO7tYTlr4pXEwg21C7K0zBrvfqRxaGACdxEDLLIECOcQ6uNl9z31zNLlug0ZCWJwfawtEJrKjpr3p4Lqky56_Eb_UP_MXF-_Oz-4bbu_AjWsJ9iE/tKjr_zz741k7e0q0pzGVGvz0B_55fL9BmwDo8n6mfgESODl9t6WIv5JkYEes21RSMTLfoTzwGGzDV7A02ar9L0yDWsODD0KiLyCH0oooBOCm02OhYdLsw1T-UQPByMC0/l3sBFcGDrooxO805_ZPrD3vtZHQXS3vldy3YtqyIPRMufhykJZ6NXnBLO9otURtUfbHDRCDus8e-U4_2ZxCCFQ==/minibin-6-6-0-0-en-win.zip"
+    URL      = "https: / / dw47.uptodown.com / dwn / oc4YgcmvHp0-dsHGcZohsd42NY0ewNRNAiSTs2HlJtlCBGzXVi4M2l9UyDQU5v7WXJTm_8fVmOQ3FurkysYNjvyOcRCVFluvTewi0Zd4ogWUgzJ2_L4vFY22ad7Ahxrk/zSyQjuPPOOBEd3HdWoc1ApnZr_rW6ZdtPU4wcW5Et137n22-YXybLFJUrs96uf6toifQn2MidNgUkc1qwE7-obrnhXGrjQlZRwSNevtNrpnFN1gkSV0_lGRk_1PSEjZB/u7KFTm4cRv3o8Af70urxZIgddISO2Y4AcG4XEiB-DL4hfaGU9MCVBNV_8M5y6lvUPgbvAXnQWnlHedqL1mxdLg==/minibin-6-6-0-0-en-win.zip"
 }
 Install-Zip @MiniBinParams
 
@@ -820,16 +780,11 @@ Get-ChildItem "MiniBin-*.exe" | Rename-Item -NewName {
     $_.Name -replace $_.Name, "MiniBin.exe"
 }
 
-Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/norestart", "/S"
+Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/S", "/D=D:\Minibin"
 Remove-Item MiniBin.exe
 
-# Notion # Maybe # Location Not Working
-$NotionParams = @{
-    Name         = "Notion"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-    URL          = "https://desktop-release.notion-static.com/Notion%20Setup%202.0.28.exe"
-}
-Install-EXE @NotionParams
+# Notion
+winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive" -ChildPath "Notion") --accept-package-agreements --accept-source-agreements
 
 # Nvidia Geforce Experience
 $NvidiaGEParams = @{
@@ -860,10 +815,10 @@ $OpenHardwareParams = @{
 Install-Zip @OpenHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
 
-# Proton VPN # Maybe # Not Working
+# Proton VPN # Maybe # Check if it works after reboot
 $ProtonVPNParams = @{
     Name         = "ProtonVPN"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/quiet")
+    ArgumentList = @("/qb")
     URL          = "https://protonvpn.com/download/ProtonVPN_win_v2.0.1.exe"
 }
 Install-EXE @ProtonVPNParams
@@ -903,21 +858,13 @@ Install-EXE @TorParams
 Move-Item '.\Desktop\Tor Browser\' 'D:\Tor Browser'
 # Maybe # Backup Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
 
-# Unity Hub # Maybe # Not Working Problem with arguments
+# Unity Hub
 $UnityHubParams = @{
     Name         = "Unity Hub"
-    ArgumentList = @("/D=$InstallDrive\Unity", "/norestart", "/S")
+    ArgumentList = @("/S", "/D=$InstallDrive\Unity Hub")
     URL          = "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe"
 }
 Install-EXE @UnityHubParams
-
-# VeraCrypt # Maybe # Not Working
-$VeraCryptParams = @{
-    Name     = "VeraCrypt"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "VeraCrypt")
-    URL      = "https://launchpad.net/veracrypt/trunk/1.25.9/+download/VeraCrypt_Setup_x64_1.25.9.msi"
-}
-Install-MSI @VeraCryptParams
 
 # WizTree
 $WizTreeParams = @{
@@ -930,25 +877,20 @@ Install-Zip @WizTreeParams
 # Yubikey Manager
 $YubikeyManagerParams = @{
     Name         = "Yubikey Manager"
-    ArgumentList = @("/S")
+    ArgumentList = @("/S", "/D=$InstallDrive\Yubikey Manager")
     URL          = "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe"
 }
 Install-EXE @YubikeyManagerParams
 
 # -------------------- Tools & Tweaks --------------------
 
-# Figma # Maybe # Location not working # Freezes
-$FigmaParams = @{
-    Name         = "Figma"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S", "/Silent")
-    URL          = "https://desktop.figma.com/win/FigmaSetup.exe"
-}
-Install-EXE @FigmaParams
+# Figma
+winget install -e --id Figma.Figma --accept-package-agreements --accept-source-agreements
 
-# Mendeley # Location Not Working
+# Mendeley
 $MendeleyParams = @{
     Name         = "Mendeley"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
+    ArgumentList = @("/norestart", "/S")
     URL          = "https://static.mendeley.com/bin/desktop/mendeley-reference-manager-2.74.0.exe"
 }
 Install-EXE @MendeleyParams
@@ -992,7 +934,7 @@ gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path 
 
 # -------------------- Development Tools --------------------
 
-# TexLive # Elevation doesn't work
+# TexLive # Maybe # Elevation doesn't work
 if ($confirmationTex -eq 'y') {
     Start-Process -FilePath pwsh.exe -ArgumentList {
         $TexLiveParams = @{
@@ -1022,24 +964,14 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
     $_.Name -replace $_.Name, "ffmpeg"
 }
 
-# JDK # Maybe # Not Working
-$JDKParams = @{
-    Name     = "JDK"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "JDK")
-    URL      = "https://objects.githubusercontent.com/github-production-release-asset-2e65be/372925194/624fbac8-d836-4208-8186-3d54c73e74f1?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220709%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220709T142037Z&X-Amz-Expires=300&X-Amz-Signature=1b5498f3c26397b1a8e86af9f65b2c7cb0d92ec0da0f2e239ecd597788c8e821&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=372925194&response-content-disposition=attachment%3B%20filename%3DOpenJDK17U-jdk_x64_windows_hotspot_17.0.3_7.zip&response-content-type=application%2Foctet-stream"
-}
-Install-Zip @JDKParams
+# JDK
+winget install -e --id EclipseAdoptium.Temurin.17 --accept-package-agreements --accept-source-agreements
 
 # GitHub Desktop
 winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept-source-agreements
 
-# Insomnia # Maybe # Not Working
-$InsomniaParams = @{
-    Name         = "Insomnia"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S", "--silent")
-    URL          = "https://objects.githubusercontent.com/github-production-release-asset-2e65be/56899284/dd3795fc-6215-4d0a-875d-74746c959441?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIWNJYAX4CSVEH53A%2F20220725%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20220725T120532Z&X-Amz-Expires=300&X-Amz-Signature=40d36aafdfe6a98b8db10c62167db9e23df5409dcfa0220a47123515879632ec&X-Amz-SignedHeaders=host&actor_id=26505751&key_id=0&repo_id=56899284&response-content-disposition=attachment%3B%20filename%3DInsomnia.Core-2022.4.2.exe&response-content-type=application%2Foctet-stream"
-}
-Install-EXE @InsomniaParams
+# Insomnia
+winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-source-agreements
 
 # NVM
 Start-Process -FilePath PowerShell.exe -ArgumentList {
