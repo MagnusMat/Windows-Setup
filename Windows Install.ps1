@@ -10,9 +10,11 @@ do {
     $ConfirmationDrive = Read-Host "Do you want to install software the C: or D: drive c/d"
     if ($ConfirmationDrive -eq 'c') {
         $InstallDrive = "C:\Program Files"
+        $OneDriveDir = "$env:USERPROFILE\OneDrive"
     }
     elseif ($ConfirmationDrive -eq 'd') {
         $InstallDrive = "D:"
+        $OneDriveDir = "D:\OneDrive"
     }
     else {
         "You need to pick a valid option"
@@ -338,21 +340,11 @@ $DotNetParams = @{
 }
 Install-EXE @DotNetParams
 
-# Visual Studio Enterprise 2022 # Maybe # Dunno
-$VisualStudioEnterprise2022Params = @{
-    Name         = "VSEnterprise"
-    ArgumentList = @("--installPath (Join-Path -Path `"$InstallDrive`" -ChildPath `"Visual Studio`" -AdditionalChildPath `"Visual Studio 2022`")", "--passive", "--norestart")
-    URL          = "https://aka.ms/vs/17/release/vs_enterprise.exe"
-}
-Install-EXE @VisualStudioEnterprise2022Params
+# Visual Studio Enterprise 2022
+winget install -e --id Microsoft.VisualStudio.2022.Enterprise --accept-package-agreements --accept-source-agreements
 
-# Visual Studio 2019 Build Tools # Maybe # Dunno
-$VisualStudio2019BuildToolsParams = @{
-    Name         = "BuildTools"
-    ArgumentList = @("--installPath (Join-Path -Path `"$InstallDrive`" -ChildPath `"Visual Studio`" -AdditionalChildPath `"Build Tools 2022`")", "--passive", "--norestart")
-    URL          = "https://download.visualstudio.microsoft.com/download/pr/d59287e5-e208-462b-8894-db3142c39eca/c6d14e46b035dd68b0e813768ca5d8d4fb712a2930cc009a2fc68873e37f0e42/vs_BuildTools.exe"
-}
-Install-EXE @VisualStudio2019BuildToolsParams
+# Visual Studio 2019 Build Tools
+winget install -e --id Microsoft.VisualStudio.2019.BuildTools --accept-package-agreements --accept-source-agreements
 
 # Python
 winget install -e --id Python.Python.3 --accept-package-agreements --accept-source-agreements
@@ -815,7 +807,10 @@ $OpenHardwareParams = @{
 Install-Zip @OpenHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
 
-# Proton VPN # Maybe # Check if it works after reboot
+# Photoshop
+Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
+
+# Proton VPN # Maybe # Not Working
 $ProtonVPNParams = @{
     Name         = "ProtonVPN"
     ArgumentList = @("/qb")
