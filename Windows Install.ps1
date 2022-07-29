@@ -1,9 +1,36 @@
 # Windows Install Script
 
+# Terminate during any and all errors
+$ErrorActionPreference = 'Stop'
+
+Start-Process -FilePath powershell.exe -ArgumentList {
+    # Execution Permission
+    Set-ExecutionPolicy RemoteSigned
+} -Verb RunAs
+
 Start-Process -FilePath pwsh.exe -ArgumentList {
     # Execution Permission
-    Set-ExecutionPolicy RemoteSigned # Maybe # Elevation not working
+    Set-ExecutionPolicy RemoteSigned
 } -Verb RunAs
+
+# -------------------- Updates & Package Managers --------------------
+
+# Upgade all packages
+winget source update
+
+winget upgrade --all --accept-package-agreements --accept-source-agreements
+
+# Git
+winget install -e --id Git.Git --accept-package-agreements --accept-source-agreements
+
+# GitHub CLI
+winget install -e --id GitHub.cli --accept-package-agreements --accept-source-agreements
+
+# Reloads profile
+. $profile
+
+# GitHub Cli Login
+gh auth login
 
 # Prompt for Install Drive
 do {
@@ -154,18 +181,7 @@ Set-Confirmation -Confirmation $confirmationDocker -Question "Do you want to ins
 Set-Confirmation -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
 Set-Confirmation -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
 
-# -------------------- Winget --------------------
-
-# Upgade all packages
-winget source update
-
-winget upgrade --all --accept-package-agreements --accept-source-agreements
-
-# Git
-winget install -e --id Git.Git --accept-package-agreements --accept-source-agreements
-
-# GitHub CLI
-winget install -e --id GitHub.cli --accept-package-agreements --accept-source-agreements
+# -------------------- Microsoft Store --------------------
 
 # HP Smart
 winget install -e --id 9WZDNCRFHWLH --accept-package-agreements --accept-source-agreements
@@ -199,11 +215,6 @@ winget install -e --id 9NBLGGH30XJ3 --accept-package-agreements --accept-source-
 
 # 3d Viewer
 winget install -e --id 9NBLGGH42THS --accept-package-agreements --accept-source-agreements
-
-# Maybe # Needs refresh of terminal before gh auth
-
-# GitHub Cli Login
-gh auth login
 
 # -------------------- Fonts --------------------
 
@@ -267,43 +278,6 @@ Start-Process https://music.youtube.com/
 # Proton Mail
 Start-Process https://mail.proton.me/
 
-# -------------------- Paths --------------------
-
-# DotNET Telemetry
-[System.Environment]::SetEnvironmentVariable(
-    'DOTNET_CLI_TELEMETRY_OPTOUT',
-    '1',
-    [System.EnvironmentVariableTarget]::User
-)
-
-# YT-DLP
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\YT-DLP",
-    [EnvironmentVariableTarget]::User
-)
-
-# MinGW-64
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Msys2-64\mingw64\bin",
-    [EnvironmentVariableTarget]::User
-)
-
-# ffmpeg
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\ffmpeg\bin",
-    [EnvironmentVariableTarget]::User
-)
-
-# Python Scripts
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts",
-    [EnvironmentVariableTarget]::User
-)
-
 # -------------------- Dependencies --------------------
 
 # Msys2
@@ -326,7 +300,19 @@ Start-Sleep(60)
 
 Set-Location ~
 
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Msys2-64\mingw64\bin",
+    [EnvironmentVariableTarget]::User
+)
+
 # DotNet
+[Environment]::SetEnvironmentVariable(
+    'DOTNET_CLI_TELEMETRY_OPTOUT',
+    '1',
+    [System.EnvironmentVariableTarget]::User
+)
+
 Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1";
 
 ./dotnet-install.ps1 -Channel "Current" -Runtime "dotnet"
@@ -349,7 +335,14 @@ winget install -e --id Microsoft.VisualStudio.2019.BuildTools --accept-package-a
 # Python
 winget install -e --id Python.Python.3 --accept-package-agreements --accept-source-agreements
 
-# Maybe # Needs refresh of terminal after Python install
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts",
+    [EnvironmentVariableTarget]::User
+)
+
+# Reloads profile
+. $profile
 
 python.exe -m pip install --upgrade pip --user
 
@@ -357,12 +350,6 @@ python.exe -m pip install --upgrade pip --user
 
 # Scoop
 Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression
-
-# Chocolatey # Maybe # Auto Accept prompt # Maybe remove entirely
-Start-Process -FilePath pwsh.exe -ArgumentList {
-    Set-ExecutionPolicy Bypass -Scope Process
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-} -verb RunAs
 
 # -------------------- Personal GitHub Repos --------------------
 
@@ -497,14 +484,13 @@ if ($confirmationEmulators -eq 'y') {
     }
     Install-Zip @Project64Params
 
-    # QCMA # Maybe # Not Silent
+    # QCMA
     gh release download -R codestation/qcma --pattern "*.exe"
     Get-ChildItem "Qcma_*.exe" | Rename-Item -NewName {
         $_.Name -replace $_.Name, "Qcma.exe"
     }
 
-    Start-Process -FilePath .\Qcma.exe -Wait -ArgumentList "INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S"
-    Remove-Item Qcma.exe
+    Move-Item Qcma.exe (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Qcma")
 
     # RetroArch
     Invoke-WebRequest "https://buildbot.libretro.com/stable/1.10.3/windows/x86_64/RetroArch.7z" -OutFile "RetroArch.7z"
@@ -623,7 +609,7 @@ $installDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 
-$envMachinePath = [System.Environment]::GetEnvironmentVariable('PATH', 'machine')
+$envMachinePath = [Environment]::GetEnvironmentVariable('PATH', 'machine')
 if ($envMachinePath -split ';' -notcontains $installDir) {
     [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
 }
@@ -810,13 +796,8 @@ Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "
 # Photoshop
 Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
-# Proton VPN # Maybe # Not Working
-$ProtonVPNParams = @{
-    Name         = "ProtonVPN"
-    ArgumentList = @("/qb")
-    URL          = "https://protonvpn.com/download/ProtonVPN_win_v2.0.1.exe"
-}
-Install-EXE @ProtonVPNParams
+# Proton VPN
+winget install -e --id ProtonTechnologies.ProtonVPN --accept-package-agreements --accept-source-agreements
 
 # Shotcut
 $ShotcutParams = @{
@@ -850,8 +831,7 @@ $TorParams = @{
 }
 Install-EXE @TorParams
 
-Move-Item '.\Desktop\Tor Browser\' 'D:\Tor Browser'
-# Maybe # Backup Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
+Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
 
 # Unity Hub
 $UnityHubParams = @{
@@ -906,6 +886,12 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
     $_.Name -replace $_.Name, "Pandoc"
 }
 
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
+    [EnvironmentVariableTarget]::User
+)
+
 # ShareX
 $ShareXParams = @{
     Name     = "ShareX"
@@ -927,25 +913,26 @@ Install-GitHub @TransmissionParams
 # YT-DLP
 gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP")
 
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\YT-DLP",
+    [EnvironmentVariableTarget]::User
+)
+
 # -------------------- Development Tools --------------------
 
-# TexLive # Maybe # Elevation doesn't work
+# TexLive
 if ($confirmationTex -eq 'y') {
-    Start-Process -FilePath pwsh.exe -ArgumentList {
-        $TexLiveParams = @{
-            Name     = "Tex Live"
-            Location = ".\"
-            URL      = "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip"
-        }
-        Install-Zip @TexLiveParams
+    Invoke-WebRequest "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip" -OutFile "Tex Live.zip"
+    Expand-Archive "Tex Live.zip" ".\"
+    Remove-Item "Tex Live.zip"
 
-        Get-ChildItem "install-tl-*" | Rename-Item -NewName {
-            $_.Name -replace $_.Name, "install-tl"
-        }
+    Get-ChildItem "install-tl-*" | Rename-Item -NewName {
+        $_.Name -replace $_.Name, "install-tl"
+    }
 
-        .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
-        Remove-Item "install-tl", "install-tl.zip" -Recurse -Force -Confirm:$false
-    } -verb RunAs
+    .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
+    Remove-Item "install-tl", "install-tl.zip" -Recurse -Force -Confirm:$false
 }
 
 # Docker Desktop
@@ -959,6 +946,12 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
     $_.Name -replace $_.Name, "ffmpeg"
 }
 
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\ffmpeg\bin",
+    [EnvironmentVariableTarget]::User
+)
+
 # JDK
 winget install -e --id EclipseAdoptium.Temurin.17 --accept-package-agreements --accept-source-agreements
 
@@ -969,14 +962,37 @@ winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept
 winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-source-agreements
 
 # NVM
-Start-Process -FilePath PowerShell.exe -ArgumentList {
-    choco install -y nvm
-} -verb RunAs
+gh release download -R coreybutler/nvm-windows --pattern "nvm-noinstall.zip"
+Expand-Archive nvm-noinstall.zip "$InstallDrive\NVM"
+Remove-Item nvm-noinstall.zip
 
-# NPM & Node.JS
-Start-Process -FilePath PowerShell.exe -ArgumentList {
-    nvm install latest
-} -verb RunAs
+[Environment]::SetEnvironmentVariable(
+    'NVM_HOME',
+    '$InstallDrive\NVM',
+    [System.EnvironmentVariableTarget]::User
+)
+
+[Environment]::SetEnvironmentVariable(
+    'NVM_SYMLINK',
+    '$InstallDrive\NodeJS',
+    [System.EnvironmentVariableTarget]::User
+)
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";%NVM_HOME%;%NVM_SYMLINK%",
+    [EnvironmentVariableTarget]::User
+)
+
+New-Item $InstallDrive\NVM\settings.txt
+
+"root: $InstallDrive\NVM" | Out-File -FilePath $InstallDrive\NVM\settings.txt
+"path: $InstallDrive\NodeJS" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
+"arch: 64" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
+"proxy: none" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
+
+# Node.JS
+nvm install latest
 
 # R
 $RParams = @{
@@ -994,28 +1010,10 @@ $WiresharkParams = @{
 }
 Install-EXE @WiresharkParams
 
-# Npcap # Maybe # Not Silent
-$NpcapParams = @{
-    Name         = "Npcap"
-    ArgumentList = @("/S", "/D=$InstallDrive\Npcap")
-    URL          = "https://npcap.com/dist/npcap-1.70.exe"
-}
-Install-EXE @NpcapParams
+# Npcap
+Start-Process "https://npcap.com/"
 
 # -------------------- WSL --------------------
-
-Start-Process -FilePath pwsh.exe -ArgumentList {
-    dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
-} -verb RunAs
-
-Start-Process -FilePath pwsh.exe -ArgumentList {
-    dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
-} -verb RunAs
-
-Start-Process -FilePath pwsh.exe -ArgumentList {
-    wsl --install
-} -verb RunAs
-# Needs reboot https://stackoverflow.com/questions/15166839/powershell-reboot-and-continue-script
 
 if ($confirmationUbuntu -eq 'y') {
     wsl --install -d Ubuntu
@@ -1024,4 +1022,3 @@ if ($confirmationUbuntu -eq 'y') {
 if ($confirmationDebian -eq 'y') {
     wsl --install -d Debian
 }
-wsl --set-default-version 2
