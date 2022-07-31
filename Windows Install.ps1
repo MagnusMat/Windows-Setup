@@ -8,11 +8,6 @@ Start-Process -FilePath powershell.exe -ArgumentList {
     Set-ExecutionPolicy RemoteSigned
 } -Verb RunAs
 
-Start-Process -FilePath pwsh.exe -ArgumentList {
-    # Execution Permission
-    Set-ExecutionPolicy RemoteSigned
-} -Verb RunAs
-
 # -------------------- Updates & Package Managers --------------------
 
 # Upgade all packages
@@ -29,8 +24,10 @@ winget install -e --id GitHub.cli --accept-package-agreements --accept-source-ag
 # Reloads profile
 . $profile
 
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+
 # GitHub Cli Login
-gh auth login
+& 'C:\Program Files\GitHub CLI\gh.exe' auth login
 
 # Prompt for Install Drive
 do {
@@ -120,10 +117,10 @@ function Install-GitHub {
     }
     if ($FileType -eq "7z") {
         if ($confirmationDrive -eq "c") {
-            C:\Program Files\7-Zip\7z.exe x -o"$Location" "*.7z" -r
+            & C:\Program Files\7-Zip\7z.exe x -o"$Location" "$Name.7z" -r
         }
         if ($confirmationDrive -eq "d") {
-            D:\7-Zip\7z.exe x -o"$Location" "*.7z" -r
+            & D:\7-Zip\7z.exe x -o"$Location" "$Name.7z" -r
         }
     }
     elseif ($FileType -eq "zip") {
@@ -164,22 +161,55 @@ $fWinIni = $UpdateIniFile -bor $SendChangeEvent
 
 # -------------------- Confirmations --------------------
 
-$ConfirmParams = @{
-    Confirmation = $confirmationLaptopDesktop
-    Question     = "Are you installing on a Laptop or Desktop l/d"
-    FirstTerm    = 'l'
-    SecondTerm   = 'd'
-}
-Set-Confirmation @ConfirmParams
+# Install Laptop Desktop Prompt
+do {
+    $confirmationLaptopDesktop = Read-Host "Are you installing on a Laptop or Desktop l/d"
+    if (($confirmationLaptopDesktop -ne "l") -and ($confirmationLaptopDesktop -ne "d")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationLaptopDesktop -ne "l") -and ($confirmationLaptopDesktop -ne "d")
+)
 
-Set-Confirmation -Confirmation $confirmationGames -Question "Do you want to install Games y/n"
-Set-Confirmation -Confirmation $confirmationEmulators -Question "Do you want to install Emulators y/n"
-Set-Confirmation -Confirmation $confirmationAmazon -Question "Do you want to install Amazon Send to Kindle y/n"
-Set-Confirmation -Confirmation $confirmationTex -Question "Do you want to install LaTeX y/n"
-Set-Confirmation -Confirmation $confirmationKmonad -Question "Do you want to install Kmonad y/n"
-Set-Confirmation -Confirmation $confirmationDocker -Question "Do you want to install Docker y/n"
-Set-Confirmation -Confirmation $confirmationUbuntu -Question "Do you want to install Ubuntu WSL y/n"
-Set-Confirmation -Confirmation $confirmationDebian -Question "Do you want to install Debian WSL y/n"
+# Games Prompt
+do {
+    $confirmationGames = Read-Host "Do you want to install Games y/n"
+    if (($confirmationGames -ne "y") -and ($confirmationGames -ne "n")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationGames -ne "y") -and ($confirmationGames -ne "n")
+)
+
+# Emulator prompt
+do {
+    $confirmationEmulators = Read-Host "Do you want to install Emulators y/n"
+    if (($confirmationEmulators -ne "y") -and ($confirmationEmulators -ne "n")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationEmulators -ne "y") -and ($confirmationEmulators -ne "n")
+)
+
+# Tex Prompt
+do {
+    $confirmationTex = Read-Host "Do you want to install LaTeX y/n"
+    if (($confirmationTex -ne "y") -and ($confirmationTex -ne "n")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationTex -ne "y") -and ($confirmationTex -ne "n")
+)
+
+# Linux Prompt
+do {
+    $confirmationLinux = Read-Host "Do you want to install Ubuntu or Debian WSL u/d"
+    if (($confirmationLinux -ne "u") -and ($confirmationLinux -ne "d")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationLinux -ne "u") -and ($confirmationLinux -ne "d")
+)
 
 # -------------------- Microsoft Store --------------------
 
@@ -200,6 +230,11 @@ winget install -e --id Microsoft.PowerToys --accept-package-agreements --accept-
 
 # PowerShell 7
 winget install -e --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
+
+Start-Process -FilePath pwsh.exe -ArgumentList {
+    # Execution Permission
+    Set-ExecutionPolicy RemoteSigned
+} -Verb RunAs
 
 # Visual Studio Code
 winget install -e --id Microsoft.VisualStudioCode --accept-package-agreements --accept-source-agreements
@@ -288,15 +323,14 @@ Get-ChildItem "*.exe" | Rename-Item -NewName {
 
 .\msys2.exe in --confirm-command --accept-messages --root "$InstallDrive/Msys2-64"
 
-Remove-Item msys2.exe, InstallationLog.txt
+Remove-Item msys2.exe
 
 Set-Location "$InstallDrive\Msys2-64"
 .\msys2.exe bash -l -c "pacman -Syu --noconfirm"
-Start-Sleep(60)
-.\msys2_shell.cmd -l -c "pacman -Syu --noconfirm"
-Start-Sleep(60)
+Start-Sleep(80)
+.\msys2_shell.cmd -l -c "pacman -Syu --noconfirm" | Out-Null
 .\msys2.exe bash -l -c "pacman -S --needed base-devel mingw-w64-x86_64-toolchain --noconfirm"
-Start-Sleep(60)
+Start-Sleep(180)
 
 Set-Location ~
 
@@ -344,12 +378,9 @@ winget install -e --id Python.Python.3 --accept-package-agreements --accept-sour
 # Reloads profile
 . $profile
 
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+
 python.exe -m pip install --upgrade pip --user
-
-# -------------------- Package Managers --------------------
-
-# Scoop
-Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression
 
 # -------------------- Personal GitHub Repos --------------------
 
@@ -367,31 +398,34 @@ Set-Location ~
 
 # -------------------------- Games --------------------
 
+# 7-Zip
+winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
+
 if ($confirmationGames -eq 'y') {
     # Epic Games
     $EpicGamesParams = @{
         Name     = "Epic Games"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Epic Games")
+        Location = (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Epic Games")
         URL      = "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Win32/EpicInstaller-13.3.0.msi?launcherfilename=EpicInstaller-13.3.0.msi"
     }
     Install-MSI @EpicGamesParams
 
     # GOG Galaxy
-    winget install -e --id GOG.Galaxy --location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "GOG Galaxy") --accept-package-agreements --accept-source-agreements
+    winget install -e --id GOG.Galaxy --location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy") --accept-package-agreements --accept-source-agreements
 
     # Playnite
     $PlayniteParams = @{
         Name     = "Playnite"
         Repo     = "JosefNemec/Playnite"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Playnite")
+        Location = (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Playnite")
     }
     Install-GitHub @PlayniteParams
 
     # Steam
-    winget install -e --id Valve.Steam --location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Steam") --accept-package-agreements --accept-source-agreements
+    winget install -e --id Valve.Steam --location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Steam") --accept-package-agreements --accept-source-agreements
 
     # Ubisoft Connect
-    winget install -e --id Ubisoft.Connect --location (Join-Path -Path "$InstallDrive" -ChildPath "Game Launchers" -AdditionalChildPath "Ubisoft Connect") --accept-package-agreements --accept-source-agreements
+    winget install -e --id Ubisoft.Connect --location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Ubisoft Connect") --accept-package-agreements --accept-source-agreements
 
     # Xbox
     winget install -e --id 9MV0B5HZVK9Z --accept-package-agreements --accept-source-agreements
@@ -416,10 +450,10 @@ if ($confirmationEmulators -eq 'y') {
     Invoke-WebRequest "https://github.com/citra-emu/citra-nightly/releases/download/nightly-1775/citra-windows-mingw-20220723-357025d.7z" -OutFile "Citra.7z"
 
     if ($confirmationDrive -eq "c") {
-        C:\Program Files\7-Zip\7z.exe x -o".\" "Citra.7z" -r
+        & C:\Program Files\7-Zip\7z.exe x -o".\" "Citra.7z" -r
     }
     if ($confirmationDrive -eq "d") {
-        D:\7-Zip\7z.exe x -o".\" "Citra.7z" -r
+        & D:\7-Zip\7z.exe x -o".\" "Citra.7z" -r
     }
 
     Rename-Item nightly-mingw Citra
@@ -430,37 +464,38 @@ if ($confirmationEmulators -eq 'y') {
     Invoke-WebRequest "https://dl.dolphin-emu.org/builds/0c/ca/dolphin-master-5.0-16793-x64.7z" -OutFile "Dolphin.7z"
 
     if ($confirmationDrive -eq "c") {
-        C:\Program Files\7-Zip\7z.exe x -o".\" "Dolphin.7z" -r
+        & C:\Program Files\7-Zip\7z.exe x -o".\" "Dolphin.7z" -r
     }
     if ($confirmationDrive -eq "d") {
-        D:\7-Zip\7z.exe x -o".\" "Dolphin.7z" -r
+        & D:\7-Zip\7z.exe x -o".\" "Dolphin.7z" -r
     }
 
     Rename-Item Dolphin-x64 Dolphin
     Move-Item Dolphin (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
     Remove-Item Dolphin.7z
 
-    (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Dolphin")
-
     # NoPayStation
     Invoke-WebRequest "https://nopaystation.com/vita/npsReleases/NPS_Browser_0.94.exe" -OutFile NoPayStation.exe
 
     mkdir $InstallDrive\Emulators\NoPayStation
-    Move-Item NoPayStation.exe (Join-Path -Path "$InstallDrive" -ChildPath "Emulators\NoPayStation" -AdditionalChildPath "NoPayStation.exe")
+    Move-Item NoPayStation.exe (Join-Path -Path "$InstallDrive\Emulators\NoPayStation" -ChildPath "NoPayStation.exe")
     gh release download -R mmozeiko/pkg2zip --pattern "pkg2zip_64bit.zip"
 
-    Expand-Archive "pkg2zip_64bit.zip" (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "NoPayStation")
+    Expand-Archive "pkg2zip_64bit.zip" (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "NoPayStation")
     Remove-item pkg2zip_64bit.zip
 
     # PCSX2
-    $PCSX2Params = @{
-        Name     = "PCSX2"
-        Repo     = "PCSX2/pcsx2"
-        Pattern  = "*.7z"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
-        FileType = "7z"
+    gh release download -R PCSX2/pcsx2 --pattern "*-portable.7z"
+    Get-ChildItem "*.7z" | Rename-Item -NewName {
+        $_.Name -replace $_.Name, "pcsx2.7z"
     }
-    Install-GitHub @PCSX2Params
+    if ($confirmationDrive -eq "c") {
+        & C:\Program Files\7-Zip\7z.exe x -o"$InstallDrive\Emulators" "pcsx2.7z" -r
+    }
+    if ($confirmationDrive -eq "d") {
+        & D:\7-Zip\7z.exe x -o"$InstallDrive\Emulators" "pcsx2.7z" -r
+    }
+    Remove-Item "pcsx2.7z"
 
     Set-Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
     Get-ChildItem "PCSX2 *" | Rename-Item -NewName {
@@ -471,7 +506,7 @@ if ($confirmationEmulators -eq 'y') {
     # PPSSPP
     $PPSSPPParams = @{
         Name     = "PPSSPP"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "PPSSPP")
+        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "PPSSPP")
         URL      = "https://www.ppsspp.org/files/1_12_3/ppsspp_win.zip"
     }
     Install-Zip @PPSSPPParams
@@ -479,7 +514,7 @@ if ($confirmationEmulators -eq 'y') {
     # Project64
     $Project64Params = @{
         Name     = "Project64"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Project64")
+        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "Project64")
         URL      = "https://www.pj64-emu.com/file/project64-3-0-0-5632-f83bee9/"
     }
     Install-Zip @Project64Params
@@ -490,16 +525,17 @@ if ($confirmationEmulators -eq 'y') {
         $_.Name -replace $_.Name, "Qcma.exe"
     }
 
-    Move-Item Qcma.exe (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Qcma")
+    New-Item $InstallDrive\Emulators\Qcma -ItemType Directory
+    Move-Item Qcma.exe $InstallDrive\Emulators\Qcma\Qcma.exe
 
     # RetroArch
     Invoke-WebRequest "https://buildbot.libretro.com/stable/1.10.3/windows/x86_64/RetroArch.7z" -OutFile "RetroArch.7z"
 
     if ($confirmationDrive -eq "c") {
-        C:\Program Files\7-Zip\7z.exe x -o".\" "*.7z" -r
+        & C:\Program Files\7-Zip\7z.exe x -o".\" "RetroArch.7z" -r
     }
     if ($confirmationDrive -eq "d") {
-        D:\7-Zip\7z.exe x -o".\" "*.7z" -r
+        & D:\7-Zip\7z.exe x -o".\" "RetroArch.7z" -r
     }
 
     Rename-Item RetroArch-Win64 RetroArch
@@ -511,7 +547,7 @@ if ($confirmationEmulators -eq 'y') {
         Name     = "RPCS3"
         Repo     = "RPCS3/rpcs3-binaries-win"
         Pattern  = "*.7z"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "RPCS3")
+        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "RPCS3")
         FileType = "7z"
     }
     Install-GitHub @RPCS3Params
@@ -521,14 +557,14 @@ if ($confirmationEmulators -eq 'y') {
         Name     = "Ryujinx"
         Repo     = "Ryujinx/release-channel-master"
         Pattern  = "ryujinx-*-win_x64.zip"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Ryujinx")
+        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "Ryujinx")
     }
     Install-GitHub @RyujinxParams
 
     # SNES9X
     $SNES9XParams = @{
         Name     = "SNES9X"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "SNES9X")
+        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "SNES9X")
         URL      = "https://dl.emulator-zone.com/download.php/emulators/snes/snes9x/snes9x-1.60-win32-x64.zip"
     }
     Install-Zip @SNES9XParams
@@ -536,7 +572,7 @@ if ($confirmationEmulators -eq 'y') {
     # Visual Boy Advance
     $VisualBoyAdvanceParams = @{
         Name     = "Visual Boy Advance"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators" -AdditionalChildPath "Visual Boy Advance")
+        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "Visual Boy Advance")
         URL      = "https://dl.emulator-zone.com/download.php/emulators/gba/vboyadvance/VisualBoyAdvance-1.8.0-beta3.zip"
     }
     Install-Zip @VisualBoyAdvanceParams
@@ -586,14 +622,12 @@ if ($confirmationLaptopDesktop -eq 'l') {
 }
 
 # Amazon Send to Kindle
-if ($confirmationAmazon -eq 'y') {
-    $AmazonParams = @{
-        Name         = "Amazon Send to Kindle"
-        ArgumentList = @("/norestart", "/S")
-        URL          = "https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe"
-    }
-    Install-EXE @AmazonParams
+$AmazonParams = @{
+    Name         = "Amazon Send to Kindle"
+    ArgumentList = @("/norestart", "/S")
+    URL          = "https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe"
 }
+Install-EXE @AmazonParams
 
 # 1Password CLI
 $arch = "64-bit"
@@ -609,10 +643,11 @@ $installDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
 Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 
-$envMachinePath = [Environment]::GetEnvironmentVariable('PATH', 'machine')
-if ($envMachinePath -split ';' -notcontains $installDir) {
-    [Environment]::SetEnvironmentVariable('PATH', "$envMachinePath;$installDir", 'Machine')
-}
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDir",
+    [EnvironmentVariableTarget]::User
+)
 
 Remove-Item -Path op.zip
 
@@ -623,9 +658,6 @@ $1PasswordParams = @{
     URL          = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
 }
 Install-EXE @1PasswordParams
-
-# 7-Zip
-winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
 
 # Accessibility Insights for Windows
 $AccessibilityInsightsforWindowsParams = @{
@@ -724,17 +756,18 @@ $InkscapeParams = @{
 }
 Install-MSI @InkscapeParams
 
-# Kmonad
+# Kmonad & Scoop
+Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression
+
 scoop install stack # install stack
-if ($confirmationKmonad -eq 'y') {
-    Set-Location $InstallDrive\
-    git clone https://github.com/kmonad/kmonad.git
 
-    Set-Location kmonad
-    stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
+Set-Location $InstallDrive\
+git clone https://github.com/kmonad/kmonad.git
 
-    Set-Location ~
-}
+Set-Location kmonad
+stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
+
+Set-Location ~
 
 # LaTeX-OCR
 pip install torch torchvision torchaudio
@@ -936,9 +969,7 @@ if ($confirmationTex -eq 'y') {
 }
 
 # Docker Desktop
-if ($confirmationDocker -eq 'y') {
-    winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept-source-agreements
-}
+winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept-source-agreements
 
 # ffmpeg
 Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
