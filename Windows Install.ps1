@@ -201,16 +201,6 @@ do {
         ($confirmationTex -ne "y") -and ($confirmationTex -ne "n")
 )
 
-# Linux Prompt
-do {
-    $confirmationLinux = Read-Host "Do you want to install Ubuntu or Debian WSL u/d"
-    if (($confirmationLinux -ne "u") -and ($confirmationLinux -ne "d")) {
-        "You need to pick a valid option"
-    }
-} while (
-        ($confirmationLinux -ne "u") -and ($confirmationLinux -ne "d")
-)
-
 # -------------------- Microsoft Store --------------------
 
 # HP Smart
@@ -689,6 +679,7 @@ $CryptomatorParams = @{
     Pattern  = "*.msi"
     Location = (Join-Path -Path "$InstallDrive" -ChildPath "Cryptomator")
     FileType = "msi"
+    Version  = "1.6.11"
 }
 Install-GitHub @CryptomatorParams
 
@@ -712,19 +703,9 @@ winget install -e --id eMClient.eMClient --accept-package-agreements --accept-so
 # Microsoft Teams
 winget install -e --id Microsoft.Teams --accept-package-agreements --accept-source-agreements
 
-# FileZilla
-$FileZillaParams = @{
-    Name     = "FileZilla"
-    Location = "$InstallDrive\"
-    URL      = "https://dl1.cdn.filezilla-project.org/client/FileZilla_3.60.2_win64.zip?h=v0HJLEZWw0IRmgWMoieAfw&x=1658880574"
-}
-Install-Zip @FileZillaParams
-
-Set-Location $InstallDrive\
-Get-ChildItem "FileZilla-*" | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "FileZilla"
-}
-Set-location ~
+# WinSCP
+Invoke-WebRequest "https://winscp.net/download/files/2022073117450d423dd4e6697dab8efabb383fc12cd2/WinSCP-5.21.1-Portable.zip" -OutFile WinSCP.zip
+Expand-Archive .\WinSCP.zip "$InstallDrive\WinSCP"
 
 # Mozilla Firefox
 $FirefoxParams = @{
@@ -783,7 +764,7 @@ winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-
 $MiniBinParams = @{
     Name     = "MiniBin"
     Location = ".\"
-    URL      = "https: / / dw47.uptodown.com / dwn / oc4YgcmvHp0-dsHGcZohsd42NY0ewNRNAiSTs2HlJtlCBGzXVi4M2l9UyDQU5v7WXJTm_8fVmOQ3FurkysYNjvyOcRCVFluvTewi0Zd4ogWUgzJ2_L4vFY22ad7Ahxrk/zSyQjuPPOOBEd3HdWoc1ApnZr_rW6ZdtPU4wcW5Et137n22-YXybLFJUrs96uf6toifQn2MidNgUkc1qwE7-obrnhXGrjQlZRwSNevtNrpnFN1gkSV0_lGRk_1PSEjZB/u7KFTm4cRv3o8Af70urxZIgddISO2Y4AcG4XEiB-DL4hfaGU9MCVBNV_8M5y6lvUPgbvAXnQWnlHedqL1mxdLg==/minibin-6-6-0-0-en-win.zip"
+    URL      = "https://files03.tchspt.com/temp/minibin.zip"
 }
 Install-Zip @MiniBinParams
 
@@ -833,12 +814,15 @@ Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 winget install -e --id ProtonTechnologies.ProtonVPN --accept-package-agreements --accept-source-agreements
 
 # Shotcut
-$ShotcutParams = @{
-    Name     = "Shotcut"
-    Repo     = "mltframework/shotcut"
-    Location = "$InstallDrive"
+gh release download -R mltframework/shotcut --pattern "*.zip"
+
+Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "Shotcut.zip"
 }
-Install-GitHub @ShotcutParams
+
+Expand-Archive Shotcut.zip $InstallDrive\
+
+Remove-Item Shotcut.zip
 
 # TeamViewer
 $TeamViewerParams = @{
@@ -869,7 +853,7 @@ Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Bro
 # Unity Hub
 $UnityHubParams = @{
     Name         = "Unity Hub"
-    ArgumentList = @("/S", "/D=$InstallDrive\Unity Hub")
+    ArgumentList = @("/S", "/D=$InstallDrive\Unity")
     URL          = "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe"
 }
 Install-EXE @UnityHubParams
@@ -984,7 +968,7 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
 )
 
 # JDK
-winget install -e --id EclipseAdoptium.Temurin.17 --accept-package-agreements --accept-source-agreements
+winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-package-agreements --accept-source-agreements
 
 # GitHub Desktop
 winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept-source-agreements
@@ -998,14 +982,14 @@ Expand-Archive nvm-noinstall.zip "$InstallDrive\NVM"
 Remove-Item nvm-noinstall.zip
 
 [Environment]::SetEnvironmentVariable(
-    'NVM_HOME',
-    '$InstallDrive\NVM',
+    "NVM_HOME",
+    "$InstallDrive\NVM",
     [System.EnvironmentVariableTarget]::User
 )
 
 [Environment]::SetEnvironmentVariable(
-    'NVM_SYMLINK',
-    '$InstallDrive\NodeJS',
+    "NVM_SYMLINK",
+    "$InstallDrive\NodeJS",
     [System.EnvironmentVariableTarget]::User
 )
 
@@ -1022,8 +1006,10 @@ New-Item $InstallDrive\NVM\settings.txt
 "arch: 64" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
 "proxy: none" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
 
-# Node.JS
-nvm install latest
+# Reloads profile
+. $profile
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
 
 # R
 $RParams = @{
@@ -1032,6 +1018,10 @@ $RParams = @{
     URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/R-4.2.1-win.exe"
 }
 Install-EXE @RParams
+
+Start-Process pwsh -ArgumentList {
+    wsl --install -d Ubuntu
+} -Verb RunAs
 
 # Wireshark
 $WiresharkParams = @{
@@ -1044,12 +1034,4 @@ Install-EXE @WiresharkParams
 # Npcap
 Start-Process "https://npcap.com/"
 
-# -------------------- WSL --------------------
-
-if ($confirmationUbuntu -eq 'y') {
-    wsl --install -d Ubuntu
-}
-
-if ($confirmationDebian -eq 'y') {
-    wsl --install -d Debian
-}
+winget install -e --id WiresharkFoundation.Wireshark --accept-package-agreements --accept-source-agreements
