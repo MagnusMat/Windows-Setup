@@ -301,6 +301,9 @@ Start-Process https://music.youtube.com/
 # Proton Mail
 Start-Process https://mail.proton.me/
 
+# Npcap
+Start-Process "https://npcap.com/"
+
 # -------------------- Dependencies --------------------
 
 # Msys2
@@ -1016,19 +1019,8 @@ $RParams = @{
 }
 Install-EXE @RParams
 
-Start-Process pwsh -ArgumentList {
-    wsl --install -d Ubuntu
-} -Verb RunAs
+# WSL
+wsl --install -d Ubuntu
 
 # Wireshark
-$WiresharkParams = @{
-    Name         = "Wireshark"
-    ArgumentList = @("/S", "/desktopicon=no", "/quicklaunchicon=no", "/D=$InstallDrive\WireShark")
-    URL          = "https://1.eu.dl.wireshark.org/win64/Wireshark-win64-3.6.6.exe"
-}
-Install-EXE @WiresharkParams
-
-# Npcap
-Start-Process "https://npcap.com/"
-
 winget install -e --id WiresharkFoundation.Wireshark --accept-package-agreements --accept-source-agreements
