@@ -705,7 +705,8 @@ winget install -e --id Microsoft.Teams --accept-package-agreements --accept-sour
 
 # WinSCP
 Invoke-WebRequest "https://winscp.net/download/files/2022073117450d423dd4e6697dab8efabb383fc12cd2/WinSCP-5.21.1-Portable.zip" -OutFile WinSCP.zip
-Expand-Archive .\WinSCP.zip "$InstallDrive\WinSCP"
+Expand-Archive WinSCP.zip "$InstallDrive\WinSCP"
+Remove-Item WinSCP.zip
 
 # Mozilla Firefox
 $FirefoxParams = @{
