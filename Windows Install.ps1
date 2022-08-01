@@ -3,10 +3,8 @@
 # Terminate during any and all errors
 $ErrorActionPreference = 'Stop'
 
-Start-Process -FilePath powershell.exe -ArgumentList {
-    # Execution Permission
-    Set-ExecutionPolicy RemoteSigned
-} -Verb RunAs
+# Execution Permission
+Set-ExecutionPolicy RemoteSigned
 
 # -------------------- Updates & Package Managers --------------------
 
@@ -704,9 +702,7 @@ winget install -e --id eMClient.eMClient --accept-package-agreements --accept-so
 winget install -e --id Microsoft.Teams --accept-package-agreements --accept-source-agreements
 
 # WinSCP
-Invoke-WebRequest "https://winscp.net/download/files/2022073117450d423dd4e6697dab8efabb383fc12cd2/WinSCP-5.21.1-Portable.zip" -OutFile WinSCP.zip
-Expand-Archive WinSCP.zip "$InstallDrive\WinSCP"
-Remove-Item WinSCP.zip
+winget install -e --id WinSCP.WinSCP
 
 # Mozilla Firefox
 $FirefoxParams = @{
@@ -739,7 +735,7 @@ $InkscapeParams = @{
 Install-MSI @InkscapeParams
 
 # Kmonad & Scoop
-Invoke-WebRequest -useb get.scoop.sh | Invoke-Expression
+iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
 
 scoop install stack # install stack
 
