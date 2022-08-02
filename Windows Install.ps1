@@ -6,7 +6,7 @@ $ErrorActionPreference = 'Stop'
 # Execution Permission
 Set-ExecutionPolicy RemoteSigned
 
-# -------------------- Updates & Package Managers --------------------
+# -------------------- Initial Setup - Updates & Package Managers --------------------
 
 # Upgade all packages
 winget source update
@@ -44,6 +44,7 @@ do {
 } while (
     ($ConfirmationDrive -ne "c") -and ($ConfirmationDrive -ne "d")
 )
+
 
 # -------------------- Functions --------------------
 
@@ -134,6 +135,7 @@ function Install-GitHub {
 }
 
 # -------------------- Set Wallpaper --------------------
+
 New-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -PropertyType String -Value 10 -Force
 Add-Type -TypeDefinition @"
 using System;
@@ -304,7 +306,7 @@ Start-Process https://mail.proton.me/
 # Npcap
 Start-Process "https://npcap.com/"
 
-# -------------------- Dependencies --------------------
+# -------------------- Development Tools & Dependencies --------------------
 
 # Msys2
 gh release download -R msys2/msys2-installer --pattern "msys2-x86_64-*.exe"
@@ -387,10 +389,465 @@ gh repo clone MagnusMat/test-repo
 
 Set-Location ~
 
-# -------------------------- Games --------------------
+# -------------------- Winget --------------------
+
+# Blender
+winget install -e --id BlenderFoundation.Blender --accept-package-agreements --accept-source-agreements
+
+# Calibre
+winget install -e --id calibre.calibre --accept-package-agreements --accept-source-agreements
+
+# Discord
+winget install -e --id Discord.Discord --location (Join-Path -Path "$InstallDrive" -ChildPath "Discord") --accept-package-agreements --accept-source-agreements
+
+# Docker Desktop
+winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept-source-agreements
+
+# Draw.io
+winget install -e --id JGraph.Draw --location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") --accept-package-agreements --accept-source-agreements
+
+# eM Client
+winget install -e --id eMClient.eMClient --accept-package-agreements --accept-source-agreements
+
+# Figma
+winget install -e --id Figma.Figma --accept-package-agreements --accept-source-agreements
+
+# GitHub Desktop
+winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept-source-agreements
+
+# Insomnia
+winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-source-agreements
+
+# JDK
+winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-package-agreements --accept-source-agreements
+
+# MegaSync
+winget install -e --id Mega.MEGASync --accept-package-agreements --accept-source-agreements
+
+# Messenger
+winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-agreements
+
+# Microsoft Teams
+winget install -e --id Microsoft.Teams --accept-package-agreements --accept-source-agreements
+
+# Notion
+winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive" -ChildPath "Notion") --accept-package-agreements --accept-source-agreements
+
+# Nvidia RTX Voice
+winget install -e --id Nvidia.RTXVoice --accept-package-agreements --accept-source-agreements
+
+# Proton VPN
+winget install -e --id ProtonTechnologies.ProtonVPN --accept-package-agreements --accept-source-agreements
+
+# WinSCP
+winget install -e --id WinSCP.WinSCP
+
+# Wireshark
+winget install -e --id WiresharkFoundation.Wireshark --accept-package-agreements --accept-source-agreements
+
+# -------------------- Apps --------------------
+
+if ($confirmationLaptopDesktop -eq 'd') {
+    # Archi Steam Farm
+    $ArchiSteamFarmParams = @{
+        Name     = "Archi Steam Farm"
+        Repo     = "JustArchiNET/ArchiSteamFarm"
+        Pattern  = "ASF-win-x64.zip"
+        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Archi Steam Farm")
+    }
+    Install-GitHub @ArchiSteamFarmParams
+
+    # Global Steam Controller
+    $GloSCParams = @{
+        Name     = "GloSC"
+        Repo     = "Alia5/GlosSI"
+        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller")
+        Version  = "0.0.7.0"
+    }
+    Install-GitHub @GloSCParams
+
+    # Locale Emulator
+    $LocaleEmulatorParams = @{
+        Name     = "Locale Emulator"
+        Repo     = "xupefei/Locale-Emulator"
+        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator")
+    }
+    Install-GitHub @LocaleEmulatorParams
+
+    # Hue Sync
+    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
+}
 
 # 7-Zip
 winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
+
+# 1Password CLI
+$arch = "64-bit"
+
+switch ($arch) {
+    '64-bit' { $opArch = 'amd64'; break }
+    '32-bit' { $opArch = '386'; break }
+    Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
+}
+
+$installDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
+
+Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
+Expand-Archive -Path op.zip -DestinationPath $installDir -Force
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDir",
+    [EnvironmentVariableTarget]::User
+)
+
+Remove-Item -Path op.zip
+
+# 1Password
+$1PasswordParams = @{
+    Name         = "1Password"
+    ArgumentList = @("--silent")
+    URL          = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
+}
+Install-EXE @1PasswordParams
+
+# Accessibility Insights for Windows
+$AccessibilityInsightsforWindowsParams = @{
+    Name     = "Accessibility Insights for Windows"
+    Repo     = "microsoft/accessibility-insights-windows"
+    Pattern  = "*.msi"
+    FileType = "msi"
+}
+Install-GitHub @AccessibilityInsightsforWindowsParams
+
+# Amazon Send to Kindle
+$AmazonParams = @{
+    Name         = "Amazon Send to Kindle"
+    ArgumentList = @("/norestart", "/S")
+    URL          = "https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe"
+}
+Install-EXE @AmazonParams
+
+# CPU-Z
+$CPUZParams = @{
+    Name     = "CPU-Z"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "CPU-Z")
+    URL      = "https://download.cpuid.com/cpu-z/cpu-z_2.01-en.zip"
+}
+Install-Zip @CPUZParams
+
+# Cryptomator
+$CryptomatorParams = @{
+    Name     = "Cryptomator"
+    Repo     = "cryptomator/cryptomator"
+    Pattern  = "*.msi"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Cryptomator")
+    FileType = "msi"
+    Version  = "1.6.11"
+}
+Install-GitHub @CryptomatorParams
+
+# DroidCam
+$DroidCamParams = @{
+    Name         = "DroidCam"
+    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
+    URL          = "https://files.dev47apps.net/win/DroidCam.Setup.6.5.2.exe"
+}
+Install-EXE @DroidCamParams
+
+# ffmpeg
+Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
+Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "ffmpeg"
+}
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\ffmpeg\bin",
+    [EnvironmentVariableTarget]::User
+)
+
+# Google Drive
+$GoogleDriveParams = @{
+    Name         = "GoogleDrive"
+    ArgumentList = @("--silent", "--gsuite_shortcuts=false")
+    URL          = "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe"
+}
+Install-EXE @GoogleDriveParams
+
+# Handbrake
+$HandBrakeParams = @{
+    Name    = "HandBrake"
+    Repo    = "HandBrake/HandBrake"
+    Pattern = "*-x86_64-Win_GUI.zip"
+}
+Install-GitHub @HandBrakeParams
+
+# HP Support Assistant
+if ($confirmationLaptopDesktop -eq 'l') {
+    $HPParams = @{
+        Name         = "HP"
+        ArgumentList = @("/s")
+        URL          = "https://ftp.ext.hp.com/pub/softpaq/sp140001-140500/sp140482.exe"
+    }
+    Install-EXE @HPParams
+}
+
+# Inkscape
+$InkscapeParams = @{
+    Name = "Inkscape"
+    URL  = "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi"
+}
+Install-MSI @InkscapeParams
+
+# Kmonad & Scoop
+iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+Remove-Item .\install.ps1
+
+scoop install stack # install stack
+
+Set-Location $InstallDrive\
+git clone https://github.com/kmonad/kmonad.git
+
+Set-Location kmonad
+stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
+
+Set-Location ~
+
+# LaTeX-OCR
+pip install torch torchvision torchaudio
+pip install pix2tex[gui]
+
+# Mendeley
+$MendeleyParams = @{
+    Name         = "Mendeley"
+    ArgumentList = @("/norestart", "/S")
+    URL          = "https://static.mendeley.com/bin/desktop/mendeley-reference-manager-2.74.0.exe"
+}
+Install-EXE @MendeleyParams
+
+# MiniBin
+$MiniBinParams = @{
+    Name     = "MiniBin"
+    Location = ".\"
+    URL      = "https://files03.tchspt.com/temp/minibin.zip"
+}
+Install-Zip @MiniBinParams
+
+Get-ChildItem "MiniBin-*.exe" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "MiniBin.exe"
+}
+
+Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/S", "/D=D:\Minibin"
+Remove-Item MiniBin.exe
+
+# Mozilla Firefox
+$FirefoxParams = @{
+    Name = "Mozilla Firefox"
+    URL  = "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da"
+}
+Install-MSI @FirefoxParams
+
+# Nvidia Geforce Experience
+$NvidiaGEParams = @{
+    Name         = "NvidiaGE"
+    ArgumentList = @("-s", "-noreboot")
+    URL          = "https://uk.download.nvidia.com/GFE/GFEClient/3.25.1.27/GeForce_Experience_v3.25.1.27.exe"
+}
+Install-EXE @NvidiaGEParams
+
+# NVM
+gh release download -R coreybutler/nvm-windows --pattern "nvm-noinstall.zip"
+Expand-Archive nvm-noinstall.zip "$InstallDrive\NVM"
+Remove-Item nvm-noinstall.zip
+
+[Environment]::SetEnvironmentVariable(
+    "NVM_HOME",
+    "$InstallDrive\NVM",
+    [System.EnvironmentVariableTarget]::User
+)
+
+[Environment]::SetEnvironmentVariable(
+    "NVM_SYMLINK",
+    "$InstallDrive\NodeJS",
+    [System.EnvironmentVariableTarget]::User
+)
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";%NVM_HOME%;%NVM_SYMLINK%",
+    [EnvironmentVariableTarget]::User
+)
+
+New-Item $InstallDrive\NVM\settings.txt
+
+"root: $InstallDrive\NVM" | Out-File -FilePath $InstallDrive\NVM\settings.txt
+"path: $InstallDrive\NodeJS" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
+"arch: 64" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
+"proxy: none" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
+
+# Reloads profile
+. $profile
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+
+# OBS Studio
+$OBSStudioParams = @{
+    Name     = "OBS Studio"
+    Repo     = "obsproject/obs-studio"
+    Pattern  = "*-x64.zip"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "OBS Studio")
+}
+Install-GitHub @OBSStudioParams
+
+# Open Hardware Monitor
+$OpenHardwareParams = @{
+    Name     = "Open Hardware Monitor"
+    Location = "$InstallDrive\"
+    URL      = "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip"
+}
+Install-Zip @OpenHardwareParams
+Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
+
+# Onion Share
+$OnionShareParams = @{
+    Name     = "Onion Share"
+    Repo     = "onionshare/onionshare"
+    Pattern  = "*.msi"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Onion Share")
+    FileType = "msi"
+}
+Install-GitHub @OnionShareParams
+
+# Pandoc
+Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
+Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "Pandoc"
+}
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
+    [EnvironmentVariableTarget]::User
+)
+
+# Photoshop
+Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
+
+# R
+$RParams = @{
+    Name         = "R"
+    ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
+    URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/R-4.2.1-win.exe"
+}
+Install-EXE @RParams
+
+# ShareX
+$ShareXParams = @{
+    Name     = "ShareX"
+    Repo     = "ShareX/ShareX"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "ShareX")
+}
+Install-GitHub @ShareXParams
+
+# Shotcut
+gh release download -R mltframework/shotcut --pattern "*.zip"
+
+Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "Shotcut.zip"
+}
+
+Expand-Archive Shotcut.zip $InstallDrive\
+
+Remove-Item Shotcut.zip
+
+# TeamViewer
+$TeamViewerParams = @{
+    Name     = ""
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "TeamViewer")
+    URL      = "https://download.teamviewer.com/download/TeamViewerPortable.zip"
+}
+Install-Zip @TeamViewerParams
+
+# TeraCopy
+$TeraCopyParams = @{
+    Name         = "TeraCopy"
+    ArgumentList = @("/exenoui", "/qn", "/norestart")
+    URL          = "https://www.codesector.com/files/teracopy.exe"
+}
+Install-EXE @TeraCopyParams
+
+# TexLive
+if ($confirmationTex -eq 'y') {
+    Invoke-WebRequest "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip" -OutFile "Tex Live.zip"
+    Expand-Archive "Tex Live.zip" ".\"
+    Remove-Item "Tex Live.zip"
+
+    Get-ChildItem "install-tl-*" | Rename-Item -NewName {
+        $_.Name -replace $_.Name, "install-tl"
+    }
+
+    .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
+    Remove-Item "install-tl", "install-tl.zip" -Recurse -Force -Confirm:$false
+}
+
+# Tor Browser
+$TorParams = @{
+    Name         = "Tor"
+    ArgumentList = @("/norestart", "/S")
+    URL          = "https://www.torproject.org/dist/torbrowser/11.5/torbrowser-install-win64-11.5_en-US.exe"
+}
+Install-EXE @TorParams
+
+Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
+
+# Transmission
+$TransmissionParams = @{
+    Name     = "Transmission"
+    Repo     = "transmission/transmission"
+    Pattern  = "*-x64.msi"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Transmission")
+    FileType = "msi"
+}
+Install-GitHub @TransmissionParams
+
+# Unity Hub
+$UnityHubParams = @{
+    Name         = "Unity Hub"
+    ArgumentList = @("/S", "/D=$InstallDrive\Unity")
+    URL          = "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe"
+}
+Install-EXE @UnityHubParams
+
+# WizTree
+$WizTreeParams = @{
+    Name     = "WizTree"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "WizTree")
+    URL      = "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip"
+}
+Install-Zip @WizTreeParams
+
+# WSL Ubuntu
+wsl --install -d Ubuntu
+
+# YT-DLP
+gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP")
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\YT-DLP",
+    [EnvironmentVariableTarget]::User
+)
+
+# Yubikey Manager
+$YubikeyManagerParams = @{
+    Name         = "Yubikey Manager"
+    ArgumentList = @("/S", "/D=$InstallDrive\Yubikey Manager")
+    URL          = "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe"
+}
+Install-EXE @YubikeyManagerParams
+
+# -------------------- Game Launchers & Emulators --------------------
 
 if ($confirmationGames -eq 'y') {
     # Epic Games
@@ -568,459 +1025,3 @@ if ($confirmationEmulators -eq 'y') {
     }
     Install-Zip @VisualBoyAdvanceParams
 }
-
-# -------------------- Miscellaneous --------------------
-
-if ($confirmationLaptopDesktop -eq 'd') {
-    # Archi Steam Farm
-    $ArchiSteamFarmParams = @{
-        Name     = "Archi Steam Farm"
-        Repo     = "JustArchiNET/ArchiSteamFarm"
-        Pattern  = "ASF-win-x64.zip"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Archi Steam Farm")
-    }
-    Install-GitHub @ArchiSteamFarmParams
-
-    # Global Steam Controller
-    $GloSCParams = @{
-        Name     = "GloSC"
-        Repo     = "Alia5/GlosSI"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller")
-        Version  = "0.0.7.0"
-    }
-    Install-GitHub @GloSCParams
-
-    # Locale Emulator
-    $LocaleEmulatorParams = @{
-        Name     = "Locale Emulator"
-        Repo     = "xupefei/Locale-Emulator"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator")
-    }
-    Install-GitHub @LocaleEmulatorParams
-
-    # Hue Sync
-    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
-}
-
-# HP Support Assistant
-if ($confirmationLaptopDesktop -eq 'l') {
-    $HPParams = @{
-        Name         = "HP"
-        ArgumentList = @("/s")
-        URL          = "https://ftp.ext.hp.com/pub/softpaq/sp140001-140500/sp140482.exe"
-    }
-    Install-EXE @HPParams
-}
-
-# Amazon Send to Kindle
-$AmazonParams = @{
-    Name         = "Amazon Send to Kindle"
-    ArgumentList = @("/norestart", "/S")
-    URL          = "https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe"
-}
-Install-EXE @AmazonParams
-
-# 1Password CLI
-$arch = "64-bit"
-
-switch ($arch) {
-    '64-bit' { $opArch = 'amd64'; break }
-    '32-bit' { $opArch = '386'; break }
-    Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
-}
-
-$installDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
-
-Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
-Expand-Archive -Path op.zip -DestinationPath $installDir -Force
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDir",
-    [EnvironmentVariableTarget]::User
-)
-
-Remove-Item -Path op.zip
-
-# 1Password
-$1PasswordParams = @{
-    Name         = "1Password"
-    ArgumentList = @("--silent")
-    URL          = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-}
-Install-EXE @1PasswordParams
-
-# Accessibility Insights for Windows
-$AccessibilityInsightsforWindowsParams = @{
-    Name     = "Accessibility Insights for Windows"
-    Repo     = "microsoft/accessibility-insights-windows"
-    Pattern  = "*.msi"
-    FileType = "msi"
-}
-Install-GitHub @AccessibilityInsightsforWindowsParams
-
-# Blender
-winget install -e --id BlenderFoundation.Blender --accept-package-agreements --accept-source-agreements
-
-# Calibre
-winget install -e --id calibre.calibre --accept-package-agreements --accept-source-agreements
-
-# CPU-Z
-$CPUZParams = @{
-    Name     = "CPU-Z"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "CPU-Z")
-    URL      = "https://download.cpuid.com/cpu-z/cpu-z_2.01-en.zip"
-}
-Install-Zip @CPUZParams
-
-# Cryptomator
-$CryptomatorParams = @{
-    Name     = "Cryptomator"
-    Repo     = "cryptomator/cryptomator"
-    Pattern  = "*.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Cryptomator")
-    FileType = "msi"
-    Version  = "1.6.11"
-}
-Install-GitHub @CryptomatorParams
-
-# Discord
-winget install -e --id Discord.Discord --location (Join-Path -Path "$InstallDrive" -ChildPath "Discord") --accept-package-agreements --accept-source-agreements
-
-# Draw.io
-winget install -e --id JGraph.Draw --location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") --accept-package-agreements --accept-source-agreements
-
-# DroidCam
-$DroidCamParams = @{
-    Name         = "DroidCam"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-    URL          = "https://files.dev47apps.net/win/DroidCam.Setup.6.5.2.exe"
-}
-Install-EXE @DroidCamParams
-
-# eM Client
-winget install -e --id eMClient.eMClient --accept-package-agreements --accept-source-agreements
-
-# Microsoft Teams
-winget install -e --id Microsoft.Teams --accept-package-agreements --accept-source-agreements
-
-# WinSCP
-winget install -e --id WinSCP.WinSCP
-
-# Mozilla Firefox
-$FirefoxParams = @{
-    Name = "Mozilla Firefox"
-    URL  = "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da"
-}
-Install-MSI @FirefoxParams
-
-# Google Drive
-$GoogleDriveParams = @{
-    Name         = "GoogleDrive"
-    ArgumentList = @("--silent", "--gsuite_shortcuts=false")
-    URL          = "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe"
-}
-Install-EXE @GoogleDriveParams
-
-# Handbrake
-$HandBrakeParams = @{
-    Name    = "HandBrake"
-    Repo    = "HandBrake/HandBrake"
-    Pattern = "*-x86_64-Win_GUI.zip"
-}
-Install-GitHub @HandBrakeParams
-
-# Inkscape
-$InkscapeParams = @{
-    Name = "Inkscape"
-    URL  = "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi"
-}
-Install-MSI @InkscapeParams
-
-# Kmonad & Scoop
-iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-
-scoop install stack # install stack
-
-Set-Location $InstallDrive\
-git clone https://github.com/kmonad/kmonad.git
-
-Set-Location kmonad
-stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
-
-Set-Location ~
-
-# LaTeX-OCR
-pip install torch torchvision torchaudio
-pip install pix2tex[gui]
-
-# MegaSync
-winget install -e --id Mega.MEGASync --accept-package-agreements --accept-source-agreements
-
-# Messenger
-winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-agreements
-
-# MiniBin
-$MiniBinParams = @{
-    Name     = "MiniBin"
-    Location = ".\"
-    URL      = "https://files03.tchspt.com/temp/minibin.zip"
-}
-Install-Zip @MiniBinParams
-
-Get-ChildItem "MiniBin-*.exe" | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "MiniBin.exe"
-}
-
-Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/S", "/D=D:\Minibin"
-Remove-Item MiniBin.exe
-
-# Notion
-winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive" -ChildPath "Notion") --accept-package-agreements --accept-source-agreements
-
-# Nvidia Geforce Experience
-$NvidiaGEParams = @{
-    Name         = "NvidiaGE"
-    ArgumentList = @("-s", "-noreboot")
-    URL          = "https://uk.download.nvidia.com/GFE/GFEClient/3.25.1.27/GeForce_Experience_v3.25.1.27.exe"
-}
-Install-EXE @NvidiaGEParams
-
-# Nvidia RTX Voice
-winget install -e --id Nvidia.RTXVoice --accept-package-agreements --accept-source-agreements
-
-# OBS Studio
-$OBSStudioParams = @{
-    Name     = "OBS Studio"
-    Repo     = "obsproject/obs-studio"
-    Pattern  = "*-x64.zip"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "OBS Studio")
-}
-Install-GitHub @OBSStudioParams
-
-# Open Hardware Monitor
-$OpenHardwareParams = @{
-    Name     = "Open Hardware Monitor"
-    Location = "$InstallDrive\"
-    URL      = "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip"
-}
-Install-Zip @OpenHardwareParams
-Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
-
-# Photoshop
-Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
-
-# Proton VPN
-winget install -e --id ProtonTechnologies.ProtonVPN --accept-package-agreements --accept-source-agreements
-
-# Shotcut
-gh release download -R mltframework/shotcut --pattern "*.zip"
-
-Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "Shotcut.zip"
-}
-
-Expand-Archive Shotcut.zip $InstallDrive\
-
-Remove-Item Shotcut.zip
-
-# TeamViewer
-$TeamViewerParams = @{
-    Name     = ""
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "TeamViewer")
-    URL      = "https://download.teamviewer.com/download/TeamViewerPortable.zip"
-}
-Install-Zip @TeamViewerParams
-
-# TeraCopy
-$TeraCopyParams = @{
-    Name         = "TeraCopy"
-    ArgumentList = @("/exenoui", "/qn", "/norestart")
-    URL          = "https://www.codesector.com/files/teracopy.exe"
-}
-Install-EXE @TeraCopyParams
-
-# Tor Browser
-$TorParams = @{
-    Name         = "Tor"
-    ArgumentList = @("/norestart", "/S")
-    URL          = "https://www.torproject.org/dist/torbrowser/11.5/torbrowser-install-win64-11.5_en-US.exe"
-}
-Install-EXE @TorParams
-
-Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
-
-# Unity Hub
-$UnityHubParams = @{
-    Name         = "Unity Hub"
-    ArgumentList = @("/S", "/D=$InstallDrive\Unity")
-    URL          = "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe"
-}
-Install-EXE @UnityHubParams
-
-# WizTree
-$WizTreeParams = @{
-    Name     = "WizTree"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "WizTree")
-    URL      = "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip"
-}
-Install-Zip @WizTreeParams
-
-# Yubikey Manager
-$YubikeyManagerParams = @{
-    Name         = "Yubikey Manager"
-    ArgumentList = @("/S", "/D=$InstallDrive\Yubikey Manager")
-    URL          = "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe"
-}
-Install-EXE @YubikeyManagerParams
-
-# -------------------- Tools & Tweaks --------------------
-
-# Figma
-winget install -e --id Figma.Figma --accept-package-agreements --accept-source-agreements
-
-# Mendeley
-$MendeleyParams = @{
-    Name         = "Mendeley"
-    ArgumentList = @("/norestart", "/S")
-    URL          = "https://static.mendeley.com/bin/desktop/mendeley-reference-manager-2.74.0.exe"
-}
-Install-EXE @MendeleyParams
-
-# Onion Share
-$OnionShareParams = @{
-    Name     = "Onion Share"
-    Repo     = "onionshare/onionshare"
-    Pattern  = "*.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Onion Share")
-    FileType = "msi"
-}
-Install-GitHub @OnionShareParams
-
-# Pandoc
-Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
-Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "Pandoc"
-}
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
-    [EnvironmentVariableTarget]::User
-)
-
-# ShareX
-$ShareXParams = @{
-    Name     = "ShareX"
-    Repo     = "ShareX/ShareX"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "ShareX")
-}
-Install-GitHub @ShareXParams
-
-# Transmission
-$TransmissionParams = @{
-    Name     = "Transmission"
-    Repo     = "transmission/transmission"
-    Pattern  = "*-x64.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Transmission")
-    FileType = "msi"
-}
-Install-GitHub @TransmissionParams
-
-# YT-DLP
-gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP")
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\YT-DLP",
-    [EnvironmentVariableTarget]::User
-)
-
-# -------------------- Development Tools --------------------
-
-# TexLive
-if ($confirmationTex -eq 'y') {
-    Invoke-WebRequest "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip" -OutFile "Tex Live.zip"
-    Expand-Archive "Tex Live.zip" ".\"
-    Remove-Item "Tex Live.zip"
-
-    Get-ChildItem "install-tl-*" | Rename-Item -NewName {
-        $_.Name -replace $_.Name, "install-tl"
-    }
-
-    .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
-    Remove-Item "install-tl", "install-tl.zip" -Recurse -Force -Confirm:$false
-}
-
-# Docker Desktop
-winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept-source-agreements
-
-# ffmpeg
-Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
-Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "ffmpeg"
-}
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\ffmpeg\bin",
-    [EnvironmentVariableTarget]::User
-)
-
-# JDK
-winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-package-agreements --accept-source-agreements
-
-# GitHub Desktop
-winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept-source-agreements
-
-# Insomnia
-winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-source-agreements
-
-# NVM
-gh release download -R coreybutler/nvm-windows --pattern "nvm-noinstall.zip"
-Expand-Archive nvm-noinstall.zip "$InstallDrive\NVM"
-Remove-Item nvm-noinstall.zip
-
-[Environment]::SetEnvironmentVariable(
-    "NVM_HOME",
-    "$InstallDrive\NVM",
-    [System.EnvironmentVariableTarget]::User
-)
-
-[Environment]::SetEnvironmentVariable(
-    "NVM_SYMLINK",
-    "$InstallDrive\NodeJS",
-    [System.EnvironmentVariableTarget]::User
-)
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";%NVM_HOME%;%NVM_SYMLINK%",
-    [EnvironmentVariableTarget]::User
-)
-
-New-Item $InstallDrive\NVM\settings.txt
-
-"root: $InstallDrive\NVM" | Out-File -FilePath $InstallDrive\NVM\settings.txt
-"path: $InstallDrive\NodeJS" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
-"arch: 64" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
-"proxy: none" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
-
-# Reloads profile
-. $profile
-
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
-
-# R
-$RParams = @{
-    Name         = "R"
-    ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
-    URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/R-4.2.1-win.exe"
-}
-Install-EXE @RParams
-
-# WSL
-wsl --install -d Ubuntu
-
-# Wireshark
-winget install -e --id WiresharkFoundation.Wireshark --accept-package-agreements --accept-source-agreements
