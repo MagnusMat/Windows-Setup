@@ -700,15 +700,6 @@ $OBSStudioParams = @{
 }
 Install-GitHub @OBSStudioParams
 
-# Open Hardware Monitor
-$OpenHardwareParams = @{
-    Name     = "Open Hardware Monitor"
-    Location = "$InstallDrive\"
-    URL      = "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip"
-}
-Install-Zip @OpenHardwareParams
-Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
-
 # Onion Share
 $OnionShareParams = @{
     Name     = "Onion Share"
@@ -718,6 +709,15 @@ $OnionShareParams = @{
     FileType = "msi"
 }
 Install-GitHub @OnionShareParams
+
+# Open Hardware Monitor
+$OpenHardwareParams = @{
+    Name     = "Open Hardware Monitor"
+    Location = "$InstallDrive\"
+    URL      = "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip"
+}
+Install-Zip @OpenHardwareParams
+Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
 
 # Pandoc
 Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
