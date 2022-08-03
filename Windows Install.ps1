@@ -206,9 +206,6 @@ do {
 # HP Smart
 winget install -e --id 9WZDNCRFHWLH --accept-package-agreements --accept-source-agreements
 
-# Microsoft Defender
-winget install -e --id 9P6PMZTM93LR --accept-package-agreements --accept-source-agreements
-
 # Microsoft Whiteboard
 winget install -e --id 9MSPC6MP8FM4 --accept-package-agreements --accept-source-agreements
 
