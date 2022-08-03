@@ -729,13 +729,33 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
 # Photoshop
 Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
-# R
+# R Language
 $RParams = @{
     Name         = "R"
     ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
     URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/R-4.2.1-win.exe"
 }
 Install-EXE @RParams
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\R\bin",
+    [EnvironmentVariableTarget]::User
+)
+
+# Reloads profile
+. $profile
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+
+Set-Location $InstallDrive\R\bin
+
+R.exe -e 'install.packages(""languageserver"", repos = ""https://mirrors.dotsrc.org/cran/"")'
+R.exe -e 'install.packages(""httpgd"", repos = ""https://mirrors.dotsrc.org/cran/"")'
+
+Set-Location ~
+
+pip3 install -U radian
 
 # ShareX
 $ShareXParams = @{
