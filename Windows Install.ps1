@@ -7,7 +7,6 @@ $ErrorActionPreference = 'Stop'
 
 # Upgade all packages
 winget source update
-
 winget upgrade --all --accept-package-agreements --accept-source-agreements
 
 # Git
@@ -819,9 +818,6 @@ $WizTreeParams = @{
     URL      = "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip"
 }
 Install-Zip @WizTreeParams
-
-# WSL Ubuntu
-wsl --install -d Ubuntu
 
 # YT-DLP
 gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP")
