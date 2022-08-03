@@ -418,9 +418,6 @@ winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-so
 # JDK
 winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-package-agreements --accept-source-agreements
 
-# MegaSync
-winget install -e --id Mega.MEGASync --accept-package-agreements --accept-source-agreements
-
 # Messenger
 winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-agreements
 
