@@ -599,7 +599,6 @@ Install-MSI @InkscapeParams
 
 # Kmonad & Scoop
 iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-Remove-Item .\install.ps1
 
 scoop install stack # install stack
 
