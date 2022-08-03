@@ -600,6 +600,9 @@ $InkscapeParams = @{
 }
 Install-MSI @InkscapeParams
 
+# Internet Archive Downloader
+pip install internetarchive
+
 # Kmonad & Scoop
 iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
 
