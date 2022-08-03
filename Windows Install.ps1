@@ -3,9 +3,6 @@
 # Terminate during any and all errors
 $ErrorActionPreference = 'Stop'
 
-# Execution Permission
-Set-ExecutionPolicy RemoteSigned
-
 # -------------------- Initial Setup - Updates & Package Managers --------------------
 
 # Upgade all packages
