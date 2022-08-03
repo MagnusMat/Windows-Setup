@@ -463,6 +463,9 @@ if ($confirmationLaptopDesktop -eq 'd') {
     }
     Install-GitHub @GloSCParams
 
+    # Hue Sync
+    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
+
     # Locale Emulator
     $LocaleEmulatorParams = @{
         Name     = "Locale Emulator"
@@ -470,9 +473,6 @@ if ($confirmationLaptopDesktop -eq 'd') {
         Location = (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator")
     }
     Install-GitHub @LocaleEmulatorParams
-
-    # Hue Sync
-    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
 }
 
 # 7-Zip
