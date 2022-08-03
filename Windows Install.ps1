@@ -750,8 +750,7 @@ Install-EXE @RParams
     [EnvironmentVariableTarget]::User
 )
 
-# Reloads profile
-. $profile
+. $profile # Reloads profile
 
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
 
@@ -763,6 +762,16 @@ R.exe -e 'install.packages(""httpgd"", repos = ""https://mirrors.dotsrc.org/cran
 Set-Location ~
 
 pip3 install -U radian
+
+#RustDesk
+gh release download -R rustdesk/rustdesk --pattern "*-windows_x64-portable.zip"
+
+Get-ChildItem "rustdesk-*.zip" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "RustDesk.zip"
+}
+
+Expand-Archive .\RustDesk.zip $InstallDrive\RustDesk
+Remove-Item RustDesk.zip
 
 # ShareX
 $ShareXParams = @{
@@ -782,14 +791,6 @@ Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
 Expand-Archive Shotcut.zip $InstallDrive\
 
 Remove-Item Shotcut.zip
-
-# TeamViewer
-$TeamViewerParams = @{
-    Name     = ""
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "TeamViewer")
-    URL      = "https://download.teamviewer.com/download/TeamViewerPortable.zip"
-}
-Install-Zip @TeamViewerParams
 
 # TeraCopy
 $TeraCopyParams = @{
