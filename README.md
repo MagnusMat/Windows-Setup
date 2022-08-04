@@ -3,7 +3,6 @@
 Windows Setup Script. Installs all the software that i use.
 Before running script, please set the execution policy to RemoteSigned or similar.
 
-
 ```ps1
 Set-ExecutionPolicy RemoteSigned
 ```
@@ -21,7 +20,7 @@ Afterwards, please install the desired WSL Distribution, eg.
 wsl --install -d Ubuntu
 ```
 
-or 
+or
 
 ```ps1
 wsl --install -d Debian
