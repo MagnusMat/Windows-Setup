@@ -764,7 +764,7 @@ Install-EXE @RParams
 
 . $profile # Reloads profile
 
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 Set-Location $InstallDrive\R\bin
 
