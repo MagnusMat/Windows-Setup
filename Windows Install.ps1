@@ -7,7 +7,6 @@ $ErrorActionPreference = 'Stop'
 
 # Upgade all packages
 winget source update
-
 winget upgrade --all --accept-package-agreements --accept-source-agreements
 
 # Git
@@ -133,6 +132,8 @@ function Install-GitHub {
 
 # -------------------- Set Wallpaper --------------------
 
+Invoke-WebRequest https://wallpapershome.com/images/wallpapers/windows-365-2560x1440-microsoft-windows-11-4k-24048.jpg -OutFile wallpaper.jpg
+
 New-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -PropertyType String -Value 10 -Force
 Add-Type -TypeDefinition @"
 using System;
@@ -148,13 +149,15 @@ public class WallParams
 }
 "@
 
-$WallpaperImage = "C:\Windows\Web\Wallpaper\ThemeB\img26.jpg"
+$WallpaperImage = "~\Wallpaper.jpg"
 $SPI_SETDESKWALLPAPER = 0x0014
 $UpdateIniFile = 0x01
 $SendChangeEvent = 0x02
 $fWinIni = $UpdateIniFile -bor $SendChangeEvent
 
 [WallParams]::SystemParametersInfo($SPI_SETDESKWALLPAPER, 0, $WallpaperImage, $fWinIni)
+
+Remove-Item Wallpaper.jpg
 
 # -------------------- Confirmations --------------------
 
@@ -433,9 +436,6 @@ winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-so
 # JDK
 winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-package-agreements --accept-source-agreements
 
-# MegaSync
-winget install -e --id Mega.MEGASync --accept-package-agreements --accept-source-agreements
-
 # Messenger
 winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-agreements
 
@@ -478,6 +478,9 @@ if ($confirmationLaptopDesktop -eq 'd') {
     }
     Install-GitHub @GloSCParams
 
+    # Hue Sync
+    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
+
     # Locale Emulator
     $LocaleEmulatorParams = @{
         Name     = "Locale Emulator"
@@ -485,9 +488,6 @@ if ($confirmationLaptopDesktop -eq 'd') {
         Location = (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator")
     }
     Install-GitHub @LocaleEmulatorParams
-
-    # Hue Sync
-    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
 }
 
 # 7-Zip
@@ -612,9 +612,11 @@ $InkscapeParams = @{
 }
 Install-MSI @InkscapeParams
 
+# Internet Archive Downloader
+pip install internetarchive
+
 # Kmonad & Scoop
 iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
-Remove-Item .\install.ps1
 
 scoop install stack # install stack
 
@@ -746,13 +748,42 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
 # Photoshop
 Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
-# R
+# R Language
 $RParams = @{
     Name         = "R"
     ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
     URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/R-4.2.1-win.exe"
 }
 Install-EXE @RParams
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\R\bin",
+    [EnvironmentVariableTarget]::User
+)
+
+. $profile # Reloads profile
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+
+Set-Location $InstallDrive\R\bin
+
+R.exe -e 'install.packages(""languageserver"", repos = ""https://mirrors.dotsrc.org/cran/"")'
+R.exe -e 'install.packages(""httpgd"", repos = ""https://mirrors.dotsrc.org/cran/"")'
+
+Set-Location ~
+
+pip3 install -U radian
+
+#RustDesk
+gh release download -R rustdesk/rustdesk --pattern "*-windows_x64-portable.zip"
+
+Get-ChildItem "rustdesk-*.zip" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "RustDesk.zip"
+}
+
+Expand-Archive .\RustDesk.zip $InstallDrive\RustDesk
+Remove-Item RustDesk.zip
 
 # ShareX
 $ShareXParams = @{
@@ -772,14 +803,6 @@ Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
 Expand-Archive Shotcut.zip $InstallDrive\
 
 Remove-Item Shotcut.zip
-
-# TeamViewer
-$TeamViewerParams = @{
-    Name     = ""
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "TeamViewer")
-    URL      = "https://download.teamviewer.com/download/TeamViewerPortable.zip"
-}
-Install-Zip @TeamViewerParams
 
 # TeraCopy
 $TeraCopyParams = @{
@@ -838,9 +861,6 @@ $WizTreeParams = @{
     URL      = "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip"
 }
 Install-Zip @WizTreeParams
-
-# WSL Ubuntu
-wsl --install -d Ubuntu
 
 # YT-DLP
 gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP")

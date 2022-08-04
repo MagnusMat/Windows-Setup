@@ -14,3 +14,15 @@ Install automatically with the command below.
 $ScriptFromGitHub = Invoke-WebRequest https://raw.githubusercontent.com/MagnusMat/Windows-Setup/main/Windows%20Install.ps1
 Invoke-Expression $($ScriptFromGitHub.Content)
 ```
+
+Afterwards, please install the desired WSL Distribution, eg.
+
+```ps1
+wsl --install -d Ubuntu
+```
+
+or 
+
+```ps1
+wsl --install -d Debian
+```
