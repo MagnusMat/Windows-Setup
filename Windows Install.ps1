@@ -19,7 +19,7 @@ winget install -e --id GitHub.cli --accept-package-agreements --accept-source-ag
 # Reloads profile
 . $profile
 
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 # GitHub Cli Login
 & 'C:\Program Files\GitHub CLI\gh.exe' auth login
@@ -198,6 +198,18 @@ do {
         ($confirmationTex -ne "y") -and ($confirmationTex -ne "n")
 )
 
+# EM Client
+do {
+    $confirmationEMClient = Read-Host "Do you want to install EM Client y/n"
+    if (($confirmationEMClient -ne "y") -and ($confirmationEMClient -ne "n")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationEMClient -ne "y") -and ($confirmationEMClient -ne "n")
+)
+
+
+
 # -------------------- Microsoft Store --------------------
 
 # HP Smart
@@ -368,7 +380,7 @@ winget install -e --id Python.Python.3 --accept-package-agreements --accept-sour
 # Reloads profile
 . $profile
 
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 python.exe -m pip install --upgrade pip --user
 
@@ -403,8 +415,11 @@ winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept
 # Draw.io
 winget install -e --id JGraph.Draw --location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") --accept-package-agreements --accept-source-agreements
 
-# eM Client
-winget install -e --id eMClient.eMClient --accept-package-agreements --accept-source-agreements
+
+if ($confirmationEMClient -eq 'y') {
+    # eM Client
+    winget install -e --id eMClient.eMClient --accept-package-agreements --accept-source-agreements
+}
 
 # Figma
 winget install -e --id Figma.Figma --accept-package-agreements --accept-source-agreements
@@ -686,7 +701,7 @@ New-Item $InstallDrive\NVM\settings.txt
 # Reloads profile
 . $profile
 
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 # OBS Studio
 $OBSStudioParams = @{
