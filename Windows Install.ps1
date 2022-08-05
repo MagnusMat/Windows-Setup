@@ -132,7 +132,7 @@ function Install-GitHub {
 
 # -------------------- Set Wallpaper --------------------
 
-Invoke-WebRequest https://wallpapershome.com/images/wallpapers/windows-365-2560x1440-microsoft-windows-11-4k-24048.jpg -OutFile wallpaper.jpg
+Invoke-WebRequest https://cdn.wallpaperhub.app/cloudcache/d/3/c/2/b/f/d3c2bf863b952ad8d93816729ce85bb0bbebcbc8.png -OutFile wallpaper.png
 
 New-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -PropertyType String -Value 10 -Force
 Add-Type -TypeDefinition @"
@@ -149,7 +149,7 @@ public class WallParams
 }
 "@
 
-$WallpaperImage = "~\Wallpaper.jpg"
+$WallpaperImage = "~\Wallpaper.png"
 $SPI_SETDESKWALLPAPER = 0x0014
 $UpdateIniFile = 0x01
 $SendChangeEvent = 0x02
@@ -157,7 +157,7 @@ $fWinIni = $UpdateIniFile -bor $SendChangeEvent
 
 [WallParams]::SystemParametersInfo($SPI_SETDESKWALLPAPER, 0, $WallpaperImage, $fWinIni)
 
-Remove-Item Wallpaper.jpg
+Remove-Item Wallpaper.png
 
 # -------------------- Confirmations --------------------
 
