@@ -198,7 +198,7 @@ do {
         ($confirmationTex -ne "y") -and ($confirmationTex -ne "n")
 )
 
-# EM Client
+# EM Client Prompt
 do {
     $confirmationEMClient = Read-Host "Do you want to install EM Client y/n"
     if (($confirmationEMClient -ne "y") -and ($confirmationEMClient -ne "n")) {
@@ -208,7 +208,7 @@ do {
         ($confirmationEMClient -ne "y") -and ($confirmationEMClient -ne "n")
 )
 
-# EM Client
+# Haskell Prompt
 do {
     $confirmationHaskell = Read-Host "Do you want to install Haskell y/n"
     if (($confirmationHaskell -ne "y") -and ($confirmationHaskell -ne "n")) {
@@ -216,6 +216,16 @@ do {
     }
 } while (
         ($confirmationHaskell -ne "y") -and ($confirmationHaskell -ne "n")
+)
+
+# Windows Terminal Settings Prompt
+do {
+    $confirmationWindowsTerm = Read-Host "Do you want to replace the Windows Terminal Settings? This will not work if you have a Windows Terminal instance open y/n"
+    if (($confirmationWindowsTerm -ne "y") -and ($confirmationWindowsTerm -ne "n")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationWindowsTerm -ne "y") -and ($confirmationWindowsTerm -ne "n")
 )
 
 # -------------------- Microsoft Store --------------------
@@ -865,7 +875,9 @@ $UnityHubParams = @{
 Install-EXE @UnityHubParams
 
 # Windows Terminal settings
-Set-Content -Path 'C:\Users\magnu\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState' -Value (Get-Content -Path 'D:\GitHub\Windows-Terminal-Setup\Terminal settings.json' -Raw)
+if ($confirmationWindowsTerm -eq 'y') {
+    Set-Content -Path 'C:\Users\magnu\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState' -Value (Get-Content -Path 'D:\GitHub\Windows-Terminal-Setup\Terminal settings.json' -Raw)
+}
 
 # WizTree
 $WizTreeParams = @{
