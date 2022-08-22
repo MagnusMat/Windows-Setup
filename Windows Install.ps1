@@ -142,12 +142,9 @@ using System.Runtime.InteropServices;
 public class WallParams
 {
     [DllImport("User32.dll",CharSet=CharSet.Unicode)]
-    public static extern int SystemParametersInfo (Int32 uAction,
-                                                   Int32 uParam,
-                                                   String lpvParam,
-                                                   Int32 fuWinIni);
+    public static extern int SystemParametersInfo (Int32 uAction, Int32 uParam, String lpvParam, Int32 fuWinIni);
 }
-"@
+"@ -Language CSharp
 
 $WallpaperImage = "~\Wallpaper.png"
 $SPI_SETDESKWALLPAPER = 0x0014
@@ -211,7 +208,15 @@ do {
         ($confirmationEMClient -ne "y") -and ($confirmationEMClient -ne "n")
 )
 
-
+# EM Client
+do {
+    $confirmationHaskell = Read-Host "Do you want to install Haskell y/n"
+    if (($confirmationHaskell -ne "y") -and ($confirmationHaskell -ne "n")) {
+        "You need to pick a valid option"
+    }
+} while (
+        ($confirmationHaskell -ne "y") -and ($confirmationHaskell -ne "n")
+)
 
 # -------------------- Microsoft Store --------------------
 
@@ -595,6 +600,11 @@ $HandBrakeParams = @{
 }
 Install-GitHub @HandBrakeParams
 
+# Haskell
+if ($confirmationHaskell -eq 'y') {
+    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Command -ScriptBlock ([ScriptBlock]::Create((Invoke-WebRequest https://www.haskell.org/ghcup/sh/bootstrap-haskell.ps1 -UseBasicParsing))) -ArgumentList $false, $false, $false, $false, $false, $true, $true, "$InstallDrive\", 'https://www.haskell.org/ghcup/sh/bootstrap-haskell', "$InstallDrive\Msys2-64", "$InstallDrive\Cabal"
+}
+
 # HP Support Assistant
 if ($confirmationLaptopDesktop -eq 'l') {
     $HPParams = @{
@@ -616,7 +626,7 @@ Install-MSI @InkscapeParams
 pip install internetarchive
 
 # Kmonad & Scoop
-iex "& {$(irm get.scoop.sh)} -RunAsAdmin"
+Invoke-Expression "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
 
 scoop install stack # install stack
 
@@ -775,7 +785,7 @@ Set-Location ~
 
 pip3 install -U radian
 
-#RustDesk
+# RustDesk
 gh release download -R rustdesk/rustdesk --pattern "*-windows_x64-portable.zip"
 
 Get-ChildItem "rustdesk-*.zip" | Rename-Item -NewName {
