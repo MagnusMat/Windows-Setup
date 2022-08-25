@@ -306,7 +306,7 @@ Remove-Item Fonts -Recurse -Force -Confirm:$false
 
 # -------------------- Progressive Web Apps --------------------
 
-# Dinere
+# Dinero
 Start-Process https://app.dinero.dk/
 
 # Proton Calendar
@@ -331,7 +331,7 @@ Start-Process https://music.youtube.com/
 Start-Process https://mail.proton.me/
 
 # Npcap
-Start-Process "https://npcap.com/"
+Start-Process https://npcap.com/
 
 # -------------------- Development Tools & Dependencies --------------------
 
@@ -472,7 +472,7 @@ winget install -e --id WinSCP.WinSCP
 # Wireshark
 winget install -e --id WiresharkFoundation.Wireshark --accept-package-agreements --accept-source-agreements
 
-# -------------------- Apps --------------------
+# -------------------- Programs --------------------
 
 if ($confirmationLaptopDesktop -eq 'd') {
     # Archi Steam Farm
@@ -917,6 +917,9 @@ if ($confirmationGames -eq 'y') {
 
     # GOG Galaxy
     winget install -e --id GOG.Galaxy --location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy") --accept-package-agreements --accept-source-agreements
+
+    # Minecraft
+    winget install -e --id Mojang.MinecraftLauncher --accept-package-agreements --accept-source-agreements
 
     # Playnite
     $PlayniteParams = @{
