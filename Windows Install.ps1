@@ -943,16 +943,11 @@ if ($confirmationEmulators -eq 'y') {
     # Cemu
     $CemuParams = @{
         Name     = "Cemu"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
-        URL      = "https://cemu.info/releases/cemu_1.26.2.zip"
+        Repo     = "cemu-project/Cemu"
+        Pattern  = "*-windows-x64.zip"
+        Location = (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Cemu")
     }
-    Install-Zip @CemuParams
-
-    Set-Location (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
-    Get-ChildItem "*" | Rename-Item -NewName {
-        $_.Name -replace $_.Name, "Cemu"
-    }
-    Set-location ~
+    Install-GitHub @CemuParams
 
     # Citra
     Invoke-WebRequest "https://github.com/citra-emu/citra-nightly/releases/download/nightly-1775/citra-windows-mingw-20220723-357025d.7z" -OutFile "Citra.7z"
