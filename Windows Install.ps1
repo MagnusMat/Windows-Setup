@@ -396,7 +396,7 @@ winget install -e --id Microsoft.VisualStudio.2022.Enterprise --accept-package-a
 winget install -e --id Microsoft.VisualStudio.2019.BuildTools --accept-package-agreements --accept-source-agreements
 
 # Python
-winget install -e --id Python.Python.3 --accept-package-agreements --accept-source-agreements
+winget install -e --id Python.Python.3.10 --accept-package-agreements --accept-source-agreements
 
 [Environment]::SetEnvironmentVariable(
     "Path",
