@@ -1,5 +1,7 @@
 # Windows Install Script
 
+Set-Location ~
+
 # Terminate during any and all errors
 $ErrorActionPreference = 'Stop'
 
