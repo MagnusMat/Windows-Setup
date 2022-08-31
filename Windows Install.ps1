@@ -287,6 +287,13 @@ Remove-Item FiraCodeiScript -Recurse -Force -Confirm:$false
 # Fira Code Nerd Font
 Install-GitHub -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraCode.zip" -Location ".\FiraCode"
 Install-GitHub -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraMono.zip" -Location ".\FiraMono"
+Set-Location Fonts
+Remove-Item README.md
+Set-Location ~/FiraCode
+Remove-Item readme.md, LICENSE
+Set-Location ~/FiraMono
+Remove-Item readme.md, LICENSE.txt
+Set-Location ~
 Get-ChildItem -Path FiraCode -Recurse -File | Move-Item -Destination Fonts
 Get-ChildItem -Path FiraMono -Recurse -File | Move-Item -Destination Fonts
 Remove-Item FiraCode, FiraMono
