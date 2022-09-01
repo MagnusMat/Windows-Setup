@@ -896,7 +896,11 @@ Install-EXE @UnityHubParams
 
 # Windows Terminal settings
 if ($confirmationWindowsTerm -eq 'y') {
-    Set-Content -Path 'C:\Users\magnu\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState' -Value (Get-Content -Path 'D:\GitHub\Windows-Terminal-Setup\Terminal settings.json' -Raw)
+    Set-Location 'C:\Users\magnu\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState'
+    if ((Test-Path ./settings.json) -eq $false) {
+        New-Item settings.json
+    }
+    Set-Content -Path 'settings.json' -Value (Get-Content -Path 'D:\GitHub\Windows-Terminal-Setup\Terminal settings.json' -Raw)
 }
 
 # WizTree
