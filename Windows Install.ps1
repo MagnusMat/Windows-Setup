@@ -662,10 +662,12 @@ pip install torch torchvision torchaudio
 pip install pix2tex[gui]
 
 # Mendeley
+$mendeleyLink = ((Invoke-WebRequest -URI https://www.mendeley.com/download-reference-manager/windows).Links | Where-Object href -like "https://static.mendeley.com/bin/desktop/*.exe").href
+
 $MendeleyParams = @{
     Name         = "Mendeley"
     ArgumentList = @("/norestart", "/S")
-    URL          = "https://static.mendeley.com/bin/desktop/mendeley-reference-manager-2.74.0.exe"
+    URL          = "$mendeleyLink"
 }
 Install-EXE @MendeleyParams
 
@@ -692,10 +694,12 @@ $FirefoxParams = @{
 Install-MSI @FirefoxParams
 
 # Nvidia Geforce Experience
+$nvidiaLink = ((Invoke-WebRequest -URI https://www.nvidia.com/da-dk/geforce/geforce-experience/).Links | Where-Object href -like "https://uk.download.nvidia.com/*.exe").href
+
 $NvidiaGEParams = @{
     Name         = "NvidiaGE"
     ArgumentList = @("-s", "-noreboot")
-    URL          = "https://uk.download.nvidia.com/GFE/GFEClient/3.25.1.27/GeForce_Experience_v3.25.1.27.exe"
+    URL          = "$nvidiaLink"
 }
 Install-EXE @NvidiaGEParams
 
@@ -754,10 +758,13 @@ $OnionShareParams = @{
 Install-GitHub @OnionShareParams
 
 # Open Hardware Monitor
+
+$OpenHardwareMonitorLink = ((Invoke-WebRequest -URI https://openhardwaremonitor.org/downloads/).Links | Where-Object href -like "https://openhardwaremonitor.org/files/*.zip").href
+
 $OpenHardwareParams = @{
     Name     = "Open Hardware Monitor"
     Location = "$InstallDrive\"
-    URL      = "https://openhardwaremonitor.org/files/openhardwaremonitor-v0.9.6.zip"
+    URL      = "$OpenHardwareMonitorLink[0]"
 }
 Install-Zip @OpenHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
@@ -779,10 +786,12 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
 Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
 # R Language
+
+
 $RParams = @{
     Name         = "R"
     ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
-    URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/R-4.2.1-win.exe"
+    URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/release.html"
 }
 Install-EXE @RParams
 
@@ -865,12 +874,12 @@ if ($confirmationTex -eq 'y') {
 }
 
 # Tor Browser
-$torlink = ((Invoke-WebRequest -URI https://www.torproject.org/download/).Links | Where innerHTML -eq "Download for Windows").href
+$torLink = ((Invoke-WebRequest -URI https://www.torproject.org/download/).Links | Where-Object innerHTML -eq "Download for Windows").href
 
 $TorParams = @{
     Name         = "Tor"
     ArgumentList = @("/norestart", "/S")
-    URL          = "https://www.torproject.org/$torlink"
+    URL          = "https://www.torproject.org/$torLink"
 }
 Install-EXE @TorParams
 
@@ -1003,7 +1012,8 @@ if ($confirmationEmulators -eq 'y') {
     Remove-Item Dolphin.7z
 
     # NoPayStation
-    Invoke-WebRequest "https://nopaystation.com/vita/npsReleases/NPS_Browser_0.94.exe" -OutFile NoPayStation.exe
+    $noPayStationLink = ((Invoke-WebRequest -URI https://nopaystation.com/).Links | Where-Object href -like "https://nopaystation.com/vita/npsReleases/*.exe").href
+    Invoke-WebRequest "$noPayStationLink" -OutFile NoPayStation.exe
 
     mkdir $InstallDrive\Emulators\NoPayStation
     Move-Item NoPayStation.exe (Join-Path -Path "$InstallDrive\Emulators\NoPayStation" -ChildPath "NoPayStation.exe")

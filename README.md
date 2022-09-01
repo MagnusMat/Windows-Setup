@@ -30,7 +30,10 @@ You might need to upgrade the Linux Kernel in WSL. To do so, follow the instruct
 
 ```ps1
 Invoke-WebRequest https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi -OutFile "wsl_update_x64.msi"
+
 Start-Process msiexec.exe -Wait -ArgumentList "/package `"wsl_update_x64.msi`"", "/passive", "/norestart"
+
 Remove-Item "wsl_update_x64.msi"
+
 wsl --set-default-version 2
 ```
