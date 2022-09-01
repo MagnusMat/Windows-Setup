@@ -761,6 +761,7 @@ $OpenHardwareParams = @{
 }
 Install-Zip @OpenHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
+Rename-Item (Join-Path -Path "$InstallDrive/Open Hardware Monitor" -ChildPath "OpenHardWareMonitor.exe") "Open Hardware Monitor.exe"
 
 # Pandoc
 Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
@@ -813,6 +814,14 @@ Get-ChildItem "rustdesk-*.zip" | Rename-Item -NewName {
 
 Expand-Archive .\RustDesk.zip $InstallDrive\RustDesk
 Remove-Item RustDesk.zip
+
+Set-Location $InstallDrive\RustDesk
+
+Get-ChildItem "rustdesk-*.exe" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "RustDesk.exe"
+}
+
+Set-Location ~
 
 # ShareX
 $ShareXParams = @{
