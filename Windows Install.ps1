@@ -985,7 +985,7 @@ if ($confirmationEmulators -eq 'y') {
     }
 
     Rename-Item nightly-mingw Citra
-    Move-Item Citra (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
+    Move-Item Citra (Join-Path -Path "$InstallDrive/Emulators" -ChildPath "Citra")
     Remove-Item Citra.7z
 
     # Dolphin
