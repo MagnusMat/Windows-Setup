@@ -901,6 +901,7 @@ if ($confirmationWindowsTerm -eq 'y') {
         New-Item settings.json
     }
     Set-Content -Path 'settings.json' -Value (Get-Content -Path 'D:\GitHub\Windows-Terminal-Setup\Terminal settings.json' -Raw)
+    Set-Location ~
 }
 
 # WizTree
