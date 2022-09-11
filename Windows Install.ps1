@@ -644,6 +644,9 @@ Install-MSI @InkscapeParams
 # Internet Archive Downloader
 pip install internetarchive
 
+# Jupyter Notebook
+pip install jupyter
+
 # Kmonad & Scoop
 Invoke-Expression "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
 
