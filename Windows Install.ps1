@@ -370,24 +370,16 @@ Set-Location ~
 )
 
 # DotNet
-[Environment]::SetEnvironmentVariable(
-    'DOTNET_CLI_TELEMETRY_OPTOUT',
-    '1',
-    [System.EnvironmentVariableTarget]::User
-)
+winget install -e --id Microsoft.DotNet.SDK.6 --accept-package-agreements --accept-source-agreements
 
-Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1";
-
-./dotnet-install.ps1 -Channel "Current" -Runtime "dotnet"
-Remove-item dotnet-install.ps1
+# DotNet Runtime
+winget install -e --id Microsoft.DotNet.Runtime.6 --accept-package-agreements --accept-source-agreements
 
 # DotNet Desktop Runtime
-$DotNetParams = @{
-    Name         = "DesktopRuntime"
-    ArgumentList = @("/install", "/quiet", "/norestart")
-    URL          = "https://download.visualstudio.microsoft.com/download/pr/dc0e0e83-0115-4518-8b6a-590ed594f38a/65b63e41f6a80decb37fa3c5af79a53d/windowsdesktop-runtime-6.0.7-win-x64.exe"
-}
-Install-EXE @DotNetParams
+winget install -e --id Microsoft.DotNet.DesktopRuntime.6 --accept-package-agreements --accept-source-agreements
+
+# DotNet AspNet Core
+winget install -e --id Microsoft.DotNet.AspNetCore.6 --accept-package-agreements --accept-source-agreements
 
 # Visual Studio Enterprise 2022
 winget install -e --id Microsoft.VisualStudio.2022.Enterprise --accept-package-agreements --accept-source-agreements
