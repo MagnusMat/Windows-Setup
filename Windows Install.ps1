@@ -442,9 +442,6 @@ winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive"
 # Nvidia RTX Voice
 winget install -e --id Nvidia.RTXVoice --accept-package-agreements --accept-source-agreements
 
-#Portmaster
-winget install -e --id Safing.Portmaster --accept-package-agreements --accept-source-agreements
-
 # Proton VPN
 winget install -e --id ProtonTechnologies.ProtonVPN --accept-package-agreements --accept-source-agreements
 
