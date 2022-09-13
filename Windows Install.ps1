@@ -487,6 +487,12 @@ if ($confirmationLaptopDesktop -eq 'd') {
 # 7-Zip
 winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
 
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\7-Zip",
+    [EnvironmentVariableTarget]::User
+)
+
 # 1Password CLI
 $arch = "64-bit"
 
