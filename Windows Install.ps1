@@ -550,6 +550,12 @@ Get-ChildItem LLVM-*-win64.exe | Rename-Item -NewName {
 Start-Process -FilePath .\LLVM.exe -Wait -ArgumentList "/S"
 remove-item LLVM.exe
 
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\LLVM\bin",
+    [EnvironmentVariableTarget]::User
+)
+
 # CPU-Z
 $CPUZParams = @{
     Name     = "CPU-Z"
