@@ -540,6 +540,16 @@ $AmazonParams = @{
 }
 Install-EXE @AmazonParams
 
+#Clangd
+gh release download -R llvm/llvm-project --pattern "LLVM-*-win64.exe"
+
+Get-ChildItem LLVM-*-win64.exe | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "LLVM.exe"
+}
+
+Start-Process -FilePath .\LLVM.exe -Wait -ArgumentList "/S"
+remove-item LLVM.exe
+
 # CPU-Z
 $CPUZParams = @{
     Name     = "CPU-Z"
