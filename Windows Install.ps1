@@ -132,9 +132,9 @@ function Install-GitHub {
     Remove-Item "$Name.$FileType"
 }
 
-# -------------------- Set Wallpaper --------------------
+# -------------------- Wallpaper --------------------
 
-Invoke-WebRequest https://cdn.wallpaperhub.app/cloudcache/d/3/c/2/b/f/d3c2bf863b952ad8d93816729ce85bb0bbebcbc8.png -OutFile Wallpaper.png
+Invoke-WebRequest https://cdn.wallpaperhub.app/cloudcache/d/3/c/2/b/f/d3c2bf863b952ad8d93816729ce85bb0bbebcbc8.png -OutFile ~\Pictures\Wallpaper.png
 
 # -------------------- Confirmations --------------------
 
