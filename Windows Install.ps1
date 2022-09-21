@@ -785,7 +785,6 @@ Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
 # R Language
 
-
 $RParams = @{
     Name         = "R"
     ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
@@ -1116,4 +1115,7 @@ if ($confirmationEmulators -eq 'y') {
 
 # Remove Desktop Icons
 $desk = [Environment]::GetFolderPath("Desktop")
+Set-Location $desk
+
 remove-item *
+Set-Location ~
