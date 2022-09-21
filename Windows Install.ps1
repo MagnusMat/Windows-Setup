@@ -756,7 +756,6 @@ $OnionShareParams = @{
 Install-GitHub @OnionShareParams
 
 # Open Hardware Monitor
-
 $OpenHardwareMonitorLink = ((Invoke-WebRequest -URI https://openhardwaremonitor.org/downloads/).Links | Where-Object href -like "https://openhardwaremonitor.org/files/*.zip").href
 
 $OpenHardwareParams = @{
@@ -784,7 +783,6 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
 Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
 # R Language
-
 $RParams = @{
     Name         = "R"
     ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
