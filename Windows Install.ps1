@@ -303,7 +303,7 @@ Start-Process https://calendar.proton.me/
 Start-Process https://photos.google.com/
 
 # Google Podcasts
-Start-Prodess https://podcasts.google.com/
+Start-Process https://podcasts.google.com/
 
 # Overleaf
 Start-Process https://www.overleaf.com/
