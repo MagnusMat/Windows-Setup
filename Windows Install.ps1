@@ -1113,3 +1113,7 @@ if ($confirmationEmulators -eq 'y') {
     }
     Install-Zip @VisualBoyAdvanceParams
 }
+
+# Remove Desktop Icons
+$desk = [Environment]::GetFolderPath("Desktop")
+remove-item *
