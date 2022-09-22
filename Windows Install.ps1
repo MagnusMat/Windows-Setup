@@ -206,6 +206,9 @@ do {
 
 # -------------------- Microsoft Store --------------------
 
+# 3d Viewer
+winget install -e --id 9NBLGGH42THS --accept-package-agreements --accept-source-agreements
+
 # HP Smart
 winget install -e --id 9WZDNCRFHWLH --accept-package-agreements --accept-source-agreements
 
@@ -240,9 +243,6 @@ winget install -e --id 9N26S50LN705 --accept-package-agreements --accept-source-
 
 # Xbox Accessories
 winget install -e --id 9NBLGGH30XJ3 --accept-package-agreements --accept-source-agreements
-
-# 3d Viewer
-winget install -e --id 9NBLGGH42THS --accept-package-agreements --accept-source-agreements
 
 # -------------------- Fonts --------------------
 
@@ -315,9 +315,6 @@ Start-Process https://music.youtube.com/
 
 # Proton Mail
 Start-Process https://mail.proton.me/
-
-# Npcap
-Start-Process https://npcap.com/
 
 # -------------------- Development Tools & Dependencies --------------------
 
@@ -396,6 +393,15 @@ Set-Location ~
 
 # -------------------- Winget --------------------
 
+# 7-Zip
+winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\7-Zip",
+    [EnvironmentVariableTarget]::User
+)
+
 # Blender
 winget install -e --id BlenderFoundation.Blender --accept-package-agreements --accept-source-agreements
 
@@ -411,7 +417,6 @@ winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept
 # Draw.io
 winget install -e --id JGraph.Draw --location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") --accept-package-agreements --accept-source-agreements
 
-
 if ($confirmationEMClient -eq 'y') {
     # eM Client
     winget install -e --id eMClient.eMClient --accept-package-agreements --accept-source-agreements
@@ -422,6 +427,9 @@ winget install -e --id Figma.Figma --accept-package-agreements --accept-source-a
 
 # GitHub Desktop
 winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept-source-agreements
+
+# Inkscape
+winget install -e --id Inkscape.Inkscape --accept-package-agreements --accept-source-agreements
 
 # Insomnia
 winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-source-agreements
@@ -435,14 +443,29 @@ winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-
 # Microsoft Teams
 winget install -e --id Microsoft.Teams --accept-package-agreements --accept-source-agreements
 
+# Mozilla Firefox
+winget install -e --id Mozilla.Firefox --accept-package-agreements --accept-source-agreements
+
 # Notion
 winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive" -ChildPath "Notion") --accept-package-agreements --accept-source-agreements
+
+# Nvidia Geforce Experience
+winget install -e --id Nvidia.GeForceExperience --accept-package-agreements --accept-source-agreements
 
 # Nvidia RTX Voice
 winget install -e --id Nvidia.RTXVoice --accept-package-agreements --accept-source-agreements
 
+# NVM
+winget install -e --id CoreyButler.NVMforWindows --accept-package-agreements --accept-source-agreements
+
+# Postman
+winget install -e --id Postman.Postman --accept-package-agreements --accept-source-agreements
+
 # Proton VPN
 winget install -e --id ProtonTechnologies.ProtonVPN --accept-package-agreements --accept-source-agreements
+
+# TeraCopy
+winget install -e --id CodeSector.TeraCopy --accept-package-agreements --accept-source-agreements
 
 # WinSCP
 winget install -e --id WinSCP.WinSCP
@@ -482,15 +505,6 @@ if ($confirmationLaptopDesktop -eq 'd') {
     }
     Install-GitHub @LocaleEmulatorParams
 }
-
-# 7-Zip
-winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\7-Zip",
-    [EnvironmentVariableTarget]::User
-)
 
 # 1Password CLI
 $arch = "64-bit"
@@ -625,13 +639,6 @@ if ($confirmationLaptopDesktop -eq 'l') {
     Install-EXE @HPParams
 }
 
-# Inkscape
-$InkscapeParams = @{
-    Name = "Inkscape"
-    URL  = "https://media.inkscape.org/dl/resources/file/inkscape-1.2_2022-05-15_dc2aedaf03-x64_5iRsplS.msi"
-}
-Install-MSI @InkscapeParams
-
 # Internet Archive Downloader
 pip install internetarchive
 
@@ -656,7 +663,7 @@ pip install torch torchvision torchaudio
 pip install pix2tex[gui]
 
 # Mendeley
-$mendeleyLink = ((Invoke-WebRequest -URI https://www.mendeley.com/download-reference-manager/windows).Links | Where-Object href -like "https://static.mendeley.com/bin/desktop/*.exe").href
+$mendeleyLink = ((Invoke-WebRequest -URI https://www.mendeley.com/download-reference-manager/windows -UseBasicParsing).Links | Where-Object href -like "https://static.mendeley.com/bin/desktop/*.exe").href
 
 $MendeleyParams = @{
     Name         = "Mendeley"
@@ -680,58 +687,6 @@ Get-ChildItem "MiniBin-*.exe" | Rename-Item -NewName {
 Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/S", "/D=D:\Minibin"
 Remove-Item MiniBin.exe
 
-# Mozilla Firefox
-$FirefoxParams = @{
-    Name = "Mozilla Firefox"
-    URL  = "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=da"
-}
-Install-MSI @FirefoxParams
-
-# Nvidia Geforce Experience
-$nvidiaLink = ((Invoke-WebRequest -URI https://www.nvidia.com/da-dk/geforce/geforce-experience/).Links | Where-Object href -like "https://uk.download.nvidia.com/*.exe").href
-
-$NvidiaGEParams = @{
-    Name         = "NvidiaGE"
-    ArgumentList = @("-s", "-noreboot")
-    URL          = "$nvidiaLink"
-}
-Install-EXE @NvidiaGEParams
-
-# NVM
-gh release download -R coreybutler/nvm-windows --pattern "nvm-noinstall.zip"
-Expand-Archive nvm-noinstall.zip "$InstallDrive\NVM"
-Remove-Item nvm-noinstall.zip
-
-[Environment]::SetEnvironmentVariable(
-    "NVM_HOME",
-    "$InstallDrive\NVM",
-    [System.EnvironmentVariableTarget]::User
-)
-
-[Environment]::SetEnvironmentVariable(
-    "NVM_SYMLINK",
-    "$InstallDrive\NodeJS",
-    [System.EnvironmentVariableTarget]::User
-)
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";%NVM_HOME%;%NVM_SYMLINK%",
-    [EnvironmentVariableTarget]::User
-)
-
-New-Item $InstallDrive\NVM\settings.txt
-
-"root: $InstallDrive\NVM" | Out-File -FilePath $InstallDrive\NVM\settings.txt
-"path: $InstallDrive\NodeJS" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
-"arch: 64" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
-"proxy: none" | Out-File -FilePath $InstallDrive\NVM\settings.txt -Append
-
-# Reloads profile
-. $profile
-
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-
 # OBS Studio
 $OBSStudioParams = @{
     Name     = "OBS Studio"
@@ -752,7 +707,7 @@ $OnionShareParams = @{
 Install-GitHub @OnionShareParams
 
 # Open Hardware Monitor
-$OpenHardwareMonitorLink = ((Invoke-WebRequest -URI https://openhardwaremonitor.org/downloads/).Links | Where-Object href -like "https://openhardwaremonitor.org/files/*.zip").href
+$OpenHardwareMonitorLink = ((Invoke-WebRequest -URI https://openhardwaremonitor.org/downloads/ -UseBasicParsing).Links | Where-Object href -like "https://openhardwaremonitor.org/files/*.zip").href[0]
 
 $OpenHardwareParams = @{
     Name     = "Open Hardware Monitor"
@@ -779,24 +734,29 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
 Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
 # R Language
-$RParams = @{
-    Name         = "R"
-    ArgumentList = @("/SILENT", "/Dir=`"$InstallDrive\R`"")
-    URL          = "https://mirrors.dotsrc.org/cran/bin/windows/base/release.html"
+winget install -e --id RProject.R --accept-package-agreements --accept-source-agreements
+
+Set-Location "C:\Program Files\R"
+
+Get-ChildItem R-* | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "R"
 }
-Install-EXE @RParams
+
+Set-Location "R"
+Move-Item * "C:\Program Files\R"
+
+Set-Location "C:\Program Files\R"
+Remove-Item R
 
 [Environment]::SetEnvironmentVariable(
     "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\R\bin",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\R\bin",
     [EnvironmentVariableTarget]::User
 )
 
 . $profile # Reloads profile
 
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-Set-Location $InstallDrive\R\bin
 
 R.exe -e 'install.packages(""languageserver"", repos = ""https://mirrors.dotsrc.org/cran/"")'
 R.exe -e 'install.packages(""httpgd"", repos = ""https://mirrors.dotsrc.org/cran/"")'
@@ -842,14 +802,6 @@ Expand-Archive Shotcut.zip $InstallDrive\
 
 Remove-Item Shotcut.zip
 
-# TeraCopy
-$TeraCopyParams = @{
-    Name         = "TeraCopy"
-    ArgumentList = @("/exenoui", "/qn", "/norestart")
-    URL          = "https://www.codesector.com/files/teracopy.exe"
-}
-Install-EXE @TeraCopyParams
-
 # TexLive
 if ($confirmationTex -eq 'y') {
     Invoke-WebRequest "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip" -OutFile "Tex Live.zip"
@@ -865,7 +817,7 @@ if ($confirmationTex -eq 'y') {
 }
 
 # Tor Browser
-$torLink = ((Invoke-WebRequest -URI https://www.torproject.org/download/).Links | Where-Object innerHTML -eq "Download for Windows").href
+$torLink = "https://www.torproject.org" + ((Invoke-WebRequest -URI https://www.torproject.org/download/ -UseBasicParsing).Links | Where-Object href -like "*.exe").href[0]
 
 $TorParams = @{
     Name         = "Tor"
@@ -1003,7 +955,7 @@ if ($confirmationEmulators -eq 'y') {
     Remove-Item Dolphin.7z
 
     # NoPayStation
-    $noPayStationLink = ((Invoke-WebRequest -URI https://nopaystation.com/).Links | Where-Object href -like "https://nopaystation.com/vita/npsReleases/*.exe").href
+    $noPayStationLink = ((Invoke-WebRequest -URI https://nopaystation.com/ -UseBasicParsing).Links | Where-Object href -like "https://nopaystation.com/vita/npsReleases/*.exe").href
     Invoke-WebRequest "$noPayStationLink" -OutFile NoPayStation.exe
 
     mkdir $InstallDrive\Emulators\NoPayStation
