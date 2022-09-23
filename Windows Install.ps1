@@ -712,7 +712,7 @@ $OpenHardwareMonitorLink = ((Invoke-WebRequest -URI https://openhardwaremonitor.
 $OpenHardwareParams = @{
     Name     = "Open Hardware Monitor"
     Location = "$InstallDrive\"
-    URL      = "$OpenHardwareMonitorLink[0]"
+    URL      = "$OpenHardwareMonitorLink"
 }
 Install-Zip @OpenHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
