@@ -817,12 +817,12 @@ if ($confirmationTex -eq 'y') {
 }
 
 # Tor Browser
-$torLink = "https://www.torproject.org" + ((Invoke-WebRequest -URI https://www.torproject.org/download/ -UseBasicParsing).Links | Where-Object href -like "*.exe").href[0]
+$torLink = -Join ("https://www.torproject.org", ((Invoke-WebRequest -URI https://www.torproject.org/download/ -UseBasicParsing).Links | Where-Object href -like "*.exe").href[0])
 
 $TorParams = @{
     Name         = "Tor"
     ArgumentList = @("/norestart", "/S")
-    URL          = "https://www.torproject.org/$torLink"
+    URL          = "$torLink"
 }
 Install-EXE @TorParams
 
