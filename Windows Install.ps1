@@ -730,6 +730,19 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
     [EnvironmentVariableTarget]::User
 )
 
+# PDF Sam
+$PDFSamParams = @{
+    Name     = "PDF Sam"
+    Repo     = "torakiki/pdfsam"
+    Pattern  = "pdfsam-*-windows.zip"
+    Location = "$InstallDrive"
+}
+Install-GitHub @PDFSamParams
+
+Get-ChildItem $InstallDrive\pdfsam-*-windows | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "PDF Sam"
+}
+
 # Photoshop
 Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
 
