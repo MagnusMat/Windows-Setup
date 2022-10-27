@@ -446,6 +446,9 @@ winget install -e --id Microsoft.Teams --accept-package-agreements --accept-sour
 # Mozilla Firefox
 winget install -e --id Mozilla.Firefox --accept-package-agreements --accept-source-agreements
 
+# NextCloid
+winget install -e --id Nextcloud.NextcloudDesktop --accept-package-agreements --accept-source-agreements
+
 # Notion
 winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive" -ChildPath "Notion") --accept-package-agreements --accept-source-agreements
 
