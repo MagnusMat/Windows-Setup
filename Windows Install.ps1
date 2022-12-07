@@ -862,9 +862,6 @@ $UnityHubParams = @{
 }
 Install-EXE @UnityHubParams
 
-# Visual Studio Code Settings
-Expand-Archive "$OneDriveDir\Backup\Code.zip" "$ENV:APPDATA"
-
 # Windows Terminal settings
 if ($confirmationWindowsTerm -eq 'y') {
     Set-Location 'C:\Users\magnu\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState'
