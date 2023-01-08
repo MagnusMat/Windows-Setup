@@ -235,9 +235,6 @@ Start-Process -FilePath pwsh.exe -ArgumentList {
 # Visual Studio Code
 winget install -e --id Microsoft.VisualStudioCode --accept-package-agreements --accept-source-agreements
 
-# Wikipedia
-winget install -e --id 9WZDNCRFHWM4 --accept-package-agreements --accept-source-agreements
-
 # Windows File Recovery
 winget install -e --id 9N26S50LN705 --accept-package-agreements --accept-source-agreements
 
