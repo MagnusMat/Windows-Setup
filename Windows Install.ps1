@@ -316,6 +316,9 @@ Start-Process https://music.youtube.com/
 # Proton Mail
 Start-Process https://mail.proton.me/
 
+# Firefox Vertical Tabs
+Start-Process https://github.com/ranmaru22/firefox-vertical-tabs
+
 # -------------------- Development Tools & Dependencies --------------------
 
 # Msys2
@@ -446,7 +449,11 @@ winget install -e --id Microsoft.Teams --accept-package-agreements --accept-sour
 # Mozilla Firefox
 winget install -e --id Mozilla.Firefox --accept-package-agreements --accept-source-agreements
 
-# NextCloid
+# Add Firefox PWA Support
+winget install -e Microsoft.VC++2015-2022Redist-x64 --accept-package-agreements --accept-source-agreements
+winget install firefoxpwa --version 2.3.0 --accept-package-agreements --accept-source-agreements
+
+# NextCloud
 winget install -e --id Nextcloud.NextcloudDesktop --accept-package-agreements --accept-source-agreements
 
 # Notion
