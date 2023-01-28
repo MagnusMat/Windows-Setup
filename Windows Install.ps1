@@ -204,6 +204,9 @@ do {
         ($confirmationWindowsTerm -ne "y") -and ($confirmationWindowsTerm -ne "n")
 )
 
+# Install Windows Theme
+start-process -filepath "$OneDriveDir\Backup\Planets (Dark).deskthemepack"
+
 # -------------------- Microsoft Store --------------------
 
 # 3d Viewer
