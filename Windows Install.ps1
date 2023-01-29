@@ -710,7 +710,7 @@ Install-GitHub @OBSStudioParams
 $OnionShareParams = @{
     Name     = "Onion Share"
     Repo     = "onionshare/onionshare"
-    Pattern  = "*.msi"
+    Pattern  = "*-win64-*.msi"
     Location = (Join-Path -Path "$InstallDrive" -ChildPath "Onion Share")
     FileType = "msi"
 }
