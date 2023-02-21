@@ -108,6 +108,8 @@ function Install-GitHub {
         [string]$Version,
         [string]$FileType = "zip"
     )
+
+    # TODO: Look at this again
     gh release download $Version -R $Repo --pattern $Pattern
     Get-ChildItem *.$FileType | Rename-Item -NewName {
         $_.Name -replace $_.Name, "$Name.$FileType"
@@ -175,16 +177,6 @@ do {
     }
 } while (
         ($confirmationTex -ne "y") -and ($confirmationTex -ne "n")
-)
-
-# EM Client Prompt
-do {
-    $confirmationEMClient = Read-Host "Do you want to install EM Client y/n"
-    if (($confirmationEMClient -ne "y") -and ($confirmationEMClient -ne "n")) {
-        "You need to pick a valid option"
-    }
-} while (
-        ($confirmationEMClient -ne "y") -and ($confirmationEMClient -ne "n")
 )
 
 # Haskell Prompt
@@ -399,6 +391,8 @@ Set-Location ~
 
 # -------------------- Winget --------------------
 
+# TODO: Add hash table with all packages
+
 # 7-Zip
 winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
 
@@ -422,11 +416,6 @@ winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept
 
 # Draw.io
 winget install -e --id JGraph.Draw --location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") --accept-package-agreements --accept-source-agreements
-
-if ($confirmationEMClient -eq 'y') {
-    # eM Client
-    winget install -e --id eMClient.eMClient --accept-package-agreements --accept-source-agreements
-}
 
 # Figma
 winget install -e --id Figma.Figma --accept-package-agreements --accept-source-agreements
@@ -655,7 +644,7 @@ if ($confirmationLaptopDesktop -eq 'l') {
 # Internet Archive Downloader
 pip install internetarchive
 
-# Insomnia
+# Insomnia #TODO: Fix this
 $InsomniaParams = @{
     Name     = "Insomnia"
     Repo     = "Kong/insomnia"
@@ -860,7 +849,7 @@ Install-EXE @TorParams
 
 Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
 
-# Transmission
+# Transmission #TODO: Fix this
 $TransmissionParams = @{
     Name     = "Transmission"
     Repo     = "transmission/transmission"
