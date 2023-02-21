@@ -359,6 +359,9 @@ winget install -e --id Microsoft.VisualStudio.2022.Enterprise --accept-package-a
 # Visual Studio 2019 Build Tools
 winget install -e --id Microsoft.VisualStudio.2019.BuildTools --accept-package-agreements --accept-source-agreements
 
+# Visual C++ Redistributables
+wiget install -e --id Microsoft.VCRedist.2015+.x64 --accept-package-agreements --accept-source-agreements
+
 # Python
 winget install -e --id Python.Python.3.10 --accept-package-agreements --accept-source-agreements
 
