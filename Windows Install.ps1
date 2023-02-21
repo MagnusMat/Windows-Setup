@@ -462,9 +462,6 @@ winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive"
 # Nvidia Geforce Experience
 winget install -e --id Nvidia.GeForceExperience --accept-package-agreements --accept-source-agreements
 
-# Nvidia RTX Voice
-winget install -e --id Nvidia.RTXVoice --accept-package-agreements --accept-source-agreements
-
 # NVM
 winget install -e --id CoreyButler.NVMforWindows --accept-package-agreements --accept-source-agreements
 
@@ -514,6 +511,9 @@ if ($confirmationLaptopDesktop -eq 'd') {
         Location = (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator")
     }
     Install-GitHub @LocaleEmulatorParams
+
+    # Nvidia Bradcast
+    winget install -e --id Nvidia.Broadcast --accept-package-agreements --accept-source-agreements
 }
 
 # 1Password CLI
@@ -647,6 +647,9 @@ if ($confirmationLaptopDesktop -eq 'l') {
         URL          = "https://ftp.ext.hp.com/pub/softpaq/sp140001-140500/sp140482.exe"
     }
     Install-EXE @HPParams
+
+    # Nvidia RTX Voice
+    winget install -e --id Nvidia.RTXVoice --accept-package-agreements --accept-source-agreements
 }
 
 # Internet Archive Downloader
@@ -716,17 +719,14 @@ $OnionShareParams = @{
 }
 Install-GitHub @OnionShareParams
 
-# Open Hardware Monitor
-$OpenHardwareMonitorLink = ((Invoke-WebRequest -URI https://openhardwaremonitor.org/downloads/ -UseBasicParsing).Links | Where-Object href -like "https://openhardwaremonitor.org/files/*.zip").href[0]
-
-$OpenHardwareParams = @{
-    Name     = "Open Hardware Monitor"
-    Location = "$InstallDrive\"
-    URL      = "$OpenHardwareMonitorLink"
+# Libre Hardware Monitor
+$LibreHardwareParams = @{
+    Name     = "Libre Hardware Monitor"
+    Repo     = "LibreHardwareMonitor/LibreHardwareMonitor"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Libre Hardware Monitor")
 }
-Install-Zip @OpenHardwareParams
-Rename-Item (Join-Path -Path "$InstallDrive" -ChildPath "OpenHardWareMonitor") "Open Hardware Monitor"
-Rename-Item (Join-Path -Path "$InstallDrive/Open Hardware Monitor" -ChildPath "OpenHardWareMonitor.exe") "Open Hardware Monitor.exe"
+Install-GitHub @LibreHardwareParams
+Rename-Item (Join-Path -Path "$InstallDrive/Libre Hardware Monitor" -ChildPath "LibreHardwareMonitor.exe") "Libre Hardware Monitor.exe"
 
 # Pandoc
 Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
@@ -836,7 +836,6 @@ if ($confirmationTex -eq 'y') {
     }
 
     .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
-    Remove-Item "install-tl", "install-tl.zip" -Recurse -Force -Confirm:$false
 }
 
 # Tor Browser
@@ -945,7 +944,7 @@ if ($confirmationEmulators -eq 'y') {
         Name     = "Cemu"
         Repo     = "cemu-project/Cemu"
         Pattern  = "*-windows-x64.zip"
-        Location = (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Cemu")
+        Location = (Join-Path -Path "$InstallDrive/Emulators" -ChildPath "Cemu")
     }
     Install-GitHub @CemuParams
 
