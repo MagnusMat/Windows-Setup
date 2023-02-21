@@ -126,6 +126,9 @@ function Install-GitHub {
     elseif ($FileType -eq "msi") {
         Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.$FileType`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "INSTALL_DIRECTORY_PATH=`"$Location`"" , "/passive", "/norestart"
     }
+    elseif ($FileType -eq "exe") {
+        Move-Item "$Name.$FileType" $Location
+    }
     else {
         Write-Output "Archive type not supported"
     }
@@ -434,9 +437,6 @@ winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept
 # Inkscape
 winget install -e --id Inkscape.Inkscape --accept-package-agreements --accept-source-agreements
 
-# Insomnia
-winget install -e --id Insomnia.Insomnia --accept-package-agreements --accept-source-agreements
-
 # JDK
 winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-package-agreements --accept-source-agreements
 
@@ -655,6 +655,16 @@ if ($confirmationLaptopDesktop -eq 'l') {
 # Internet Archive Downloader
 pip install internetarchive
 
+# Insomnia
+$InsomniaParams = @{
+    Name     = "Insomnia"
+    Repo     = "Kong/insomnia"
+    Pattern  = "*portable.exe"
+    FileType = "exe"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Insomnia")
+}
+Install-GitHub @InsomniaParams
+
 # Jupyter Notebook
 pip install jupyter
 
@@ -664,7 +674,7 @@ Invoke-Expression "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
 scoop install stack # install stack
 
 Set-Location $InstallDrive\
-git clone https://github.com/kmonad/kmonad.git
+gh repo clone kmonad/kmonad
 
 Set-Location kmonad
 stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
