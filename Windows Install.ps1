@@ -293,9 +293,6 @@ Start-Process https://calendar.proton.me/
 # Google Photos
 Start-Process https://photos.google.com/
 
-# Google Podcasts
-Start-Process https://podcasts.google.com/
-
 # Overleaf
 Start-Process https://www.overleaf.com/
 
@@ -393,8 +390,6 @@ gh repo clone MagnusMat/test-repo
 Set-Location ~
 
 # -------------------- Winget --------------------
-
-# TODO: Add hash table with all packages
 
 # 7-Zip
 winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
