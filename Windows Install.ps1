@@ -441,7 +441,7 @@ winget install -e --id Mozilla.Thunderbird.Beta --accept-package-agreements --ac
 
 # Add Firefox PWA Support
 winget install -e Microsoft.VC++2015-2022Redist-x64 --accept-package-agreements --accept-source-agreements
-winget install firefoxpwa --version 2.3.0 --accept-package-agreements --accept-source-agreements
+winget install firefoxpwa --accept-package-agreements --accept-source-agreements
 
 # NextCloud
 winget install -e --id Nextcloud.NextcloudDesktop --accept-package-agreements --accept-source-agreements
