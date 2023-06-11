@@ -436,6 +436,9 @@ winget install -e --id Microsoft.Teams --accept-package-agreements --accept-sour
 # Mozilla Firefox
 winget install -e --id Mozilla.Firefox --accept-package-agreements --accept-source-agreements
 
+# Mozilla Thunderbird
+winget install -e --id Mozilla.Thunderbird.Beta --accept-package-agreements --accept-source-agreements
+
 # Add Firefox PWA Support
 winget install -e Microsoft.VC++2015-2022Redist-x64 --accept-package-agreements --accept-source-agreements
 winget install firefoxpwa --version 2.3.0 --accept-package-agreements --accept-source-agreements
