@@ -299,8 +299,8 @@ Start-Process https://www.overleaf.com/
 # Remove.bg
 Start-Process https://remove.bg/
 
-# Snapdrop
-Start-Process https://snapdrop.net/
+# Pairdrop
+Start-Process https://pairdrop.net/
 
 # Youtube Music
 Start-Process https://music.youtube.com/
