@@ -507,14 +507,6 @@ $wingets += Winget -Name "Docker Desktop" -ID "Docker.DockerDesktop"
 # Draw.io
 $wingets += Winget -Name "Draw.io" -ID "JGraph.Draw"
 
-# DroidCam
-$DroidCamParams = @{
-    Name         = "DroidCam"
-    ArgumentList = @("INSTALLDIR=$Location", "TARGETDIR=$Location", "/norestart", "/S")
-    URL          = "https://files.dev47apps.net/win/DroidCam.Setup.6.5.2.exe"
-}
-Install-EXE @DroidCamParams
-
 # Facebook Messenger
 $wingets += Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
