@@ -148,11 +148,9 @@ do {
     $ConfirmationDrive = Read-Host "Do you want to install software the C: or D: drive c/d"
     if ($ConfirmationDrive -eq 'c') {
         $InstallDrive = "C:\Program Files"
-        $CloudDriveDir = "$env:USERPROFILE\Proton Drive\Magnus_Mat\My files"
     }
     elseif ($ConfirmationDrive -eq 'd') {
         $InstallDrive = "D:"
-        $CloudDriveDir = "D:\Proton Drive\Magnus_Mat\My files"
     }
     else {
         "You need to pick a valid option"
@@ -258,7 +256,9 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 python.exe -m pip install --upgrade pip --user
 
 # Install Windows Theme
-Start-Process -filepath "$CloudDriveDir\Backup\Windows\Planets (Dark).deskthemepack"
+Invoke-WebRequest -Uri https://github.com/MagnusMat/Windows-Setup/blob/25ab6abdc10dfe620130314cabd53a76ab96d50a/Windows/Planets%20(Dark).deskthemepack -OutFile ./Theme.deskthemepack
+Start-Process -FilePath ./Theme.deskthemepack
+Remove-Item ./Theme.deskthemepack
 
 # -------------------- Fonts --------------------
 
