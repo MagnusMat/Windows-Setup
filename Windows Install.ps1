@@ -71,7 +71,6 @@ function Install-GitHub {
         [string]$FileType = "zip"
     )
 
-    # TODO: Look at this again
     gh release download $Version -R $Repo --pattern $Pattern
     Get-ChildItem *.$FileType | Rename-Item -NewName {
         $_.Name -replace $_.Name, "$Name.$FileType"
@@ -119,6 +118,18 @@ function Install-Wingets {
             winget install -e --id $item.ID --location $item.Location --source $item.Source --accept-package-agreements --accept-source-agreements
         }
     }
+}
+
+
+function Get-DownloadLink {
+    param (
+        [string]$URL,
+        [string]$DownloadURL
+    )
+
+    $url = ((Invoke-WebRequest -URI $URL -UseBasicParsing).Links | Where-Object { $_.href -like $DownloadURL } | Select-Object -First 1).href
+
+    return $url
 }
 
 
@@ -319,11 +330,44 @@ if ($confirmationLaptopDesktop -eq 'l') {
     $urls += "https://support.hp.com/us-en/drivers/laptops"
 }
 
+# Drivers and Software for AMD Radeon
+if ($confirmationNvidiaAMD -eq - 'a') {
+    $urls += "https://www.amd.com/en/support"
+}
+
 foreach ($url in $urls) {
     Start-Process $url
 }
 
-# -------------------- Development Tools & Dependencies --------------------
+# -------------------- Development Tools --------------------
+
+# Clangd
+gh release download -R llvm/llvm-project --pattern "LLVM-*-win64.exe"
+
+Get-ChildItem LLVM-*-win64.exe | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "LLVM.exe"
+}
+
+Start-Process -FilePath .\LLVM.exe -Wait -ArgumentList "/S"
+remove-item LLVM.exe
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\LLVM\bin",
+    [EnvironmentVariableTarget]::User
+)
+
+# ffmpeg
+Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
+Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "ffmpeg"
+}
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\ffmpeg\bin",
+    [EnvironmentVariableTarget]::User
+)
 
 # Msys2
 gh release download -R msys2/msys2-installer --pattern "msys2-x86_64-*.exe"
@@ -350,13 +394,21 @@ Set-Location ~
     [EnvironmentVariableTarget]::User
 )
 
+# Pandoc
+Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
+Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "Pandoc"
+}
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
+    [EnvironmentVariableTarget]::User
+)
+
 # -------------------- Programs --------------------
 
 $wingets = @()
-
-if ($confirmationNvidiaAMD -eq - 'a') {
-    #TODO: AMD Radeon Software
-}
 
 if ($confirmationNvidiaAMD -eq - 'n') {
     # Nvidia Broadcast
@@ -382,6 +434,14 @@ if ($confirmationLaptopDesktop -eq 'd') {
     Install-GitHub @LocaleEmulatorParams
 }
 
+# 1Password
+$1PasswordParams = @{
+    Name         = "1Password"
+    ArgumentList = @("--silent")
+    URL          = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
+}
+Install-EXE @1PasswordParams
+
 # 1Password CLI
 $arch = "64-bit"
 
@@ -403,14 +463,6 @@ Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 )
 
 Remove-Item -Path op.zip
-
-# 1Password
-$1PasswordParams = @{
-    Name         = "1Password"
-    ArgumentList = @("--silent")
-    URL          = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-}
-Install-EXE @1PasswordParams
 
 # 3D Viewer
 $wingets += Winget -Name "3D Viewer" -ID "9NBLGGH42THS"
@@ -437,22 +489,6 @@ $wingets += Winget -Name "Blender" -ID "BlenderFoundation.Blender"
 
 # Calibre
 $wingets += Winget -Name "Calibre" -ID "calibre.calibre"
-
-# Clangd
-gh release download -R llvm/llvm-project --pattern "LLVM-*-win64.exe"
-
-Get-ChildItem LLVM-*-win64.exe | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "LLVM.exe"
-}
-
-Start-Process -FilePath .\LLVM.exe -Wait -ArgumentList "/S"
-remove-item LLVM.exe
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\LLVM\bin",
-    [EnvironmentVariableTarget]::User
-)
 
 # CPU-Z
 $CPUZParams = @{
@@ -482,18 +518,6 @@ Install-EXE @DroidCamParams
 # Facebook Messenger
 $wingets += Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
-# ffmpeg
-Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
-Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "ffmpeg"
-}
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\ffmpeg\bin",
-    [EnvironmentVariableTarget]::User
-)
-
 # Figma
 $wingets += Winget -Name "Figma" -ID "Figma.Figma"
 
@@ -514,7 +538,7 @@ $wingets += Winget -Name "HP Smart" -ID "9WZDNCRFHWLH"
 # Inkscape
 $wingets += Winget -Name "Inkscape" -ID "Inkscape.Inkscape"
 
-# Insomnia #TODO: Fix this
+# Insomnia
 $InsomniaParams = @{
     Name     = "Insomnia"
     Repo     = "Kong/insomnia"
@@ -544,12 +568,10 @@ Install-GitHub @LibreHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive/Libre Hardware Monitor" -ChildPath "LibreHardwareMonitor.exe") "Libre Hardware Monitor.exe"
 
 # Mendeley
-$MendeleyLink = ((Invoke-WebRequest -URI https://www.mendeley.com/download-reference-manager/windows -UseBasicParsing).Links | Where-Object href -like "https://static.mendeley.com/bin/desktop/*.exe").href
-
 $MendeleyParams = @{
     Name         = "Mendeley"
     ArgumentList = @("/norestart", "/S")
-    URL          = "$MendeleyLink"
+    URL          = Get-DownloadLink -URL "https://www.mendeley.com/download-reference-manager/windows" -DownloadURL "https://static.mendeley.com/bin/desktop/*.exe"
 }
 Install-EXE @MendeleyParams
 
@@ -614,18 +636,6 @@ $OnionShareParams = @{
 }
 Install-GitHub @OnionShareParams
 
-# Pandoc
-Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
-Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "Pandoc"
-}
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
-    [EnvironmentVariableTarget]::User
-)
-
 # PDF Sam
 $PDFSamParams = @{
     Name     = "PDF Sam"
@@ -646,12 +656,10 @@ $wingets += Winget -Name "Postman" -ID "Postman.Postman"
 $wingets += Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
 
 # Proton Drive
-$ProtonDriveLink = ((Invoke-WebRequest -URI https://proton.me/drive/download -UseBasicParsing).Links | Where-Object href -like "https://proton.me/download/drive/windows/*.exe").href
-
 $ProtonDriveParams = @{
     Name         = "Proton Drive"
     ArgumentList = @("/norestart", "/S")
-    URL          = "$ProtonDriveLink"
+    URL          = Get-DownloadLink -URL "https://proton.me/drive/download" -DownloadURL "https://proton.me/download/drive/windows/*.exe"
 }
 Install-EXE @ProtonDriveParams
 
@@ -704,18 +712,16 @@ if ($confirmationTex -eq 'y') {
 }
 
 # Tor Browser
-$torLink = -Join ("https://www.torproject.org", ((Invoke-WebRequest -URI https://www.torproject.org/download/ -UseBasicParsing).Links | Where-Object href -like "*.exe").href[0])
-
 $TorParams = @{
     Name         = "Tor"
     ArgumentList = @("/norestart", "/S")
-    URL          = "$torLink"
+    URL          = -Join ("https://www.torproject.org", (Get-DownloadLink -URL "https://www.torproject.org/download/" -DownloadURL "*.exe"))
 }
 Install-EXE @TorParams
 
 Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
 
-# Transmission #TODO: Fix this
+# Transmission
 $TransmissionParams = @{
     Name     = "Transmission"
     Repo     = "transmission/transmission"
@@ -866,7 +872,7 @@ if ($confirmationEmulators -eq 'y') {
     Remove-Item Dolphin.7z
 
     # NoPayStation
-    $noPayStationLink = ((Invoke-WebRequest -URI https://nopaystation.com/ -UseBasicParsing).Links | Where-Object href -like "https://nopaystation.com/vita/npsReleases/*.exe").href
+    $noPayStationLink = Get-DownloadLink -URL "https://nopaystation.com/" -DownloadURL "https://nopaystation.com/vita/npsReleases/*.exe"
     Invoke-WebRequest "$noPayStationLink" -OutFile NoPayStation.exe
 
     mkdir $InstallDrive\Emulators\NoPayStation
