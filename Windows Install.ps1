@@ -5,45 +5,6 @@ Set-Location ~
 # Terminate during any and all errors
 $ErrorActionPreference = 'Stop'
 
-# -------------------- Initial Setup - Updates & Package Managers --------------------
-
-# Upgade all packages
-winget source update
-winget upgrade --all --accept-package-agreements --accept-source-agreements
-
-# Git
-winget install -e --id Git.Git --accept-package-agreements --accept-source-agreements
-
-# GitHub CLI
-winget install -e --id GitHub.cli --accept-package-agreements --accept-source-agreements
-
-# Reloads profile
-. $profile
-
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-# GitHub Cli Login
-& 'C:\Program Files\GitHub CLI\gh.exe' auth login
-
-# Prompt for Install Drive
-do {
-    $ConfirmationDrive = Read-Host "Do you want to install software the C: or D: drive c/d"
-    if ($ConfirmationDrive -eq 'c') {
-        $InstallDrive = "C:\Program Files"
-        $OneDriveDir = "$env:USERPROFILE\OneDrive"
-    }
-    elseif ($ConfirmationDrive -eq 'd') {
-        $InstallDrive = "D:"
-        $OneDriveDir = "D:\OneDrive"
-    }
-    else {
-        "You need to pick a valid option"
-    }
-} while (
-    ($ConfirmationDrive -ne "c") -and ($ConfirmationDrive -ne "d")
-)
-
-
 # -------------------- Functions --------------------
 
 function Set-Confirmation {
@@ -86,6 +47,7 @@ function Install-EXE {
     Start-Process -FilePath .\"$Name.exe" -Wait -ArgumentList $ArgumentList
     Remove-Item "$Name.exe"
 }
+
 
 function Install-MSI {
     param (
@@ -137,107 +99,166 @@ function Install-GitHub {
     Remove-Item "$Name.$FileType"
 }
 
+
+function Install-Wingets {
+    param (
+        $items
+    )
+
+    foreach ($item in $items) {
+        if ([string]::IsNullOrEmpty($item.Location) -and [string]::IsNullOrEmpty($item.Source)) {
+            winget install -e --id $item.ID --accept-package-agreements --accept-source-agreements
+        }
+        elseif ([string]::IsNullOrEmpty($item.Source)) {
+            winget install -e --id $item.ID --location $item.Location --accept-package-agreements --accept-source-agreements
+        }
+        elseif ([string]::IsNullOrEmpty($item.Location)) {
+            winget install -e --id $item.ID --source $item.Source --accept-package-agreements --accept-source-agreements
+        }
+        else {
+            winget install -e --id $item.ID --location $item.Location --source $item.Source --accept-package-agreements --accept-source-agreements
+        }
+    }
+}
+
+
+function Winget {
+    param (
+        [string]$Name,
+        [string]$ID,
+        [string]$Location,
+        [string]$Source
+    )
+
+    $object = [PSCustomObject]@{
+        Name     = $Name
+        ID       = $ID
+        Location = $Location
+        Source   = $Source
+    }
+
+    return $object
+}
+
+
 # -------------------- Confirmations --------------------
 
-# Install Laptop Desktop Prompt
+# Prompt for Install Drive
 do {
-    $confirmationLaptopDesktop = Read-Host "Are you installing on a Laptop or Desktop l/d"
-    if (($confirmationLaptopDesktop -ne "l") -and ($confirmationLaptopDesktop -ne "d")) {
+    $ConfirmationDrive = Read-Host "Do you want to install software the C: or D: drive c/d"
+    if ($ConfirmationDrive -eq 'c') {
+        $InstallDrive = "C:\Program Files"
+        $CloudDriveDir = "$env:USERPROFILE\Proton Drive\Magnus_Mat\My files"
+    }
+    elseif ($ConfirmationDrive -eq 'd') {
+        $InstallDrive = "D:"
+        $CloudDriveDir = "D:\Proton Drive\Magnus_Mat\My files"
+    }
+    else {
         "You need to pick a valid option"
     }
 } while (
-        ($confirmationLaptopDesktop -ne "l") -and ($confirmationLaptopDesktop -ne "d")
+    ($ConfirmationDrive -ne "c") -and ($ConfirmationDrive -ne "d")
 )
+
+# Install Laptop Desktop Prompt
+Set-Confirmation -Confirmation $ConfirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
+
+# Graphics Card Architecture Prompt
+Set-Confirmation -Confirmation $ConfirmationNvidiaAMD -Question "Are you installing on a Nvidia or AMD system n/a" -FirstTerm 'n' -SecondTerm 'a'
 
 # Games Prompt
-do {
-    $confirmationGames = Read-Host "Do you want to install Games y/n"
-    if (($confirmationGames -ne "y") -and ($confirmationGames -ne "n")) {
-        "You need to pick a valid option"
-    }
-} while (
-        ($confirmationGames -ne "y") -and ($confirmationGames -ne "n")
-)
+Set-Confirmation -Confirmation $ConfirmationGames -Question "Do you want to install Games y/n"
 
 # Emulator prompt
-do {
-    $confirmationEmulators = Read-Host "Do you want to install Emulators y/n"
-    if (($confirmationEmulators -ne "y") -and ($confirmationEmulators -ne "n")) {
-        "You need to pick a valid option"
-    }
-} while (
-        ($confirmationEmulators -ne "y") -and ($confirmationEmulators -ne "n")
-)
+Set-Confirmation -Confirmation $ConfirmationEmulators -Question "Do you want to install Emulators y/n"
 
 # Tex Prompt
-do {
-    $confirmationTex = Read-Host "Do you want to install LaTeX y/n"
-    if (($confirmationTex -ne "y") -and ($confirmationTex -ne "n")) {
-        "You need to pick a valid option"
-    }
-} while (
-        ($confirmationTex -ne "y") -and ($confirmationTex -ne "n")
-)
-
-# Haskell Prompt
-do {
-    $confirmationHaskell = Read-Host "Do you want to install Haskell y/n"
-    if (($confirmationHaskell -ne "y") -and ($confirmationHaskell -ne "n")) {
-        "You need to pick a valid option"
-    }
-} while (
-        ($confirmationHaskell -ne "y") -and ($confirmationHaskell -ne "n")
-)
+Set-Confirmation -Confirmation $ConfirmationTex -Question "Do you want to install LaTeX y/n"
 
 # Windows Terminal Settings Prompt
-do {
-    $confirmationWindowsTerm = Read-Host "Do you want to replace the Windows Terminal Settings? This will not work if you have a Windows Terminal instance open y/n"
-    if (($confirmationWindowsTerm -ne "y") -and ($confirmationWindowsTerm -ne "n")) {
-        "You need to pick a valid option"
-    }
-} while (
-        ($confirmationWindowsTerm -ne "y") -and ($confirmationWindowsTerm -ne "n")
-)
+Set-Confirmation -Confirmation $ConfirmationWindowsTerm -Question "Do you want to replace the Windows Terminal Settings? This will not work if you have a Windows Terminal instance open y/n"
 
-# Install Windows Theme
-start-process -filepath "$OneDriveDir\Backup\Planets (Dark).deskthemepack"
+# -------------------- Initial Setup - Updates & Package Managers --------------------
 
-# -------------------- Microsoft Store --------------------
+# Upgade all packages
+winget source update
+winget upgrade --all --accept-package-agreements --accept-source-agreements
 
-# 3d Viewer
-winget install -e --id 9NBLGGH42THS --accept-package-agreements --accept-source-agreements
+$dependenciesWingets = @()
 
-# HP Smart
-winget install -e --id 9WZDNCRFHWLH --accept-package-agreements --accept-source-agreements
+# Git
+$dependenciesWingets += Winget -Name "Git" -ID "Git.Git"
 
-# Microsoft Whiteboard
-winget install -e --id 9MSPC6MP8FM4 --accept-package-agreements --accept-source-agreements
-
-# MPEG-2
-winget install -e --id 9N95Q1ZZPMH4 --accept-package-agreements --accept-source-agreements
-
-# Nvidia Control Panel
-winget install -e --id 9NF8H0H7WMLT --accept-package-agreements --accept-source-agreements
-
-# Powertoys
-winget install -e --id Microsoft.PowerToys --accept-package-agreements --accept-source-agreements
+# GitHub CLI
+$dependenciesWingets += Winget -Name "GitHub CLI" -ID "GitHub.cli"
 
 # PowerShell 7
-winget install -e --id Microsoft.PowerShell --source winget --accept-package-agreements --accept-source-agreements
+$dependenciesWingets += Winget -Name "Powershell 7" -ID "Microsoft.PowerShell" -Source "winget"
+
+# 7-Zip
+$dependenciesWingets += Winget -Name "7-Zip" -ID "7zip.7zip"
+
+# DotNet 7 SDK
+$dependenciesWingets += Winget -Name "DotNet 7 SDK" -ID "Microsoft.DotNet.SDK.7"
+
+# DotNet 7 Runtime
+$dependenciesWingets += Winget -Name "DotNet 7 Runtime" -ID "Microsoft.DotNet.Runtime.7"
+
+# DotNet 7 Desktop Runtime
+$dependenciesWingets += Winget -Name "DotNet 7 Desktop Runtime" -ID "Microsoft.DotNet.DesktopRuntime.7"
+
+# AspNet Core 7
+$dependenciesWingets += Winget -Name "AspNet Core 7" -ID "Microsoft.DotNet.AspNetCore.7"
+
+# Visual Studio 2022 Enterprise
+$dependenciesWingets += Winget -Name "Visual Studio 2022 Enterprise" -ID "Microsoft.VisualStudio.2022.Enterprise"
+
+# Visual Studio 2019 Build Tools
+$dependenciesWingets += Winget -Name "Visual Studio 2019 Build Tools" -ID "Microsoft.VisualStudio.2019.BuildTools"
+
+# Microsoft 2015 VCRedistributables
+$dependenciesWingets += Winget -Name "Microsoft 2015 VCRedistributables" -ID "Microsoft.VCRedist.2015+.x64"
+
+# Python 3.10
+$dependenciesWingets += Winget -Name "Python 3.10" -ID "Python.Python.3.10"
+
+Install-Wingets -items $dependenciesWingets
 
 Start-Process -FilePath pwsh.exe -ArgumentList {
     # Execution Permission
     Set-ExecutionPolicy RemoteSigned
 } -Verb RunAs
 
-# Visual Studio Code
-winget install -e --id Microsoft.VisualStudioCode --accept-package-agreements --accept-source-agreements
+# Reloads profile
+. $profile
 
-# Windows File Recovery
-winget install -e --id 9N26S50LN705 --accept-package-agreements --accept-source-agreements
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
-# Xbox Accessories
-winget install -e --id 9NBLGGH30XJ3 --accept-package-agreements --accept-source-agreements
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\7-Zip",
+    [EnvironmentVariableTarget]::User
+)
+
+# GitHub Cli Login
+& 'C:\Program Files\GitHub CLI\gh.exe' auth login
+
+[Environment]::SetEnvironmentVariable(
+    "Path",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts",
+    [EnvironmentVariableTarget]::User
+)
+
+# Reloads profile
+. $profile
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+python.exe -m pip install --upgrade pip --user
+
+# Install Windows Theme
+Start-Process -filepath "$CloudDriveDir\Backup\Windows\Planets (Dark).deskthemepack"
 
 # -------------------- Fonts --------------------
 
@@ -282,34 +303,25 @@ foreach ($file in Get-ChildItem "Fira*.ttf") {
 Set-Location ~
 Remove-Item Fonts -Recurse -Force -Confirm:$false
 
-# -------------------- Progressive Web Apps --------------------
+# -------------------- Websites --------------------
 
-# Dinero
-Start-Process https://app.dinero.dk/
+# Create a list of urls
+$urls = @(
+    "https://www.overleaf.com/"
+    "https://pairdrop.net/"
+    "https://mail.proton.me/"
+    "https://github.com/ranmaru22/firefox-vertical-tabs"
+    "https://www.minitool.com/news/how-to-pin-a-website-to-taskbar.html"
+)
 
-# Proton Calendar
-Start-Process https://calendar.proton.me/
+# Drivers and Software for HP Laptops
+if ($confirmationLaptopDesktop -eq 'l') {
+    $urls += "https://support.hp.com/us-en/drivers/laptops"
+}
 
-# Google Photos
-Start-Process https://photos.google.com/
-
-# Overleaf
-Start-Process https://www.overleaf.com/
-
-# Remove.bg
-Start-Process https://remove.bg/
-
-# Pairdrop
-Start-Process https://pairdrop.net/
-
-# Youtube Music
-Start-Process https://music.youtube.com/
-
-# Proton Mail
-Start-Process https://mail.proton.me/
-
-# Firefox Vertical Tabs
-Start-Process https://github.com/ranmaru22/firefox-vertical-tabs
+foreach ($url in $urls) {
+    Start-Process $url
+}
 
 # -------------------- Development Tools & Dependencies --------------------
 
@@ -338,161 +350,28 @@ Set-Location ~
     [EnvironmentVariableTarget]::User
 )
 
-# DotNet
-winget install -e --id Microsoft.DotNet.SDK.6 --accept-package-agreements --accept-source-agreements
-
-# DotNet Runtime
-winget install -e --id Microsoft.DotNet.Runtime.6 --accept-package-agreements --accept-source-agreements
-
-# DotNet Desktop Runtime
-winget install -e --id Microsoft.DotNet.DesktopRuntime.6 --accept-package-agreements --accept-source-agreements
-
-# DotNet AspNet Core
-winget install -e --id Microsoft.DotNet.AspNetCore.6 --accept-package-agreements --accept-source-agreements
-
-# Visual Studio Enterprise 2022
-winget install -e --id Microsoft.VisualStudio.2022.Enterprise --accept-package-agreements --accept-source-agreements
-
-# Visual Studio 2019 Build Tools
-winget install -e --id Microsoft.VisualStudio.2019.BuildTools --accept-package-agreements --accept-source-agreements
-
-# Visual C++ Redistributables
-wiget install -e --id Microsoft.VCRedist.2015+.x64 --accept-package-agreements --accept-source-agreements
-
-# Python
-winget install -e --id Python.Python.3.10 --accept-package-agreements --accept-source-agreements
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts",
-    [EnvironmentVariableTarget]::User
-)
-
-# Reloads profile
-. $profile
-
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-python.exe -m pip install --upgrade pip --user
-
-# -------------------- Personal GitHub Repos --------------------
-
-Set-Location $InstallDrive\
-New-Item GitHub -ItemType Directory
-
-Set-Location GitHub
-gh repo clone MagnusMat/Windows-Setup
-gh repo clone MagnusMat/Windows-Terminal-Setup
-gh repo clone MagnusMat/MagnusMat
-gh repo clone MagnusMat/PowerShell-Scripts
-gh repo clone MagnusMat/test-repo
-
-Set-Location ~
-
-# -------------------- Winget --------------------
-
-# 7-Zip
-winget install -e --id 7zip.7zip --location (Join-Path -Path "$InstallDrive" -ChildPath "7-Zip") --accept-package-agreements --accept-source-agreements
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\7-Zip",
-    [EnvironmentVariableTarget]::User
-)
-
-# Blender
-winget install -e --id BlenderFoundation.Blender --accept-package-agreements --accept-source-agreements
-
-# Calibre
-winget install -e --id calibre.calibre --accept-package-agreements --accept-source-agreements
-
-# Discord
-winget install -e --id Discord.Discord --location (Join-Path -Path "$InstallDrive" -ChildPath "Discord") --accept-package-agreements --accept-source-agreements
-
-# Docker Desktop
-winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept-source-agreements
-
-# Draw.io
-winget install -e --id JGraph.Draw --location (Join-Path -Path "$InstallDrive" -ChildPath "DrawIO") --accept-package-agreements --accept-source-agreements
-
-# Figma
-winget install -e --id Figma.Figma --accept-package-agreements --accept-source-agreements
-
-# GitHub Desktop
-winget install -e --id GitHub.GitHubDesktop --accept-package-agreements --accept-source-agreements
-
-# Inkscape
-winget install -e --id Inkscape.Inkscape --accept-package-agreements --accept-source-agreements
-
-# JDK
-winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-package-agreements --accept-source-agreements
-
-# Messenger
-winget install -e --id 9WZDNCRF0083 --accept-package-agreements --accept-source-agreements
-
-# Microsoft Teams
-winget install -e --id Microsoft.Teams --accept-package-agreements --accept-source-agreements
-
-# Mozilla Firefox
-winget install -e --id Mozilla.Firefox --accept-package-agreements --accept-source-agreements
-
-# Mozilla Thunderbird
-winget install -e --id Mozilla.Thunderbird.Beta --accept-package-agreements --accept-source-agreements
-
-# Add Firefox PWA Support
-winget install -e Microsoft.VC++2015-2022Redist-x64 --accept-package-agreements --accept-source-agreements
-winget install firefoxpwa --accept-package-agreements --accept-source-agreements
-
-# NextCloud
-winget install -e --id Nextcloud.NextcloudDesktop --accept-package-agreements --accept-source-agreements
-
-# Notion
-winget install -e --id Notion.Notion --location (Join-Path -Path "$InstallDrive" -ChildPath "Notion") --accept-package-agreements --accept-source-agreements
-
-# Nvidia Geforce Experience
-winget install -e --id Nvidia.GeForceExperience --accept-package-agreements --accept-source-agreements
-
-# NVM
-winget install -e --id CoreyButler.NVMforWindows --accept-package-agreements --accept-source-agreements
-
-# Postman
-winget install -e --id Postman.Postman --accept-package-agreements --accept-source-agreements
-
-# Proton VPN
-winget install -e --id ProtonTechnologies.ProtonVPN --accept-package-agreements --accept-source-agreements
-
-# TeraCopy
-winget install -e --id CodeSector.TeraCopy --accept-package-agreements --accept-source-agreements
-
-# WinSCP
-winget install -e --id WinSCP.WinSCP
-
-# Wireshark
-winget install -e --id WiresharkFoundation.Wireshark --accept-package-agreements --accept-source-agreements
-
 # -------------------- Programs --------------------
 
+$wingets = @()
+
+if ($confirmationNvidiaAMD -eq - 'a') {
+    #TODO: AMD Radeon Software
+}
+
+if ($confirmationNvidiaAMD -eq - 'n') {
+    # Nvidia Broadcast
+    $wingets += winget -Name "Nvidia Broadcast" -ID "Nvidia.Broadcast"
+
+    # Nvidia Control Panel
+    $wingets += winget -Name "Nvidia Control Panel" -ID "9NF8H0H7WMLT"
+
+    # Nvidia GeForce Experience
+    $wingets += winget -Name "Nvidia GeForce Experience" -ID "Nvidia.GeForceExperience"
+}
+
 if ($confirmationLaptopDesktop -eq 'd') {
-    # Archi Steam Farm
-    $ArchiSteamFarmParams = @{
-        Name     = "Archi Steam Farm"
-        Repo     = "JustArchiNET/ArchiSteamFarm"
-        Pattern  = "ASF-win-x64.zip"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Archi Steam Farm")
-    }
-    Install-GitHub @ArchiSteamFarmParams
-
-    # Global Steam Controller
-    $GloSCParams = @{
-        Name     = "GloSC"
-        Repo     = "Alia5/GlosSI"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller")
-        Version  = "0.0.7.0"
-    }
-    Install-GitHub @GloSCParams
-
     # Hue Sync
-    winget install -e --id Philips.HueSync --accept-package-agreements --accept-source-agreements
+    $wingets += winget -Name "Hue Sync" -ID "Philips.HueSync"
 
     # Locale Emulator
     $LocaleEmulatorParams = @{
@@ -501,9 +380,6 @@ if ($confirmationLaptopDesktop -eq 'd') {
         Location = (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator")
     }
     Install-GitHub @LocaleEmulatorParams
-
-    # Nvidia Bradcast
-    winget install -e --id Nvidia.Broadcast --accept-package-agreements --accept-source-agreements
 }
 
 # 1Password CLI
@@ -536,6 +412,9 @@ $1PasswordParams = @{
 }
 Install-EXE @1PasswordParams
 
+# 3D Viewer
+$wingets += Winget -Name "3D Viewer" -ID "9NBLGGH42THS"
+
 # Accessibility Insights for Windows
 $AccessibilityInsightsforWindowsParams = @{
     Name     = "Accessibility Insights for Windows"
@@ -553,7 +432,13 @@ $AmazonParams = @{
 }
 Install-EXE @AmazonParams
 
-#Clangd
+# Blender
+$wingets += Winget -Name "Blender" -ID "BlenderFoundation.Blender"
+
+# Calibre
+$wingets += Winget -Name "Calibre" -ID "calibre.calibre"
+
+# Clangd
 gh release download -R llvm/llvm-project --pattern "LLVM-*-win64.exe"
 
 Get-ChildItem LLVM-*-win64.exe | Rename-Item -NewName {
@@ -577,16 +462,14 @@ $CPUZParams = @{
 }
 Install-Zip @CPUZParams
 
-# Cryptomator
-$CryptomatorParams = @{
-    Name     = "Cryptomator"
-    Repo     = "cryptomator/cryptomator"
-    Pattern  = "*.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Cryptomator")
-    FileType = "msi"
-    Version  = "1.6.11"
-}
-Install-GitHub @CryptomatorParams
+# Discord
+$wingets += Winget -Name "Discord" -ID "Discord.Discord"
+
+# Docker Desktop
+$wingets += Winget -Name "Docker Desktop" -ID "Docker.DockerDesktop"
+
+# Draw.io
+$wingets += Winget -Name "Draw.io" -ID "JGraph.Draw"
 
 # DroidCam
 $DroidCamParams = @{
@@ -595,6 +478,9 @@ $DroidCamParams = @{
     URL          = "https://files.dev47apps.net/win/DroidCam.Setup.6.5.2.exe"
 }
 Install-EXE @DroidCamParams
+
+# Facebook Messenger
+$wingets += Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
 # ffmpeg
 Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
@@ -608,13 +494,11 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
     [EnvironmentVariableTarget]::User
 )
 
-# Google Drive
-$GoogleDriveParams = @{
-    Name         = "GoogleDrive"
-    ArgumentList = @("--silent", "--gsuite_shortcuts=false")
-    URL          = "https://dl.google.com/drive-file-stream/GoogleDriveSetup.exe"
-}
-Install-EXE @GoogleDriveParams
+# Figma
+$wingets += Winget -Name "Figma" -ID "Figma.Figma"
+
+# GitHub Desktop
+$wingets += Winget -Name "GitHub Desktop" -ID "GitHub.GitHubDesktop"
 
 # Handbrake
 $HandBrakeParams = @{
@@ -624,26 +508,11 @@ $HandBrakeParams = @{
 }
 Install-GitHub @HandBrakeParams
 
-# Haskell
-if ($confirmationHaskell -eq 'y') {
-    Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Command -ScriptBlock ([ScriptBlock]::Create((Invoke-WebRequest https://www.haskell.org/ghcup/sh/bootstrap-haskell.ps1 -UseBasicParsing))) -ArgumentList $false, $false, $false, $false, $false, $true, $true, "$InstallDrive\", 'https://www.haskell.org/ghcup/sh/bootstrap-haskell', "$InstallDrive\Msys2-64", "$InstallDrive\Cabal"
-}
+# HP Smart
+$wingets += Winget -Name "HP Smart" -ID "9WZDNCRFHWLH"
 
-# HP Support Assistant
-if ($confirmationLaptopDesktop -eq 'l') {
-    $HPParams = @{
-        Name         = "HP"
-        ArgumentList = @("/s")
-        URL          = "https://ftp.ext.hp.com/pub/softpaq/sp140001-140500/sp140482.exe"
-    }
-    Install-EXE @HPParams
-
-    # Nvidia RTX Voice
-    winget install -e --id Nvidia.RTXVoice --accept-package-agreements --accept-source-agreements
-}
-
-# Internet Archive Downloader
-pip install internetarchive
+# Inkscape
+$wingets += Winget -Name "Inkscape" -ID "Inkscape.Inkscape"
 
 # Insomnia #TODO: Fix this
 $InsomniaParams = @{
@@ -655,35 +524,40 @@ $InsomniaParams = @{
 }
 Install-GitHub @InsomniaParams
 
+# JDK Adoptium JDK 17
+$wingets += Winget -Name "JDK Adoptium JDK 17" -ID "EclipseAdoptium.Temurin.17.JDK"
+
 # Jupyter Notebook
 pip install jupyter
-
-# Kmonad & Scoop
-Invoke-Expression "& {$(Invoke-RestMethod get.scoop.sh)} -RunAsAdmin"
-
-scoop install stack # install stack
-
-Set-Location $InstallDrive\
-gh repo clone kmonad/kmonad
-
-Set-Location kmonad
-stack build # compile KMonad (this will first download GHC and msys2, it takes a while)
-
-Set-Location ~
 
 # LaTeX-OCR
 pip install torch torchvision torchaudio
 pip install pix2tex[gui]
 
+# Libre Hardware Monitor
+$LibreHardwareParams = @{
+    Name     = "Libre Hardware Monitor"
+    Repo     = "LibreHardwareMonitor/LibreHardwareMonitor"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Libre Hardware Monitor")
+}
+Install-GitHub @LibreHardwareParams
+Rename-Item (Join-Path -Path "$InstallDrive/Libre Hardware Monitor" -ChildPath "LibreHardwareMonitor.exe") "Libre Hardware Monitor.exe"
+
 # Mendeley
-$mendeleyLink = ((Invoke-WebRequest -URI https://www.mendeley.com/download-reference-manager/windows -UseBasicParsing).Links | Where-Object href -like "https://static.mendeley.com/bin/desktop/*.exe").href
+$MendeleyLink = ((Invoke-WebRequest -URI https://www.mendeley.com/download-reference-manager/windows -UseBasicParsing).Links | Where-Object href -like "https://static.mendeley.com/bin/desktop/*.exe").href
 
 $MendeleyParams = @{
     Name         = "Mendeley"
     ArgumentList = @("/norestart", "/S")
-    URL          = "$mendeleyLink"
+    URL          = "$MendeleyLink"
 }
 Install-EXE @MendeleyParams
+
+# Microsoft Teams
+$wingets += Winget -Name "Microsoft Teams" -ID "Microsoft.Teams"
+
+# Microsoft Whiteboard
+$wingets += Winget -Name "Microsoft Whiteboard" -ID "9MSPC6MP8FM4"
 
 # MiniBin
 $MiniBinParams = @{
@@ -700,6 +574,24 @@ Get-ChildItem "MiniBin-*.exe" | Rename-Item -NewName {
 Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/S", "/D=D:\Minibin"
 Remove-Item MiniBin.exe
 
+# Mozilla Firefox
+$wingets += Winget -Name "Mozilla Firefox" -ID "Mozilla.Firefox"
+
+# Mozilla Thunderbird Beta
+$wingets += Winget -Name "Mozilla Thunderbird Beta" -ID "Mozilla.Thunderbird.Beta"
+
+# MPEG-2
+$wingets += Winget -Name "MPEG-2" -ID "9N95Q1ZZPMH4"
+
+# Nextcloud
+$wingets += Winget -Name "Nextcloud" -ID "Nextcloud.NextcloudDesktop"
+
+# Notion
+$wingets += Winget -Name "Notion" -ID "Notion.Notion"
+
+# NVM for Windows
+$wingets += Winget -Name "NVM for Windows" -ID "CoreyButler.NVMforWindows"
+
 # OBS Studio
 $OBSStudioParams = @{
     Name     = "OBS Studio"
@@ -708,6 +600,9 @@ $OBSStudioParams = @{
     Location = (Join-Path -Path "$InstallDrive" -ChildPath "OBS Studio")
 }
 Install-GitHub @OBSStudioParams
+
+# Obsidian
+$wingets += Winget -Name "Obsidian" -ID "Obsidian.Obsidian"
 
 # Onion Share
 $OnionShareParams = @{
@@ -718,15 +613,6 @@ $OnionShareParams = @{
     FileType = "msi"
 }
 Install-GitHub @OnionShareParams
-
-# Libre Hardware Monitor
-$LibreHardwareParams = @{
-    Name     = "Libre Hardware Monitor"
-    Repo     = "LibreHardwareMonitor/LibreHardwareMonitor"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Libre Hardware Monitor")
-}
-Install-GitHub @LibreHardwareParams
-Rename-Item (Join-Path -Path "$InstallDrive/Libre Hardware Monitor" -ChildPath "LibreHardwareMonitor.exe") "Libre Hardware Monitor.exe"
 
 # Pandoc
 Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
@@ -753,40 +639,24 @@ Get-ChildItem $InstallDrive\pdfsam-*-windows | Rename-Item -NewName {
     $_.Name -replace $_.Name, "PDF Sam"
 }
 
-# Photoshop
-Expand-Archive "$OneDriveDir\Backup\Adobe Photoshop 2020.zip" "$InstallDrive\"
+# Postman
+$wingets += Winget -Name "Postman" -ID "Postman.Postman"
 
-# R Language
-winget install -e --id RProject.R --accept-package-agreements --accept-source-agreements
+# PowerToys
+$wingets += Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
 
-Set-Location "C:\Program Files\R"
+# Proton Drive
+$ProtonDriveLink = ((Invoke-WebRequest -URI https://proton.me/drive/download -UseBasicParsing).Links | Where-Object href -like "https://proton.me/download/drive/windows/*.exe").href
 
-Get-ChildItem R-* | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "R"
+$ProtonDriveParams = @{
+    Name         = "Proton Drive"
+    ArgumentList = @("/norestart", "/S")
+    URL          = "$ProtonDriveLink"
 }
+Install-EXE @ProtonDriveParams
 
-Set-Location "R"
-Move-Item * "C:\Program Files\R"
-
-Set-Location "C:\Program Files\R"
-Remove-Item R
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\R\bin",
-    [EnvironmentVariableTarget]::User
-)
-
-. $profile # Reloads profile
-
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-R.exe -e 'install.packages(""languageserver"", repos = ""https://mirrors.dotsrc.org/cran/"")'
-R.exe -e 'install.packages(""httpgd"", repos = ""https://mirrors.dotsrc.org/cran/"")'
-
-Set-Location ~
-
-pip3 install -U radian
+# ProtonVPN
+$wingets += Winget -Name "ProtonVPN" -ID "ProtonTechnologies.ProtonVPN"
 
 # RustDesk
 gh release download -R rustdesk/rustdesk --pattern "*-windows_x64-portable.zip"
@@ -806,14 +676,6 @@ Get-ChildItem "rustdesk-*.exe" | Rename-Item -NewName {
 
 Set-Location ~
 
-# ShareX
-$ShareXParams = @{
-    Name     = "ShareX"
-    Repo     = "ShareX/ShareX"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "ShareX")
-}
-Install-GitHub @ShareXParams
-
 # Shotcut
 gh release download -R mltframework/shotcut --pattern "*.zip"
 
@@ -824,6 +686,9 @@ Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
 Expand-Archive Shotcut.zip $InstallDrive\
 
 Remove-Item Shotcut.zip
+
+# TeraCopy
+$wingets += Winget -Name "TeraCopy" -ID "CodeSector.TeraCopy"
 
 # TexLive
 if ($confirmationTex -eq 'y') {
@@ -868,6 +733,12 @@ $UnityHubParams = @{
 }
 Install-EXE @UnityHubParams
 
+# Visual Studio Code
+$wingets += Winget -Name "Visual Studio Code" -ID "Microsoft.VisualStudioCode"
+
+# Windows File Recovery
+$wingets += Winget -Name "Windows File Recovery" -ID "9N26S50LN705"
+
 # Windows Terminal settings
 if ($confirmationWindowsTerm -eq 'y') {
     Set-Location 'C:\Users\magnu\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState'
@@ -878,6 +749,12 @@ if ($confirmationWindowsTerm -eq 'y') {
     Set-Location ~
 }
 
+# WinSCP
+$wingets += Winget -Name "WinSCP" -ID "WinSCP.WinSCP"
+
+# Wireshark
+$wingets += Winget -Name "Wireshark" -ID "WiresharkFoundation.Wireshark"
+
 # WizTree
 $WizTreeParams = @{
     Name     = "WizTree"
@@ -885,15 +762,6 @@ $WizTreeParams = @{
     URL      = "https://antibodysoftware-17031.kxcdn.com/files/wiztree_4_08_portable.zip"
 }
 Install-Zip @WizTreeParams
-
-# YT-DLP
-gh release download -R yt-dlp/yt-dlp --pattern 'yt-dlp.exe' -D (Join-Path -Path "$InstallDrive" -ChildPath "YT-DLP")
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\YT-DLP",
-    [EnvironmentVariableTarget]::User
-)
 
 # Yubikey Manager
 $YubikeyManagerParams = @{
@@ -906,6 +774,15 @@ Install-EXE @YubikeyManagerParams
 # -------------------- Game Launchers & Emulators --------------------
 
 if ($confirmationGames -eq 'y') {
+    # Archi Steam Farm
+    $ArchiSteamFarmParams = @{
+        Name     = "Archi Steam Farm"
+        Repo     = "JustArchiNET/ArchiSteamFarm"
+        Pattern  = "ASF-win-x64.zip"
+        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Archi Steam Farm")
+    }
+    Install-GitHub @ArchiSteamFarmParams
+
     # Epic Games
     $EpicGamesParams = @{
         Name     = "Epic Games"
@@ -914,11 +791,20 @@ if ($confirmationGames -eq 'y') {
     }
     Install-MSI @EpicGamesParams
 
+    # Global Steam Controller
+    $GloSCParams = @{
+        Name     = "GloSC"
+        Repo     = "Alia5/GlosSI"
+        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller")
+        Version  = "0.0.7.0"
+    }
+    Install-GitHub @GloSCParams
+
     # GOG Galaxy
-    winget install -e --id GOG.Galaxy --location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy") --accept-package-agreements --accept-source-agreements
+    $wingets += winget -Name "GOG Galaxy" -ID "GOG.Galaxy" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy")
 
     # Minecraft
-    winget install -e --id Mojang.MinecraftLauncher --accept-package-agreements --accept-source-agreements
+    $wingets += winget -Name "Minecraft" -ID "Mojang.MinecraftLauncher"
 
     # Playnite
     $PlayniteParams = @{
@@ -929,13 +815,16 @@ if ($confirmationGames -eq 'y') {
     Install-GitHub @PlayniteParams
 
     # Steam
-    winget install -e --id Valve.Steam --location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Steam") --accept-package-agreements --accept-source-agreements
+    $wingets += winget -Name "Steam" -ID "Valve.Steam" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Steam")
 
     # Ubisoft Connect
-    winget install -e --id Ubisoft.Connect --location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Ubisoft Connect") --accept-package-agreements --accept-source-agreements
+    $wingets += winget -Name "Ubisoft Connect" -ID "Ubisoft.Connect" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Ubisoft Connect")
 
     # Xbox
-    winget install -e --id 9MV0B5HZVK9Z --accept-package-agreements --accept-source-agreements
+    $wingets += winget "Xbox" -ID "9MV0B5HZVK9Z"
+
+    # Xbox Accessories
+    $wingets += winget "Xbox Accessories" -ID "9NBLGGH30XJ3"
 }
 
 if ($confirmationEmulators -eq 'y') {
@@ -1080,6 +969,11 @@ if ($confirmationEmulators -eq 'y') {
     }
     Install-Zip @VisualBoyAdvanceParams
 }
+
+# -------------------- Final Install of Wingets --------------------
+
+# Install all the wingets in an array
+Install-Wingets -items $wingets
 
 # Remove Desktop Icons
 $desk = [Environment]::GetFolderPath("Desktop")
