@@ -275,6 +275,12 @@ Remove-Item ./Theme.deskthemepack
 
 New-Item Fonts -ItemType Directory
 
+# Google Fonts
+Invoke-WebRequest -Uri https://github.com/google/fonts/archive/main.zip -OutFile fonts.zip
+Expand-Archive .\fonts.zip .\Fonts\
+Get-ChildItem -Path .\Fonts\fonts-main\apache\ -Recurse -File -Filter *.ttf | Move-Item -Destination .\Fonts\
+Remove-Item .\fonts.zip, .\Fonts\fonts-main\ -Recurse -Force -Confirm:$false
+
 # Fira Code
 Install-GitHub -Name "FiraCode" -Repo "tonsky/FiraCode" -Location ".\FiraCode"
 Get-ChildItem -Path FiraCode\ttf -Recurse -File | Move-Item -Destination Fonts
@@ -289,15 +295,15 @@ Remove-Item FiraCodeiScript -Recurse -Force -Confirm:$false
 Install-GitHub -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraCode.zip" -Location ".\FiraCode"
 Install-GitHub -Name "FiraCode" -Repo "ryanoasis/nerd-fonts" -Pattern "FiraMono.zip" -Location ".\FiraMono"
 Set-Location Fonts
-Remove-Item README.md
+Remove-Item README.md -Force -Confirm:$false
 Set-Location ~/FiraCode
-Remove-Item readme.md, LICENSE
+Remove-Item readme.md, LICENSE -Force -Confirm:$false
 Set-Location ~/FiraMono
-Remove-Item readme.md, LICENSE.txt
+Remove-Item readme.md, LICENSE.txt -Force -Confirm:$false
 Set-Location ~
 Get-ChildItem -Path FiraCode -Recurse -File | Move-Item -Destination Fonts
 Get-ChildItem -Path FiraMono -Recurse -File | Move-Item -Destination Fonts
-Remove-Item FiraCode, FiraMono
+Remove-Item FiraCode, FiraMono -Recurse -Force -Confirm:$false
 
 # Install all fonts in Fonts folder
 Set-Location Fonts
