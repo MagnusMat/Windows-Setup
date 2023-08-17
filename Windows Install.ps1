@@ -324,11 +324,7 @@ Remove-Item Fonts -Recurse -Force -Confirm:$false
 
 # Create a list of urls
 $urls = @(
-    "https://www.overleaf.com/"
-    "https://pairdrop.net/"
-    "https://mail.proton.me/"
     "https://github.com/ranmaru22/firefox-vertical-tabs"
-    "https://www.minitool.com/news/how-to-pin-a-website-to-taskbar.html"
 )
 
 # Drivers and Software for HP Laptops
