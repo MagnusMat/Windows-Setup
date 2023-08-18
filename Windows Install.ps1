@@ -512,6 +512,15 @@ $wingets += Winget -Name "Draw.io" -ID "JGraph.Draw"
 # Facebook Messenger
 $wingets += Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
+# Fan Control
+$FanControlParams = @{
+    Name     = "Fan Control"
+    Repo     = "Rem0o/FanControl.Releases"
+    Pattern  = "FanControl_net_7_0.zip"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Fan Control")
+}
+Install-GitHub @FanControlParams
+
 # Figma
 $wingets += Winget -Name "Figma" -ID "Figma.Figma"
 
@@ -688,6 +697,16 @@ Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
 Expand-Archive Shotcut.zip $InstallDrive\
 
 Remove-Item Shotcut.zip
+
+# SyncTrayzor
+$SyncTrayzorParams = @{
+    Name     = "SyncTrayzor"
+    Repo     = "canton7/SyncTrayzor"
+    Pattern  = "*-x64.exe"
+    FileType = "exe"
+    Location = (Join-Path -Path "$InstallDrive" -ChildPath "SyncTrayzor")
+}
+Install-GitHub @$SyncTrayzorParams
 
 # TeraCopy
 $wingets += Winget -Name "TeraCopy" -ID "CodeSector.TeraCopy"
