@@ -133,7 +133,7 @@ function Get-DownloadLink {
 }
 
 
-function Winget {
+function Add-Winget {
     param (
         [string]$Name,
         [string]$ID,
@@ -197,40 +197,40 @@ winget upgrade --all --accept-package-agreements --accept-source-agreements
 $dependenciesWingets = @()
 
 # Git
-$dependenciesWingets += Winget -Name "Git" -ID "Git.Git"
+$dependenciesWingets += Add-Winget -Name "Git" -ID "Git.Git"
 
 # GitHub CLI
-$dependenciesWingets += Winget -Name "GitHub CLI" -ID "GitHub.cli"
+$dependenciesWingets += Add-Winget -Name "GitHub CLI" -ID "GitHub.cli"
 
 # PowerShell 7
-$dependenciesWingets += Winget -Name "Powershell 7" -ID "Microsoft.PowerShell" -Source "winget"
+$dependenciesWingets += Add-Winget -Name "Powershell 7" -ID "Microsoft.PowerShell" -Source "winget"
 
 # 7-Zip
-$dependenciesWingets += Winget -Name "7-Zip" -ID "7zip.7zip"
+$dependenciesWingets += Add-Winget -Name "7-Zip" -ID "7zip.7zip"
 
 # DotNet 7 SDK
-$dependenciesWingets += Winget -Name "DotNet 7 SDK" -ID "Microsoft.DotNet.SDK.7"
+$dependenciesWingets += Add-Winget -Name "DotNet 7 SDK" -ID "Microsoft.DotNet.SDK.7"
 
 # DotNet 7 Runtime
-$dependenciesWingets += Winget -Name "DotNet 7 Runtime" -ID "Microsoft.DotNet.Runtime.7"
+$dependenciesWingets += Add-Winget -Name "DotNet 7 Runtime" -ID "Microsoft.DotNet.Runtime.7"
 
 # DotNet 7 Desktop Runtime
-$dependenciesWingets += Winget -Name "DotNet 7 Desktop Runtime" -ID "Microsoft.DotNet.DesktopRuntime.7"
+$dependenciesWingets += Add-Winget -Name "DotNet 7 Desktop Runtime" -ID "Microsoft.DotNet.DesktopRuntime.7"
 
 # AspNet Core 7
-$dependenciesWingets += Winget -Name "AspNet Core 7" -ID "Microsoft.DotNet.AspNetCore.7"
+$dependenciesWingets += Add-Winget -Name "AspNet Core 7" -ID "Microsoft.DotNet.AspNetCore.7"
 
 # Visual Studio 2022 Enterprise
-$dependenciesWingets += Winget -Name "Visual Studio 2022 Enterprise" -ID "Microsoft.VisualStudio.2022.Enterprise"
+$dependenciesWingets += Add-Winget -Name "Visual Studio 2022 Enterprise" -ID "Microsoft.VisualStudio.2022.Enterprise"
 
 # Visual Studio 2019 Build Tools
-$dependenciesWingets += Winget -Name "Visual Studio 2019 Build Tools" -ID "Microsoft.VisualStudio.2019.BuildTools"
+$dependenciesWingets += Add-Winget -Name "Visual Studio 2019 Build Tools" -ID "Microsoft.VisualStudio.2019.BuildTools"
 
 # Microsoft 2015 VCRedistributables
-$dependenciesWingets += Winget -Name "Microsoft 2015 VCRedistributables" -ID "Microsoft.VCRedist.2015+.x64"
+$dependenciesWingets += Add-Winget -Name "Microsoft 2015 VCRedistributables" -ID "Microsoft.VCRedist.2015+.x64"
 
 # Python 3.10
-$dependenciesWingets += Winget -Name "Python 3.10" -ID "Python.Python.3.10"
+$dependenciesWingets += Add-Winget -Name "Python 3.10" -ID "Python.Python.3.10"
 
 Install-Wingets -items $dependenciesWingets
 
@@ -414,18 +414,18 @@ $wingets = @()
 
 if ($confirmationNvidiaAMD -eq - 'n') {
     # Nvidia Broadcast
-    $wingets += winget -Name "Nvidia Broadcast" -ID "Nvidia.Broadcast"
+    $wingets += Add-Winget -Name "Nvidia Broadcast" -ID "Nvidia.Broadcast"
 
     # Nvidia Control Panel
-    $wingets += winget -Name "Nvidia Control Panel" -ID "9NF8H0H7WMLT"
+    $wingets += Add-Winget -Name "Nvidia Control Panel" -ID "9NF8H0H7WMLT"
 
     # Nvidia GeForce Experience
-    $wingets += winget -Name "Nvidia GeForce Experience" -ID "Nvidia.GeForceExperience"
+    $wingets += Add-Winget -Name "Nvidia GeForce Experience" -ID "Nvidia.GeForceExperience"
 }
 
 if ($confirmationLaptopDesktop -eq 'd') {
     # Hue Sync
-    $wingets += winget -Name "Hue Sync" -ID "Philips.HueSync"
+    $wingets += Add-Winget -Name "Hue Sync" -ID "Philips.HueSync"
 
     # Locale Emulator
     $LocaleEmulatorParams = @{
@@ -467,7 +467,7 @@ Expand-Archive -Path op.zip -DestinationPath $installDir -Force
 Remove-Item -Path op.zip
 
 # 3D Viewer
-$wingets += Winget -Name "3D Viewer" -ID "9NBLGGH42THS"
+$wingets += Add-Winget -Name "3D Viewer" -ID "9NBLGGH42THS"
 
 # Accessibility Insights for Windows
 $AccessibilityInsightsforWindowsParams = @{
@@ -487,10 +487,10 @@ $AmazonParams = @{
 Install-EXE @AmazonParams
 
 # Blender
-$wingets += Winget -Name "Blender" -ID "BlenderFoundation.Blender"
+$wingets += Add-Winget -Name "Blender" -ID "BlenderFoundation.Blender"
 
 # Calibre
-$wingets += Winget -Name "Calibre" -ID "calibre.calibre"
+$wingets += Add-Winget -Name "Calibre" -ID "calibre.calibre"
 
 # CPU-Z
 $CPUZParams = @{
@@ -501,16 +501,16 @@ $CPUZParams = @{
 Install-Zip @CPUZParams
 
 # Discord
-$wingets += Winget -Name "Discord" -ID "Discord.Discord"
+$wingets += Add-Winget -Name "Discord" -ID "Discord.Discord"
 
 # Docker Desktop
-$wingets += Winget -Name "Docker Desktop" -ID "Docker.DockerDesktop"
+$wingets += Add-Winget -Name "Docker Desktop" -ID "Docker.DockerDesktop"
 
 # Draw.io
-$wingets += Winget -Name "Draw.io" -ID "JGraph.Draw"
+$wingets += Add-Winget -Name "Draw.io" -ID "JGraph.Draw"
 
 # Facebook Messenger
-$wingets += Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
+$wingets += Add-Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
 # Fan Control
 $FanControlParams = @{
@@ -522,10 +522,10 @@ $FanControlParams = @{
 Install-GitHub @FanControlParams
 
 # Figma
-$wingets += Winget -Name "Figma" -ID "Figma.Figma"
+$wingets += Add-Winget -Name "Figma" -ID "Figma.Figma"
 
 # GitHub Desktop
-$wingets += Winget -Name "GitHub Desktop" -ID "GitHub.GitHubDesktop"
+$wingets += Add-Winget -Name "GitHub Desktop" -ID "GitHub.GitHubDesktop"
 
 # Handbrake
 $HandBrakeParams = @{
@@ -536,10 +536,10 @@ $HandBrakeParams = @{
 Install-GitHub @HandBrakeParams
 
 # HP Smart
-$wingets += Winget -Name "HP Smart" -ID "9WZDNCRFHWLH"
+$wingets += Add-Winget -Name "HP Smart" -ID "9WZDNCRFHWLH"
 
 # Inkscape
-$wingets += Winget -Name "Inkscape" -ID "Inkscape.Inkscape"
+$wingets += Add-Winget -Name "Inkscape" -ID "Inkscape.Inkscape"
 
 # Insomnia
 $InsomniaParams = @{
@@ -552,7 +552,7 @@ $InsomniaParams = @{
 Install-GitHub @InsomniaParams
 
 # JDK Adoptium JDK 17
-$wingets += Winget -Name "JDK Adoptium JDK 17" -ID "EclipseAdoptium.Temurin.17.JDK"
+$wingets += Add-Winget -Name "JDK Adoptium JDK 17" -ID "EclipseAdoptium.Temurin.17.JDK"
 
 # Jupyter Notebook
 pip install jupyter
@@ -579,10 +579,10 @@ $MendeleyParams = @{
 Install-EXE @MendeleyParams
 
 # Microsoft Teams
-$wingets += Winget -Name "Microsoft Teams" -ID "Microsoft.Teams"
+$wingets += Add-Winget -Name "Microsoft Teams" -ID "Microsoft.Teams"
 
 # Microsoft Whiteboard
-$wingets += Winget -Name "Microsoft Whiteboard" -ID "9MSPC6MP8FM4"
+$wingets += Add-Winget -Name "Microsoft Whiteboard" -ID "9MSPC6MP8FM4"
 
 # MiniBin
 $MiniBinParams = @{
@@ -600,22 +600,22 @@ Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/S", "/D=D:\Minibin"
 Remove-Item MiniBin.exe
 
 # Mozilla Firefox
-$wingets += Winget -Name "Mozilla Firefox" -ID "Mozilla.Firefox"
+$wingets += Add-Winget -Name "Mozilla Firefox" -ID "Mozilla.Firefox"
 
 # Mozilla Thunderbird Beta
-$wingets += Winget -Name "Mozilla Thunderbird Beta" -ID "Mozilla.Thunderbird.Beta"
+$wingets += Add-Winget -Name "Mozilla Thunderbird Beta" -ID "Mozilla.Thunderbird.Beta"
 
 # MPEG-2
-$wingets += Winget -Name "MPEG-2" -ID "9N95Q1ZZPMH4"
+$wingets += Add-Winget -Name "MPEG-2" -ID "9N95Q1ZZPMH4"
 
 # Nextcloud
-$wingets += Winget -Name "Nextcloud" -ID "Nextcloud.NextcloudDesktop"
+$wingets += Add-Winget -Name "Nextcloud" -ID "Nextcloud.NextcloudDesktop"
 
 # Notion
-$wingets += Winget -Name "Notion" -ID "Notion.Notion"
+$wingets += Add-Winget -Name "Notion" -ID "Notion.Notion"
 
 # NVM for Windows
-$wingets += Winget -Name "NVM for Windows" -ID "CoreyButler.NVMforWindows"
+$wingets += Add-Winget -Name "NVM for Windows" -ID "CoreyButler.NVMforWindows"
 
 # OBS Studio
 $OBSStudioParams = @{
@@ -627,7 +627,7 @@ $OBSStudioParams = @{
 Install-GitHub @OBSStudioParams
 
 # Obsidian
-$wingets += Winget -Name "Obsidian" -ID "Obsidian.Obsidian"
+$wingets += Add-Winget -Name "Obsidian" -ID "Obsidian.Obsidian"
 
 # Onion Share
 $OnionShareParams = @{
@@ -653,10 +653,10 @@ Get-ChildItem $InstallDrive\pdfsam-*-windows | Rename-Item -NewName {
 }
 
 # Postman
-$wingets += Winget -Name "Postman" -ID "Postman.Postman"
+$wingets += Add-Winget -Name "Postman" -ID "Postman.Postman"
 
 # PowerToys
-$wingets += Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
+$wingets += Add-Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
 
 # Proton Drive
 $ProtonDriveParams = @{
@@ -667,7 +667,7 @@ $ProtonDriveParams = @{
 Install-EXE @ProtonDriveParams
 
 # ProtonVPN
-$wingets += Winget -Name "ProtonVPN" -ID "ProtonTechnologies.ProtonVPN"
+$wingets += Add-Winget -Name "ProtonVPN" -ID "ProtonTechnologies.ProtonVPN"
 
 # RustDesk
 gh release download -R rustdesk/rustdesk --pattern "*-windows_x64-portable.zip"
@@ -709,7 +709,7 @@ $SyncTrayzorParams = @{
 Install-GitHub @$SyncTrayzorParams
 
 # TeraCopy
-$wingets += Winget -Name "TeraCopy" -ID "CodeSector.TeraCopy"
+$wingets += Add-Winget -Name "TeraCopy" -ID "CodeSector.TeraCopy"
 
 # TexLive
 if ($confirmationTex -eq 'y') {
@@ -753,10 +753,10 @@ $UnityHubParams = @{
 Install-EXE @UnityHubParams
 
 # Visual Studio Code
-$wingets += Winget -Name "Visual Studio Code" -ID "Microsoft.VisualStudioCode"
+$wingets += Add-Winget -Name "Visual Studio Code" -ID "Microsoft.VisualStudioCode"
 
 # Windows File Recovery
-$wingets += Winget -Name "Windows File Recovery" -ID "9N26S50LN705"
+$wingets += Add-Winget -Name "Windows File Recovery" -ID "9N26S50LN705"
 
 # Windows Terminal settings
 if ($confirmationWindowsTerm -eq 'y') {
@@ -769,10 +769,10 @@ if ($confirmationWindowsTerm -eq 'y') {
 }
 
 # WinSCP
-$wingets += Winget -Name "WinSCP" -ID "WinSCP.WinSCP"
+$wingets += Add-Winget -Name "WinSCP" -ID "WinSCP.WinSCP"
 
 # Wireshark
-$wingets += Winget -Name "Wireshark" -ID "WiresharkFoundation.Wireshark"
+$wingets += Add-Winget -Name "Wireshark" -ID "WiresharkFoundation.Wireshark"
 
 # WizTree
 $WizTreeParams = @{
@@ -820,10 +820,10 @@ if ($confirmationGames -eq 'y') {
     Install-GitHub @GloSCParams
 
     # GOG Galaxy
-    $wingets += winget -Name "GOG Galaxy" -ID "GOG.Galaxy" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy")
+    $wingets += Add-Winget -Name "GOG Galaxy" -ID "GOG.Galaxy" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy")
 
     # Minecraft
-    $wingets += winget -Name "Minecraft" -ID "Mojang.MinecraftLauncher"
+    $wingets += Add-Winget -Name "Minecraft" -ID "Mojang.MinecraftLauncher"
 
     # Playnite
     $PlayniteParams = @{
@@ -834,16 +834,16 @@ if ($confirmationGames -eq 'y') {
     Install-GitHub @PlayniteParams
 
     # Steam
-    $wingets += winget -Name "Steam" -ID "Valve.Steam" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Steam")
+    $wingets += Add-Winget -Name "Steam" -ID "Valve.Steam" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Steam")
 
     # Ubisoft Connect
-    $wingets += winget -Name "Ubisoft Connect" -ID "Ubisoft.Connect" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Ubisoft Connect")
+    $wingets += Add-Winget -Name "Ubisoft Connect" -ID "Ubisoft.Connect" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Ubisoft Connect")
 
     # Xbox
-    $wingets += winget "Xbox" -ID "9MV0B5HZVK9Z"
+    $wingets += Add-Winget "Xbox" -ID "9MV0B5HZVK9Z"
 
     # Xbox Accessories
-    $wingets += winget "Xbox Accessories" -ID "9NBLGGH30XJ3"
+    $wingets += Add-Winget "Xbox Accessories" -ID "9NBLGGH30XJ3"
 }
 
 if ($confirmationEmulators -eq 'y') {
