@@ -192,7 +192,6 @@ Set-Confirmation -Confirmation $ConfirmationWindowsTerm -Question "Do you want t
 
 # Upgade all packages
 winget source update
-winget upgrade --all --accept-package-agreements --accept-source-agreements
 
 $dependenciesWingets = @()
 
