@@ -316,7 +316,7 @@ Remove-Item README.md -Force -Confirm:$false
 Set-Location ~/FiraCode
 Remove-Item readme.md, LICENSE -Force -Confirm:$false
 Set-Location ~/FiraMono
-Remove-Item readme.md, LICENSE.txt -Force -Confirm:$false
+Remove-Item readme.md, LICENSE -Force -Confirm:$false
 Set-Location ~
 Get-ChildItem -Path FiraCode -Recurse -File | Move-Item -Destination Fonts
 Get-ChildItem -Path FiraMono -Recurse -File | Move-Item -Destination Fonts
