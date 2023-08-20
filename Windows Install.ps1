@@ -479,15 +479,6 @@ Remove-Item -Path op.zip
 # 3D Viewer
 $wingets += Add-Winget -Name "3D Viewer" -ID "9NBLGGH42THS"
 
-# Accessibility Insights for Windows
-$AccessibilityInsightsforWindowsParams = @{
-    Name     = "Accessibility Insights for Windows"
-    Repo     = "microsoft/accessibility-insights-windows"
-    Pattern  = "*.msi"
-    FileType = "msi"
-}
-Install-GitHub @AccessibilityInsightsforWindowsParams
-
 # Amazon Send to Kindle
 $AmazonParams = @{
     Name         = "Amazon Send to Kindle"
@@ -545,21 +536,8 @@ $HandBrakeParams = @{
 }
 Install-GitHub @HandBrakeParams
 
-# HP Smart
-$wingets += Add-Winget -Name "HP Smart" -ID "9WZDNCRFHWLH"
-
 # Inkscape
 $wingets += Add-Winget -Name "Inkscape" -ID "Inkscape.Inkscape"
-
-# Insomnia
-$InsomniaParams = @{
-    Name     = "Insomnia"
-    Repo     = "Kong/insomnia"
-    Pattern  = "*portable.exe"
-    FileType = "exe"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Insomnia")
-}
-Install-GitHub @InsomniaParams
 
 # JDK Adoptium JDK 17
 $wingets += Add-Winget -Name "JDK Adoptium JDK 17" -ID "EclipseAdoptium.Temurin.17.JDK"
