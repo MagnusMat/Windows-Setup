@@ -343,7 +343,7 @@ if ($confirmationLaptopDesktop -eq 'l') {
 }
 
 # Drivers and Software for AMD Radeon
-if ($confirmationNvidiaAMD -eq - 'a') {
+if ($confirmationNvidiaAMD -eq 'a') {
     $urls += "https://www.amd.com/en/support"
 }
 
@@ -422,7 +422,7 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
 
 $wingets = @()
 
-if ($confirmationNvidiaAMD -eq - 'n') {
+if ($confirmationNvidiaAMD -eq 'n') {
     # Nvidia Broadcast
     $wingets += Add-Winget -Name "Nvidia Broadcast" -ID "Nvidia.Broadcast"
 
