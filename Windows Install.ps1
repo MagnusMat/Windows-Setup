@@ -609,7 +609,6 @@ $wingets += Add-Winget -Name "NVM for Windows" -ID "CoreyButler.NVMforWindows"
 $OBSStudioParams = @{
     Name     = "OBS Studio"
     Repo     = "obsproject/obs-studio"
-    Pattern  = "*-x64.zip"
     Location = (Join-Path -Path "$InstallDrive" -ChildPath "OBS Studio")
 }
 Install-GitHub @OBSStudioParams
