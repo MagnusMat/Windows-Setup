@@ -648,7 +648,7 @@ $wingets += Add-Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
 # Proton Drive
 $ProtonDriveParams = @{
     Name         = "Proton Drive"
-    ArgumentList = @("/norestart", "/S")
+    ArgumentList = @("/exenoui")
     URL          = Get-DownloadLink -URL "https://proton.me/drive/download" -DownloadURL "https://proton.me/download/drive/windows/*.exe"
 }
 Install-EXE @ProtonDriveParams
