@@ -343,7 +343,7 @@ if ($confirmationLaptopDesktop -eq 'l') {
 }
 
 # Drivers and Software for AMD Radeon
-if ($confirmationNvidiaAMD -eq - 'a') {
+if ($confirmationNvidiaAMD -eq 'a') {
     $urls += "https://www.amd.com/en/support"
 }
 
