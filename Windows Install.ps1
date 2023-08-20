@@ -9,19 +9,18 @@ $ErrorActionPreference = 'Stop'
 
 function Set-Confirmation {
     param (
-        $Confirmation,
         [string]$Question,
-        [string]$FirstTerm = 'y',
-        [string]$SecondTerm = 'n'
+        [string[]]$ValidOptions = @('y', 'n')
     )
+
     do {
         $Confirmation = Read-Host "$Question"
-        if (($Confirmation -ne "$FirstTerm") -and ($Confirmation -ne "$SecondTerm")) {
-            "You need to pick a valid option"
+        if ($Confirmation -notin $ValidOptions) {
+            Write-Host "You need to pick a valid option"
         }
-    } while (
-        ($Confirmation -ne "$FirstTerm") -and ($Confirmation -ne "$SecondTerm")
-    )
+    } while ($Confirmation -notin $ValidOptions)
+
+    return $Confirmation
 }
 
 
@@ -155,38 +154,32 @@ function Add-Winget {
 # -------------------- Confirmations --------------------
 
 # Prompt for Install Drive
-do {
-    $ConfirmationDrive = Read-Host "Do you want to install software the C: or D: drive c/d"
-    if ($ConfirmationDrive -eq 'c') {
-        $InstallDrive = "C:\Program Files"
-    }
-    elseif ($ConfirmationDrive -eq 'd') {
-        $InstallDrive = "D:"
-    }
-    else {
-        "You need to pick a valid option"
-    }
-} while (
-    ($ConfirmationDrive -ne "c") -and ($ConfirmationDrive -ne "d")
-)
+$ConfirmationDrive = Set-Confirmation -Question "Do you want to install software the C: or D: drive c/d" -ValidOptions 'c', 'd'
+
+if ($ConfirmationDrive -eq 'c') {
+    $InstallDrive = "C:\Program Files"
+}
+if ($ConfirmationDrive -eq 'd') {
+    $InstallDrive = "D:"
+}
 
 # Install Laptop Desktop Prompt
-Set-Confirmation -Confirmation $ConfirmationLaptopDesktop -Question "Are you installing on a Laptop or Desktop l/d" -FirstTerm 'l' -SecondTerm 'd'
+$ConfirmationLaptopDesktop = Set-Confirmation -Question "Are you installing on a Laptop or Desktop l/d" -ValidOptions 'l', 'd'
 
 # Graphics Card Architecture Prompt
-Set-Confirmation -Confirmation $ConfirmationNvidiaAMD -Question "Are you installing on a Nvidia or AMD system n/a" -FirstTerm 'n' -SecondTerm 'a'
+$ConfirmationNvidiaAMD = Set-Confirmation -Question "Are you installing on a Nvidia or AMD system n/a" -ValidOptions 'n', 'a'
 
 # Games Prompt
-Set-Confirmation -Confirmation $ConfirmationGames -Question "Do you want to install Games y/n"
+$ConfirmationGames = Set-Confirmation -Question "Do you want to install Games y/n"
 
 # Emulator prompt
-Set-Confirmation -Confirmation $ConfirmationEmulators -Question "Do you want to install Emulators y/n"
+$ConfirmationEmulators = Set-Confirmation -Question "Do you want to install Emulators y/n"
 
 # Tex Prompt
-Set-Confirmation -Confirmation $ConfirmationTex -Question "Do you want to install LaTeX y/n"
+$ConfirmationTex = Set-Confirmation -Question "Do you want to install LaTeX y/n"
 
 # Windows Terminal Settings Prompt
-Set-Confirmation -Confirmation $ConfirmationWindowsTerm -Question "Do you want to replace the Windows Terminal Settings? This will not work if you have a Windows Terminal instance open y/n"
+$ConfirmationWindowsTerm = Set-Confirmation -Question "Do you want to replace the Windows Terminal Settings? This will not work if you have a Windows Terminal instance open y/n"
 
 # -------------------- Initial Setup - Updates & Package Managers --------------------
 
