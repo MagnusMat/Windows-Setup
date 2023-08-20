@@ -233,10 +233,10 @@ $dependenciesWingets += Add-Winget -Name "Python 3.10" -ID "Python.Python.3.10"
 
 Install-Wingets -items $dependenciesWingets
 
-Install-Module PSReadLine
-Install-Module posh-git
-Install-Module oh-my-posh
-Install-Module Terminal-Icons
+Install-Module PSReadLine -Confirm
+Install-Module posh-git -Confirm
+Install-Module oh-my-posh -Confirm
+Install-Module Terminal-Icons -Confirm
 
 # Download PowerShell Scripts
 New-Item $env:USERPROFILE/GitHub -ItemType Directory
