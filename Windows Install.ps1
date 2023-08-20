@@ -284,9 +284,9 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 python.exe -m pip install --upgrade pip --user
 
 # Install Windows Theme
-Invoke-WebRequest -Uri https://github.com/MagnusMat/Windows-Setup/blob/25ab6abdc10dfe620130314cabd53a76ab96d50a/Windows/Planets%20(Dark).deskthemepack -OutFile ./Theme.deskthemepack
-Start-Process -FilePath ./Theme.deskthemepack
-Remove-Item ./Theme.deskthemepack
+Invoke-WebRequest -Uri https://github.com/MagnusMat/Windows-Setup/blob/9caeb59930ace77e06ece2ed48c4ba5f6412c1e8/Desktop/Planets.deskthemepack -OutFile ./Planets.deskthemepack
+Start-Process -FilePath ./Planets.deskthemepack
+Remove-Item ./Planets.deskthemepack
 
 # -------------------- Fonts --------------------
 
