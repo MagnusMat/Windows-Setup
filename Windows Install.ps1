@@ -233,6 +233,24 @@ $dependenciesWingets += Add-Winget -Name "Python 3.10" -ID "Python.Python.3.10"
 
 Install-Wingets -items $dependenciesWingets
 
+Install-Module PSReadLine
+Install-Module posh-git
+Install-Module oh-my-posh
+Install-Module Terminal-Icons
+
+# Download PowerShell Scripts
+New-Item $env:USERPROFILE/GitHub -ItemType Directory
+Set-Location $env:USERPROFILE/GitHub
+
+gh repo clone MagnusMat/PowerShell-Scripts
+
+Set-Location ~
+
+# Set PowerShell Profile
+Invoke-WebRequest -Uri https://github.com/MagnusMat/Windows-Setup/ -OutFile ./Microsoft.PowerShell_profile.ps1
+Copy-Item ./Microsoft.PowerShell_profile.ps1 $env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+Move-Item ./Microsoft.PowerShell_profile.ps1 $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
+
 Start-Process -FilePath pwsh.exe -ArgumentList {
     # Execution Permission
     Set-ExecutionPolicy RemoteSigned
