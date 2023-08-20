@@ -646,12 +646,8 @@ $wingets += Add-Winget -Name "Postman" -ID "Postman.Postman"
 $wingets += Add-Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
 
 # Proton Drive
-$ProtonDriveParams = @{
-    Name         = "Proton Drive"
-    ArgumentList = @("/exenoui")
-    URL          = Get-DownloadLink -URL "https://proton.me/drive/download" -DownloadURL "https://proton.me/download/drive/windows/*.exe"
-}
-Install-EXE @ProtonDriveParams
+Invoke-WebRequest (Get-DownloadLink -URL "https://proton.me/drive/download" -DownloadURL "https://proton.me/download/drive/windows/*.exe") -OutFile ProtonDrive.exe
+Move-Item .\ProtonDrive.exe .\Downloads\ProtonDrive.exe
 
 # ProtonVPN
 $wingets += Add-Winget -Name "ProtonVPN" -ID "ProtonTechnologies.ProtonVPN"
