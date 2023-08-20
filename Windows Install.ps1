@@ -422,7 +422,7 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
 
 $wingets = @()
 
-if ($confirmationNvidiaAMD -eq - 'n') {
+if ($confirmationNvidiaAMD -eq 'n') {
     # Nvidia Broadcast
     $wingets += Add-Winget -Name "Nvidia Broadcast" -ID "Nvidia.Broadcast"
 
