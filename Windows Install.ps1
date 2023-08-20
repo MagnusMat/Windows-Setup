@@ -653,22 +653,13 @@ Move-Item .\ProtonDrive.exe .\Downloads\ProtonDrive.exe
 $wingets += Add-Winget -Name "ProtonVPN" -ID "ProtonTechnologies.ProtonVPN"
 
 # RustDesk
-gh release download -R rustdesk/rustdesk --pattern "*-windows_x64-portable.zip"
-
-Get-ChildItem "rustdesk-*.zip" | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "RustDesk.zip"
-}
-
-Expand-Archive .\RustDesk.zip $InstallDrive\RustDesk
-Remove-Item RustDesk.zip
-
-Set-Location $InstallDrive\RustDesk
+gh release download -R rustdesk/rustdesk --pattern "*_64.exe"
 
 Get-ChildItem "rustdesk-*.exe" | Rename-Item -NewName {
     $_.Name -replace $_.Name, "RustDesk.exe"
 }
 
-Set-Location ~
+Move-Item .\RustDesk.exe $InstallDrive\RustDesk\RustDesk.exe
 
 # Shotcut
 gh release download -R mltframework/shotcut --pattern "*.zip"
