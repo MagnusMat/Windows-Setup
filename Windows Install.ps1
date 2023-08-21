@@ -226,22 +226,16 @@ $dependenciesWingets += Add-Winget -Name "Python 3.10" -ID "Python.Python.3.10"
 
 Install-Wingets -items $dependenciesWingets
 
-Install-Module PSReadLine -Confirm
-Install-Module posh-git -Confirm
-Install-Module Terminal-Icons -Confirm
-
-# Download PowerShell Scripts
-New-Item $env:USERPROFILE/GitHub -ItemType Directory
-Set-Location $env:USERPROFILE/GitHub
-
-gh repo clone MagnusMat/PowerShell-Scripts
-
-Set-Location ~
+Install-Module PSReadLine -Confirm:False
+Install-Module posh-git -Confirm:False
+Install-Module Terminal-Icons -Confirm:False
 
 # Set PowerShell Profile
-Copy-Item $env:USERPROFILE/GitHub/PowerShell-Scripts/Profile/Microsoft.PowerShell_profile.ps1 $env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MagnusMat/PowerShell-Scripts/main/Profile/Microsoft.PowerShell_profile.ps1" -OutFile Microsoft.Powershell_profile.ps1
+
+Copy-Item .\Microsoft.Powershell_profile.ps1 $env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
 New-Item $env:USERPROFILE\Documents\PowerShell -ItemType Directory
-Copy-Item $env:USERPROFILE/GitHub/PowerShell-Scripts/Profile/Microsoft.PowerShell_profile.ps1 $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
+Copy-Item .\Microsoft.Powershell_profile.ps1 $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
 
 Start-Process -FilePath pwsh.exe -ArgumentList {
     # Execution Permission
