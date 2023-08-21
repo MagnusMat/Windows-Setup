@@ -212,7 +212,7 @@ Install-Module Terminal-Icons -Confirm:$false
 $env:PATH = $env:PATH + ";C:\Program Files\Git\cmd"
 $env:PATH = $env:PATH + ";C:\Program Files\GitHub CLI"
 $env:PATH = $env:PATH + ";C:\Program Files\7-Zip"
-$env:PATH = $env:PATH + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts"
+$env:PATH = $env:PATH + ";$env:USERPROFILE\AppData\Roaming\Python\Python311\Scripts"
 
 # Set PowerShell Profile
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MagnusMat/PowerShell-Scripts/main/Profile/Microsoft.PowerShell_profile.ps1" -OutFile Microsoft.Powershell_profile.ps1
@@ -241,7 +241,7 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 
 [Environment]::SetEnvironmentVariable(
     "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$env:USERPROFILE\AppData\Roaming\Python\Python311\Scripts",
     [EnvironmentVariableTarget]::User
 )
 
