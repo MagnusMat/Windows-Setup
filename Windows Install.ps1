@@ -200,35 +200,16 @@ $dependenciesWingets += Add-Winget -Name "Powershell 7" -ID "Microsoft.PowerShel
 # 7-Zip
 $dependenciesWingets += Add-Winget -Name "7-Zip" -ID "7zip.7zip"
 
-# DotNet 7 SDK
-$dependenciesWingets += Add-Winget -Name "DotNet 7 SDK" -ID "Microsoft.DotNet.SDK.7"
-
-# DotNet 7 Runtime
-$dependenciesWingets += Add-Winget -Name "DotNet 7 Runtime" -ID "Microsoft.DotNet.Runtime.7"
-
-# DotNet 7 Desktop Runtime
-$dependenciesWingets += Add-Winget -Name "DotNet 7 Desktop Runtime" -ID "Microsoft.DotNet.DesktopRuntime.7"
-
-# AspNet Core 7
-$dependenciesWingets += Add-Winget -Name "AspNet Core 7" -ID "Microsoft.DotNet.AspNetCore.7"
-
-# Visual Studio 2022 Enterprise
-$dependenciesWingets += Add-Winget -Name "Visual Studio 2022 Enterprise" -ID "Microsoft.VisualStudio.2022.Enterprise"
-
-# Visual Studio 2019 Build Tools
-$dependenciesWingets += Add-Winget -Name "Visual Studio 2019 Build Tools" -ID "Microsoft.VisualStudio.2019.BuildTools"
-
-# Microsoft 2015 VCRedistributables
-$dependenciesWingets += Add-Winget -Name "Microsoft 2015 VCRedistributables" -ID "Microsoft.VCRedist.2015+.x64"
-
-# Python 3.10
-$dependenciesWingets += Add-Winget -Name "Python 3.10" -ID "Python.Python.3.10"
-
 Install-Wingets -items $dependenciesWingets
 
-Install-Module PSReadLine -Confirm:False
-Install-Module posh-git -Confirm:False
-Install-Module Terminal-Icons -Confirm:False
+Install-Module PSReadLine -Confirm:$false
+Install-Module posh-git -Confirm:$false
+Install-Module Terminal-Icons -Confirm:$false
+
+$env:PATH = $env:PATH + ";C:\Program Files\Git\cmd"
+$env:PATH = $env:PATH + ";C:\Program Files\GitHub CLI"
+$env:PATH = $env:PATH + ";C:\Program Files\7-Zip"
+$env:PATH = $env:PATH + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts"
 
 # Set PowerShell Profile
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MagnusMat/PowerShell-Scripts/main/Profile/Microsoft.PowerShell_profile.ps1" -OutFile Microsoft.Powershell_profile.ps1
@@ -342,6 +323,11 @@ foreach ($url in $urls) {
 
 # -------------------- Development Tools --------------------
 
+$developmentToolWingets = @()
+
+# AspNet Core 7
+$developmentToolWingets += Add-Winget -Name "AspNet Core 7" -ID "Microsoft.DotNet.AspNetCore.7"
+
 # Clangd
 gh release download -R llvm/llvm-project --pattern "LLVM-*-win64.exe"
 
@@ -358,6 +344,15 @@ remove-item LLVM.exe
     [EnvironmentVariableTarget]::User
 )
 
+# DotNet 7 SDK
+$developmentToolWingets += Add-Winget -Name "DotNet 7 SDK" -ID "Microsoft.DotNet.SDK.7"
+
+# DotNet 7 Runtime
+$developmentToolWingets += Add-Winget -Name "DotNet 7 Runtime" -ID "Microsoft.DotNet.Runtime.7"
+
+# DotNet 7 Desktop Runtime
+$developmentToolWingets += Add-Winget -Name "DotNet 7 Desktop Runtime" -ID "Microsoft.DotNet.DesktopRuntime.7"
+
 # ffmpeg
 Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
 Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
@@ -369,6 +364,9 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
     [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\ffmpeg\bin",
     [EnvironmentVariableTarget]::User
 )
+
+# Microsoft 2015 VCRedistributables
+$developmentToolWingets += Add-Winget -Name "Microsoft 2015 VCRedistributables" -ID "Microsoft.VCRedist.2015+.x64"
 
 # Msys2
 gh release download -R msys2/msys2-installer --pattern "msys2-x86_64-*.exe"
@@ -406,6 +404,17 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
     [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
     [EnvironmentVariableTarget]::User
 )
+
+# Python 3.10
+$developmentToolWingets += Add-Winget -Name "Python 3.10" -ID "Python.Python.3.10"
+
+# Visual Studio 2022 Enterprise
+$developmentToolWingets += Add-Winget -Name "Visual Studio 2022 Enterprise" -ID "Microsoft.VisualStudio.2022.Enterprise"
+
+# Visual Studio 2019 Build Tools
+$developmentToolWingets += Add-Winget -Name "Visual Studio 2019 Build Tools" -ID "Microsoft.VisualStudio.2019.BuildTools"
+
+Install-Wingets -items $developmentToolWingets
 
 # -------------------- Programs --------------------
 
