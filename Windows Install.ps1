@@ -742,7 +742,8 @@ if ($confirmationWindowsTerm -eq 'y') {
     if ((Test-Path ./settings.json) -eq $false) {
         New-Item settings.json
     }
-    Set-Content -Path 'settings.json' -Value (Get-Content -Path 'D:\GitHub\Windows-Terminal-Setup\Terminal settings.json' -Raw)
+
+    Set-Content -Path 'settings.json' -Value (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MagnusMat/Windows-Terminal-Setup/main/Terminal%20settings.json").Content
     Set-Location ~
 }
 
