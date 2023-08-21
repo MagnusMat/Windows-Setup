@@ -660,6 +660,7 @@ Get-ChildItem "rustdesk-*.exe" | Rename-Item -NewName {
     $_.Name -replace $_.Name, "RustDesk.exe"
 }
 
+New-Item -Path $InstallDrive\RustDesk -ItemType Directory
 Move-Item .\RustDesk.exe $InstallDrive\RustDesk\RustDesk.exe
 
 # Shotcut
