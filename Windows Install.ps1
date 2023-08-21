@@ -228,7 +228,6 @@ Install-Wingets -items $dependenciesWingets
 
 Install-Module PSReadLine -Confirm
 Install-Module posh-git -Confirm
-Install-Module oh-my-posh -Confirm
 Install-Module Terminal-Icons -Confirm
 
 # Download PowerShell Scripts
@@ -609,6 +608,9 @@ Install-GitHub @OBSStudioParams
 
 # Obsidian
 $wingets += Add-Winget -Name "Obsidian" -ID "Obsidian.Obsidian"
+
+# Oh My Posh
+$wingets += Add-Winget -Name "Oh My Posh" -ID JanDeDobbeleer.OhMyPosh -Source "winget"
 
 # Onion Share
 $OnionShareParams = @{
