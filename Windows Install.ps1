@@ -463,14 +463,14 @@ switch ($arch) {
     Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
 }
 
-$installDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
+$OnePassinstallDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
 
 Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
-Expand-Archive -Path op.zip -DestinationPath $installDir -Force
+Expand-Archive -Path op.zip -DestinationPath $OnePassinstallDir -Force
 
 [Environment]::SetEnvironmentVariable(
     "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$installDir",
+    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$OnePassinstallDir",
     [EnvironmentVariableTarget]::User
 )
 
@@ -707,7 +707,7 @@ $TorParams = @{
 }
 Install-EXE @TorParams
 
-Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") 'D:\Tor Browser'
+Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") "$InstallDrive\Tor Browser"
 
 # Transmission
 $TransmissionParams = @{
