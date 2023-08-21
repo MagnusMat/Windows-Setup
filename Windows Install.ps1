@@ -673,14 +673,15 @@ Expand-Archive Shotcut.zip $InstallDrive\
 Remove-Item Shotcut.zip
 
 # SyncTrayzor
-$SyncTrayzorParams = @{
-    Name     = "SyncTrayzor"
-    Repo     = "canton7/SyncTrayzor"
-    Pattern  = "*-x64.exe"
-    FileType = "exe"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "SyncTrayzor")
+gh release download -R canton7/SyncTrayzor --pattern "*-x64.exe"
+
+Get-ChildItem *.exe | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "SyncTrayzor.exe"
 }
-Install-GitHub @$SyncTrayzorParams
+
+.\SyncTrayzor.exe /SILENT
+
+Remove-Item SyncTrayzor.exe
 
 # TeraCopy
 $wingets += Add-Winget -Name "TeraCopy" -ID "CodeSector.TeraCopy"
