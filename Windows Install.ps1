@@ -249,9 +249,6 @@ Start-Process -FilePath pwsh.exe -ArgumentList {
     Set-ExecutionPolicy RemoteSigned
 } -Verb RunAs
 
-# Reloads profile
-. $profile
-
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
 [Environment]::SetEnvironmentVariable(
@@ -268,9 +265,6 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
     [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$env:USERPROFILE\AppData\Roaming\Python\Python310\Scripts",
     [EnvironmentVariableTarget]::User
 )
-
-# Reloads profile
-. $profile
 
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
 
@@ -984,5 +978,5 @@ Install-Wingets -items $wingets
 $desk = [Environment]::GetFolderPath("Desktop")
 Set-Location $desk
 
-remove-item *
+Remove-Item *
 Set-Location ~
