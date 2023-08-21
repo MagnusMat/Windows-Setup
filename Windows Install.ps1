@@ -237,6 +237,8 @@ Copy-Item .\Microsoft.Powershell_profile.ps1 $env:USERPROFILE\Documents\WindowsP
 New-Item $env:USERPROFILE\Documents\PowerShell -ItemType Directory
 Copy-Item .\Microsoft.Powershell_profile.ps1 $env:USERPROFILE\Documents\PowerShell\Microsoft.PowerShell_profile.ps1
 
+Remove-Item .\Microsoft.Powershell_profile.ps1
+
 Start-Process -FilePath pwsh.exe -ArgumentList {
     # Execution Permission
     Set-ExecutionPolicy RemoteSigned
