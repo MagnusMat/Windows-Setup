@@ -727,6 +727,9 @@ $UnityHubParams = @{
 }
 Install-EXE @UnityHubParams
 
+Move-Item C:\Program\* "$InstallDrive\Unity\"
+Remove-Item C:\Program
+
 # Visual Studio Code
 $wingets += Add-Winget -Name "Visual Studio Code" -ID "Microsoft.VisualStudioCode"
 
