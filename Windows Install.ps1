@@ -188,6 +188,9 @@ winget source update
 
 $dependenciesWingets = @()
 
+# 7-Zip
+$dependenciesWingets += Add-Winget -Name "7-Zip" -ID "7zip.7zip"
+
 # Git
 $dependenciesWingets += Add-Winget -Name "Git" -ID "Git.Git"
 
@@ -197,8 +200,8 @@ $dependenciesWingets += Add-Winget -Name "GitHub CLI" -ID "GitHub.cli"
 # PowerShell 7
 $dependenciesWingets += Add-Winget -Name "Powershell 7" -ID "Microsoft.PowerShell" -Source "winget"
 
-# 7-Zip
-$dependenciesWingets += Add-Winget -Name "7-Zip" -ID "7zip.7zip"
+# Python 3.11
+$dependenciesWingets += Add-Winget -Name "Python 3.11" -ID "Python.Python.3.11"
 
 Install-Wingets -items $dependenciesWingets
 
@@ -404,9 +407,6 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
     [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
     [EnvironmentVariableTarget]::User
 )
-
-# Python 3.10
-$developmentToolWingets += Add-Winget -Name "Python 3.10" -ID "Python.Python.3.10"
 
 # Visual Studio 2022 Enterprise
 $developmentToolWingets += Add-Winget -Name "Visual Studio 2022 Enterprise" -ID "Microsoft.VisualStudio.2022.Enterprise"
