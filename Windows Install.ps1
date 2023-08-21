@@ -680,7 +680,6 @@ Get-ChildItem *.exe | Rename-Item -NewName {
 }
 
 .\SyncTrayzor.exe /SILENT
-
 Remove-Item SyncTrayzor.exe
 
 # TeraCopy
@@ -710,14 +709,22 @@ Install-EXE @TorParams
 Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") "$InstallDrive\Tor Browser"
 
 # Transmission
-$TransmissionParams = @{
-    Name     = "Transmission"
-    Repo     = "transmission/transmission"
-    Pattern  = "*-x64.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Transmission")
-    FileType = "msi"
+gh release download -R transmission/transmission --pattern "*-x64.msi"
+
+$transmissionFiles = Get-ChildItem -Path "." -Filter "transmission-*-x64.msi" # It will download two files, so we need to remove one
+$transmissionFileToDelete = $transmissionFiles | Where-Object {$_.Name -like "*qt5*"}
+if ($transmissionFileToDelete) {
+    Remove-Item -Path $transmissionFileToDelete.FullName -Force
 }
-Install-GitHub @TransmissionParams
+
+Get-ChildItem "transmission-*-x64.msi" | Rename-Item -NewName {
+    $_.Name -replace $_.Name, "transmission.msi"
+}
+
+$transmissionInstallDir = (Join-Path -Path "$InstallDrive" -ChildPath "Transmission")
+
+Start-Process msiexec.exe -Wait -ArgumentList "/package transmission.msi", "INSTALLDIR=`"$transmissionInstallDir`"", "TARGETDIR=`"$transmissionInstallDir`"", "/passive", "/norestart"
+Remove-Item transmission.msi
 
 # Unity Hub
 $UnityHubParams = @{
