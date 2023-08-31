@@ -262,7 +262,7 @@ New-Item Fonts -ItemType Directory
 Invoke-WebRequest -Uri https://github.com/google/fonts/archive/main.zip -OutFile fonts.zip
 Expand-Archive .\fonts.zip .\Fonts\
 Get-ChildItem -Path .\Fonts\fonts-main\apache\ -Recurse -File -Filter *.ttf | Move-Item -Destination .\Fonts\
-Remove-Item .\fonts.zip, .\Fonts\fonts-main\ -Recurse -Force -Confirm:$false
+Remove-Item .\fonts.zip, .\Fonts -Recurse -Force -Confirm:$false
 
 # Fira Code
 Install-GitHub -Name "FiraCode" -Repo "tonsky/FiraCode" -Location ".\FiraCode"
