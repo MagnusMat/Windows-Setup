@@ -616,6 +616,7 @@ $wingets += Add-Winget -Name "Obsidian" -ID "Obsidian.Obsidian"
 
 # Oh My Posh
 $wingets += Add-Winget -Name "Oh My Posh" -ID JanDeDobbeleer.OhMyPosh -Source "winget"
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/m365princess.omp.json" | Invoke-Expression
 
 # Onion Share
 $OnionShareParams = @{
