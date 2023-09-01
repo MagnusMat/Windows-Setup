@@ -499,6 +499,10 @@ $CPUZParams = @{
 }
 Install-Zip @CPUZParams
 
+# Dev Home
+$wingets += Add-Winget -Name "Dev Home" -ID "Microsoft.DevHome"
+
+
 # Discord
 $wingets += Add-Winget -Name "Discord" -ID "Discord.Discord"
 
