@@ -598,9 +598,6 @@ $wingets += Add-Winget -Name "Mozilla Thunderbird Beta" -ID "Mozilla.Thunderbird
 # MPEG-2
 $wingets += Add-Winget -Name "MPEG-2" -ID "9N95Q1ZZPMH4"
 
-# Nextcloud
-$wingets += Add-Winget -Name "Nextcloud" -ID "Nextcloud.NextcloudDesktop"
-
 # Notion
 $wingets += Add-Winget -Name "Notion" -ID "Notion.Notion"
 
