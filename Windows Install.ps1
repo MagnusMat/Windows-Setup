@@ -30,9 +30,15 @@ function Install-Zip {
         [string]$Location,
         [string]$URL
     )
-    Invoke-WebRequest $URL -OutFile "$Name.zip"
-    Expand-Archive "$Name.zip" $Location
-    Remove-Item "$Name.zip"
+    try {
+        Invoke-WebRequest $URL -OutFile "$Name.zip"
+        Expand-Archive "$Name.zip" $Location
+        Remove-Item "$Name.zip"
+        Write-Output "$Name installed successfully"
+    }
+    catch {
+        Write-Output "Failed to install $Name"
+    }
 }
 
 
@@ -42,9 +48,15 @@ function Install-EXE {
         [string]$ArgumentList,
         [string]$URL
     )
-    Invoke-WebRequest $URL -OutFile "$Name.exe"
-    Start-Process -FilePath .\"$Name.exe" -Wait -ArgumentList $ArgumentList
-    Remove-Item "$Name.exe"
+    try {
+        Invoke-WebRequest $URL -OutFile "$Name.exe"
+        Start-Process -FilePath .\"$Name.exe" -Wait -ArgumentList $ArgumentList
+        Remove-Item "$Name.exe"
+        Write-Output "$Name installed successfully"
+    }
+    catch {
+        Write-Output "Failed to install $Name"
+    }
 }
 
 
@@ -54,9 +66,15 @@ function Install-MSI {
         [string]$Location = "$InstallDrive\",
         [string]$URL
     )
-    Invoke-WebRequest $URL -OutFile "$Name.msi"
-    Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.msi`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "/passive", "/norestart"
-    Remove-Item "$Name.msi"
+    try {
+        Invoke-WebRequest $URL -OutFile "$Name.msi"
+        Start-Process msiexec.exe -Wait -ArgumentList "/package `"$Name.msi`"", "INSTALLDIR=`"$Location`"", "TARGETDIR=`"$Location`"", "/passive", "/norestart"
+        Remove-Item "$Name.msi"
+        Write-Output "$Name installed successfully"
+    }
+    catch {
+        Write-Output "Failed to install $Name"
+    }
 }
 
 
@@ -95,6 +113,7 @@ function Install-GitHub {
         Write-Output "Archive type not supported"
     }
     Remove-Item "$Name.$FileType"
+    Write-Output "$Name installed successfully"
 }
 
 
@@ -116,6 +135,7 @@ function Install-Wingets {
         else {
             winget install -e --id $item.ID --location $item.Location --source $item.Source --accept-package-agreements --accept-source-agreements
         }
+        Write-Output "$item.Name installed successfully"
     }
 }
 
@@ -715,7 +735,7 @@ Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") "$InstallDr
 gh release download -R transmission/transmission --pattern "*-x64.msi"
 
 $transmissionFiles = Get-ChildItem -Path "." -Filter "transmission-*-x64.msi" # It will download two files, so we need to remove one
-$transmissionFileToDelete = $transmissionFiles | Where-Object {$_.Name -like "*qt5*"}
+$transmissionFileToDelete = $transmissionFiles | Where-Object { $_.Name -like "*qt5*" }
 if ($transmissionFileToDelete) {
     Remove-Item -Path $transmissionFileToDelete.FullName -Force
 }
