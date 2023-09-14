@@ -550,6 +550,13 @@ $wingets += Add-Winget -Name "Figma" -ID "Figma.Figma"
 # GitHub Desktop
 $wingets += Add-Winget -Name "GitHub Desktop" -ID "GitHub.GitHubDesktop"
 
+# Godot
+$GodotParams = @{
+    Name    = "Godot"
+    Repo    = "godotengine/godot"
+    Pattern = "*_win64.zip "
+}
+
 # Handbrake
 $HandBrakeParams = @{
     Name    = "HandBrake"
