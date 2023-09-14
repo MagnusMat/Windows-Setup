@@ -556,6 +556,7 @@ $GodotParams = @{
     Repo    = "godotengine/godot"
     Pattern = "*_win64.zip "
 }
+Install-GitHub @GodotParams
 
 # Handbrake
 $HandBrakeParams = @{
