@@ -554,7 +554,7 @@ $wingets += Add-Winget -Name "GitHub Desktop" -ID "GitHub.GitHubDesktop"
 $GodotParams = @{
     Name    = "Godot"
     Repo    = "godotengine/godot"
-    Pattern = "*_win64.zip "
+    Pattern = "*_win64.zip"
 }
 Install-GitHub @GodotParams
 
