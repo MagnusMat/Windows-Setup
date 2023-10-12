@@ -195,9 +195,6 @@ $ConfirmationGames = Set-Confirmation -Question "Do you want to install Games y/
 # Emulator prompt
 $ConfirmationEmulators = Set-Confirmation -Question "Do you want to install Emulators y/n"
 
-# Tex Prompt
-$ConfirmationTex = Set-Confirmation -Question "Do you want to install LaTeX y/n"
-
 # Windows Terminal Settings Prompt
 $ConfirmationWindowsTerm = Set-Confirmation -Question "Do you want to replace the Windows Terminal Settings? This will not work if you have a Windows Terminal instance open y/n"
 
@@ -511,9 +508,6 @@ $CPUZParams = @{
 }
 Install-Zip @CPUZParams
 
-# Dev Home
-$wingets += Add-Winget -Name "Dev Home" -ID "Microsoft.DevHome"
-
 # Discord
 $wingets += Add-Winget -Name "Discord" -ID "Discord.Discord"
 
@@ -525,15 +519,6 @@ $wingets += Add-Winget -Name "Draw.io" -ID "JGraph.Draw"
 
 # Facebook Messenger
 $wingets += Add-Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
-
-# Fan Control
-$FanControlParams = @{
-    Name     = "Fan Control"
-    Repo     = "Rem0o/FanControl.Releases"
-    Pattern  = "FanControl_net_7_0.zip"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Fan Control")
-}
-Install-GitHub @FanControlParams
 
 # Figma
 $wingets += Add-Winget -Name "Figma" -ID "Figma.Figma"
@@ -703,19 +688,6 @@ Remove-Item SyncTrayzor.exe
 
 # TeraCopy
 $wingets += Add-Winget -Name "TeraCopy" -ID "CodeSector.TeraCopy"
-
-# TexLive
-if ($confirmationTex -eq 'y') {
-    Invoke-WebRequest "https://mirrors.mit.edu/CTAN/systems/texlive/tlnet/install-tl.zip" -OutFile "Tex Live.zip"
-    Expand-Archive "Tex Live.zip" ".\"
-    Remove-Item "Tex Live.zip"
-
-    Get-ChildItem "install-tl-*" | Rename-Item -NewName {
-        $_.Name -replace $_.Name, "install-tl"
-    }
-
-    .\install-tl\install-tl-windows.bat -no-gui -texdir (Join-Path -Path "$InstallDrive" -ChildPath "Tex Live") -no-interaction
-}
 
 # Tor Browser
 $TorParams = @{
