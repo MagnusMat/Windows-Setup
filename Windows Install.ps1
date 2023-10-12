@@ -497,14 +497,6 @@ Remove-Item -Path op.zip
 # 3D Viewer
 $wingets += Add-Winget -Name "3D Viewer" -ID "9NBLGGH42THS"
 
-# Amazon Send to Kindle
-$AmazonParams = @{
-    Name         = "Amazon Send to Kindle"
-    ArgumentList = @("/norestart", "/S")
-    URL          = "https://s3.amazonaws.com/sendtokindle/SendToKindleForPC-installer.exe"
-}
-Install-EXE @AmazonParams
-
 # Blender
 $wingets += Add-Winget -Name "Blender" -ID "BlenderFoundation.Blender"
 
@@ -521,7 +513,6 @@ Install-Zip @CPUZParams
 
 # Dev Home
 $wingets += Add-Winget -Name "Dev Home" -ID "Microsoft.DevHome"
-
 
 # Discord
 $wingets += Add-Winget -Name "Discord" -ID "Discord.Discord"
@@ -620,8 +611,8 @@ Remove-Item MiniBin.exe
 # Mozilla Firefox
 $wingets += Add-Winget -Name "Mozilla Firefox" -ID "Mozilla.Firefox"
 
-# Mozilla Thunderbird Beta
-$wingets += Add-Winget -Name "Mozilla Thunderbird Beta" -ID "Mozilla.Thunderbird.Beta"
+# Mozilla Thunderbird
+$wingets += Add-Winget -Name "Mozilla Thunderbird" -ID "Mozilla.Thunderbird"
 
 # MPEG-2
 $wingets += Add-Winget -Name "MPEG-2" -ID "9N95Q1ZZPMH4"
@@ -639,9 +630,6 @@ $OBSStudioParams = @{
     Location = (Join-Path -Path "$InstallDrive" -ChildPath "OBS Studio")
 }
 Install-GitHub @OBSStudioParams
-
-# Obsidian
-$wingets += Add-Winget -Name "Obsidian" -ID "Obsidian.Obsidian"
 
 # Oh My Posh
 $wingets += Add-Winget -Name "Oh My Posh" -ID JanDeDobbeleer.OhMyPosh -Source "winget"
@@ -838,17 +826,6 @@ if ($confirmationGames -eq 'y') {
 
     # GOG Galaxy
     $wingets += Add-Winget -Name "GOG Galaxy" -ID "GOG.Galaxy" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy")
-
-    # Minecraft
-    $wingets += Add-Winget -Name "Minecraft" -ID "Mojang.MinecraftLauncher"
-
-    # Playnite
-    $PlayniteParams = @{
-        Name     = "Playnite"
-        Repo     = "JosefNemec/Playnite"
-        Location = (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Playnite")
-    }
-    Install-GitHub @PlayniteParams
 
     # Steam
     $wingets += Add-Winget -Name "Steam" -ID "Valve.Steam" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Steam")
