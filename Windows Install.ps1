@@ -348,22 +348,6 @@ $developmentToolWingets = @()
 # AspNet Core 7
 $developmentToolWingets += Add-Winget -Name "AspNet Core 7" -ID "Microsoft.DotNet.AspNetCore.7"
 
-# Clangd
-gh release download -R llvm/llvm-project --pattern "LLVM-*-win64.exe"
-
-Get-ChildItem LLVM-*-win64.exe | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "LLVM.exe"
-}
-
-Start-Process -FilePath .\LLVM.exe -Wait -ArgumentList "/S"
-remove-item LLVM.exe
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";C:\Program Files\LLVM\bin",
-    [EnvironmentVariableTarget]::User
-)
-
 # DotNet 7 SDK
 $developmentToolWingets += Add-Winget -Name "DotNet 7 SDK" -ID "Microsoft.DotNet.SDK.7"
 
@@ -387,31 +371,6 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
 
 # Microsoft 2015 VCRedistributables
 $developmentToolWingets += Add-Winget -Name "Microsoft 2015 VCRedistributables" -ID "Microsoft.VCRedist.2015+.x64"
-
-# Msys2
-gh release download -R msys2/msys2-installer --pattern "msys2-x86_64-*.exe"
-Get-ChildItem "*.exe" | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "msys2.exe"
-}
-
-.\msys2.exe in --confirm-command --accept-messages --root "$InstallDrive/Msys2-64"
-
-Remove-Item msys2.exe
-
-Set-Location "$InstallDrive\Msys2-64"
-.\msys2.exe bash -l -c "pacman -Syu --noconfirm"
-Start-Sleep(80)
-.\msys2_shell.cmd -l -c "pacman -Syu --noconfirm" | Out-Null
-.\msys2.exe bash -l -c "pacman -S --needed base-devel mingw-w64-x86_64-toolchain --noconfirm"
-Start-Sleep(180)
-
-Set-Location ~
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Msys2-64\mingw64\bin",
-    [EnvironmentVariableTarget]::User
-)
 
 # Pandoc
 Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
@@ -446,19 +405,6 @@ if ($confirmationNvidiaAMD -eq 'n') {
 
     # Nvidia GeForce Experience
     $wingets += Add-Winget -Name "Nvidia GeForce Experience" -ID "Nvidia.GeForceExperience"
-}
-
-if ($confirmationLaptopDesktop -eq 'd') {
-    # Hue Sync
-    $wingets += Add-Winget -Name "Hue Sync" -ID "Philips.HueSync"
-
-    # Locale Emulator
-    $LocaleEmulatorParams = @{
-        Name     = "Locale Emulator"
-        Repo     = "xupefei/Locale-Emulator"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Locale Emulator")
-    }
-    Install-GitHub @LocaleEmulatorParams
 }
 
 # 1Password
@@ -544,9 +490,6 @@ Install-GitHub @HandBrakeParams
 
 # Inkscape
 $wingets += Add-Winget -Name "Inkscape" -ID "Inkscape.Inkscape"
-
-# JDK Adoptium JDK 17
-$wingets += Add-Winget -Name "JDK Adoptium JDK 17" -ID "EclipseAdoptium.Temurin.17.JDK"
 
 # Jupyter Notebook
 pip install jupyter
