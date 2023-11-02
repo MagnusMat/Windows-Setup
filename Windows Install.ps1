@@ -469,6 +469,9 @@ $wingets += Add-Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 # Figma
 $wingets += Add-Winget -Name "Figma" -ID "Figma.Figma"
 
+# Fluent Reader
+$wingets += Add-Winget -Name "Fluent Reader" -ID "yang991178.fluent-reader"
+
 # GitHub Desktop
 $wingets += Add-Winget -Name "GitHub Desktop" -ID "GitHub.GitHubDesktop"
 
