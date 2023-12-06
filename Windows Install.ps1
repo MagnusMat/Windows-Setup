@@ -691,6 +691,9 @@ if ($confirmationWindowsTerm -eq 'y') {
     Set-Location ~
 }
 
+# WingetUI
+$wingets += Add-Winget -Name "WingetUI" -ID "SomePythonThings.WingetUIStore"
+
 # WinSCP
 $wingets += Add-Winget -Name "WinSCP" -ID "WinSCP.WinSCP"
 
