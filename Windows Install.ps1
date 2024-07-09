@@ -463,11 +463,22 @@ $wingets += Add-Winget -Name "Docker Desktop" -ID "Docker.DockerDesktop"
 # Draw.io
 $wingets += Add-Winget -Name "Draw.io" -ID "JGraph.Draw"
 
+# Ente Auth
+$EnteAuthParams = @{
+    Name    = "Ente Auth"
+    Repo    = "ente-io/ente"
+    Pattern = "ente-auth-*-installer.exe "
+}
+Install-GitHub @$EnteAuthParams
+
 # Facebook Messenger
 $wingets += Add-Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
 # Figma
 $wingets += Add-Winget -Name "Figma" -ID "Figma.Figma"
+
+# Floorp Browser
+$wingets += Add-Winget -Name "Floorp Browser" -ID "Ablaze.Floorp"
 
 # Fluent Reader
 $wingets += Add-Winget -Name "Fluent Reader" -ID "yang991178.fluent-reader"
@@ -538,9 +549,6 @@ Get-ChildItem "MiniBin-*.exe" | Rename-Item -NewName {
 
 Start-Process -FilePath .\Minibin.exe -Wait -ArgumentList "/S", "/D=D:\Minibin"
 Remove-Item MiniBin.exe
-
-# Mozilla Firefox
-$wingets += Add-Winget -Name "Mozilla Firefox" -ID "Mozilla.Firefox"
 
 # Mozilla Thunderbird
 $wingets += Add-Winget -Name "Mozilla Thunderbird" -ID "Mozilla.Thunderbird"
