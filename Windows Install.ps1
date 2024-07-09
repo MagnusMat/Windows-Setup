@@ -712,13 +712,8 @@ $WizTreeParams = @{
 }
 Install-Zip @WizTreeParams
 
-# Yubikey Manager
-$YubikeyManagerParams = @{
-    Name         = "Yubikey Manager"
-    ArgumentList = @("/S", "/D=$InstallDrive\Yubikey Manager")
-    URL          = "https://developers.yubico.com/yubikey-manager-qt/Releases/yubikey-manager-qt-latest-win32.exe"
-}
-Install-EXE @YubikeyManagerParams
+# Yubico Authenticator
+$wingets += Add-Winget -Name "Yubico Authenticator" -ID "Yubico.Authenticator"
 
 # -------------------- Game Launchers & Emulators --------------------
 
