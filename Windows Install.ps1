@@ -195,6 +195,12 @@ $ConfirmationGames = Set-Confirmation -Question "Do you want to install Games y/
 # Emulator prompt
 $ConfirmationEmulators = Set-Confirmation -Question "Do you want to install Emulators y/n"
 
+# Microsoft Teams
+$ConfirmationTeams = Set-Confirmation -Question "Do you want to install Microsoft Teams? y/n"
+
+# Unity Hub
+$ConfirmationUnity = Set-Confirmation -Question "Do you want to install Unity Hub? y/n"
+
 # Windows Terminal Settings Prompt
 $ConfirmationWindowsTerm = Set-Confirmation -Question "Do you want to replace the Windows Terminal Settings? This will not work if you have a Windows Terminal instance open y/n"
 
@@ -324,7 +330,7 @@ Remove-Item Fonts -Recurse -Force -Confirm:$false
 
 # Create a list of urls
 $urls = @(
-    "https://github.com/ranmaru22/firefox-vertical-tabs"
+    "https://languagetool.org/insights/post/product-libreoffice/#how-to-enable-languagetool-on-libreoffice"
 )
 
 # Drivers and Software for HP Laptops
@@ -474,9 +480,6 @@ Install-GitHub @$EnteAuthParams
 # Facebook Messenger
 $wingets += Add-Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
-# Figma
-$wingets += Add-Winget -Name "Figma" -ID "Figma.Figma"
-
 # Floorp Browser
 $wingets += Add-Winget -Name "Floorp Browser" -ID "Ablaze.Floorp"
 
@@ -521,16 +524,10 @@ $LibreHardwareParams = @{
 Install-GitHub @LibreHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive/Libre Hardware Monitor" -ChildPath "LibreHardwareMonitor.exe") "Libre Hardware Monitor.exe"
 
-# Mendeley
-$MendeleyParams = @{
-    Name         = "Mendeley"
-    ArgumentList = @("/norestart", "/S")
-    URL          = Get-DownloadLink -URL "https://www.mendeley.com/download-reference-manager/windows" -DownloadURL "https://static.mendeley.com/bin/desktop/*.exe"
+if ($confirmationTeams -eq 'y') {
+    # Microsoft Teams
+    $wingets += Add-Winget -Name "Microsoft Teams" -ID "Microsoft.Teams"
 }
-Install-EXE @MendeleyParams
-
-# Microsoft Teams
-$wingets += Add-Winget -Name "Microsoft Teams" -ID "Microsoft.Teams"
 
 # Microsoft Whiteboard
 $wingets += Add-Winget -Name "Microsoft Whiteboard" -ID "9MSPC6MP8FM4"
@@ -671,16 +668,18 @@ $transmissionInstallDir = (Join-Path -Path "$InstallDrive" -ChildPath "Transmiss
 Start-Process msiexec.exe -Wait -ArgumentList "/package transmission.msi", "INSTALLDIR=`"$transmissionInstallDir`"", "TARGETDIR=`"$transmissionInstallDir`"", "/passive", "/norestart"
 Remove-Item transmission.msi
 
-# Unity Hub
-$UnityHubParams = @{
-    Name         = "Unity Hub"
-    ArgumentList = @("/S", "/D=$InstallDrive\Unity")
-    URL          = "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe"
-}
-Install-EXE @UnityHubParams
+if ($ConfirmationUnity -eq 'y') {
+    # Unity Hub
+    $UnityHubParams = @{
+        Name         = "Unity Hub"
+        ArgumentList = @("/S", "/D=$InstallDrive\Unity")
+        URL          = "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe"
+    }
+    Install-EXE @UnityHubParams
 
-Move-Item C:\Program\* "$InstallDrive\Unity\"
-Remove-Item C:\Program
+    Move-Item C:\Program\* "$InstallDrive\Unity\"
+    Remove-Item C:\Program
+}
 
 # Visual Studio Code
 $wingets += Add-Winget -Name "Visual Studio Code" -ID "Microsoft.VisualStudioCode"
