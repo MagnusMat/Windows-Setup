@@ -524,6 +524,9 @@ $LibreHardwareParams = @{
 Install-GitHub @LibreHardwareParams
 Rename-Item (Join-Path -Path "$InstallDrive/Libre Hardware Monitor" -ChildPath "LibreHardwareMonitor.exe") "Libre Hardware Monitor.exe"
 
+# Libre Office
+$wingets += Add-Winget -Name "Libre Office" -ID "TheDocumentFoundation.LibreOffice"
+
 if ($confirmationTeams -eq 'y') {
     # Microsoft Teams
     $wingets += Add-Winget -Name "Microsoft Teams" -ID "Microsoft.Teams"
