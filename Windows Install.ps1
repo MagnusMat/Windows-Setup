@@ -593,9 +593,6 @@ Get-ChildItem $InstallDrive\pdfsam-*-windows | Rename-Item -NewName {
     $_.Name -replace $_.Name, "PDF Sam"
 }
 
-# Postman
-$wingets += Add-Winget -Name "Postman" -ID "Postman.Postman"
-
 # PowerToys
 $wingets += Add-Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
 
@@ -703,9 +700,6 @@ $wingets += Add-Winget -Name "WingetUI" -ID "SomePythonThings.WingetUIStore"
 
 # WinSCP
 $wingets += Add-Winget -Name "WinSCP" -ID "WinSCP.WinSCP"
-
-# Wireshark
-$wingets += Add-Winget -Name "Wireshark" -ID "WiresharkFoundation.Wireshark"
 
 # WizTree
 $WizTreeParams = @{
