@@ -343,6 +343,11 @@ if ($confirmationNvidiaAMD -eq 'a') {
     $urls += "https://www.amd.com/en/support"
 }
 
+# Drivers and Software for Nvidia RTX
+if ($confirmationNvidiaAMD -eq 'n') {
+     $urls += "https://www.nvidia.com/en-us/software/nvidia-app/"
+}
+
 foreach ($url in $urls) {
     Start-Process $url
 }
@@ -351,17 +356,17 @@ foreach ($url in $urls) {
 
 $developmentToolWingets = @()
 
-# AspNet Core 7
-$developmentToolWingets += Add-Winget -Name "AspNet Core 7" -ID "Microsoft.DotNet.AspNetCore.7"
+# AspNet Core 8
+$developmentToolWingets += Add-Winget -Name "AspNet Core 8" -ID "Microsoft.DotNet.AspNetCore.8"
 
-# DotNet 7 SDK
-$developmentToolWingets += Add-Winget -Name "DotNet 7 SDK" -ID "Microsoft.DotNet.SDK.7"
+# DotNet 8 SDK
+$developmentToolWingets += Add-Winget -Name "DotNet 8 SDK" -ID "Microsoft.DotNet.SDK.8"
 
-# DotNet 7 Runtime
-$developmentToolWingets += Add-Winget -Name "DotNet 7 Runtime" -ID "Microsoft.DotNet.Runtime.7"
+# DotNet 8 Runtime
+$developmentToolWingets += Add-Winget -Name "DotNet 8 Runtime" -ID "Microsoft.DotNet.Runtime.8"
 
-# DotNet 7 Desktop Runtime
-$developmentToolWingets += Add-Winget -Name "DotNet 7 Desktop Runtime" -ID "Microsoft.DotNet.DesktopRuntime.7"
+# DotNet 8 Desktop Runtime
+$developmentToolWingets += Add-Winget -Name "DotNet 8 Desktop Runtime" -ID "Microsoft.DotNet.DesktopRuntime.8"
 
 # ffmpeg
 Install-GitHub -Name "ffmpeg" -Repo "GyanD/codexffmpeg" -Pattern "*-full_build.zip"
@@ -390,11 +395,8 @@ Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
     [EnvironmentVariableTarget]::User
 )
 
-# Visual Studio 2022 Enterprise
-$developmentToolWingets += Add-Winget -Name "Visual Studio 2022 Enterprise" -ID "Microsoft.VisualStudio.2022.Enterprise"
-
-# Visual Studio 2019 Build Tools
-$developmentToolWingets += Add-Winget -Name "Visual Studio 2019 Build Tools" -ID "Microsoft.VisualStudio.2019.BuildTools"
+# Visual Studio 2022 Community
+$developmentToolWingets += Add-Winget -Name "Visual Studio 2022 Community" -ID "Microsoft.VisualStudio.2022.Community"
 
 Install-Wingets -items $developmentToolWingets
 
@@ -402,46 +404,11 @@ Install-Wingets -items $developmentToolWingets
 
 $wingets = @()
 
-if ($confirmationNvidiaAMD -eq 'n') {
-    # Nvidia Broadcast
-    $wingets += Add-Winget -Name "Nvidia Broadcast" -ID "Nvidia.Broadcast"
-
-    # Nvidia Control Panel
-    $wingets += Add-Winget -Name "Nvidia Control Panel" -ID "9NF8H0H7WMLT"
-
-    # Nvidia GeForce Experience
-    $wingets += Add-Winget -Name "Nvidia GeForce Experience" -ID "Nvidia.GeForceExperience"
-}
-
 # 1Password
-$1PasswordParams = @{
-    Name         = "1Password"
-    ArgumentList = @("--silent")
-    URL          = "https://downloads.1password.com/win/1PasswordSetup-latest.exe"
-}
-Install-EXE @1PasswordParams
+$wingets += Add-Winget -Name "1Password" -ID "AgileBits.1Password"
 
 # 1Password CLI
-$arch = "64-bit"
-
-switch ($arch) {
-    '64-bit' { $opArch = 'amd64'; break }
-    '32-bit' { $opArch = '386'; break }
-    Default { Write-Error "Sorry, your operating system architecture '$arch' is unsupported" -ErrorAction Stop }
-}
-
-$OnePassinstallDir = Join-Path -Path "$InstallDrive" -ChildPath '1Password CLI'
-
-Invoke-WebRequest -Uri "https://cache.agilebits.com/dist/1P/op2/pkg/v2.4.1/op_windows_$($opArch)_v2.4.1.zip" -OutFile op.zip
-Expand-Archive -Path op.zip -DestinationPath $OnePassinstallDir -Force
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$OnePassinstallDir",
-    [EnvironmentVariableTarget]::User
-)
-
-Remove-Item -Path op.zip
+$wingets += Add-Winget -Name "1Password CLI" -ID "1password-cli"
 
 # 3D Viewer
 $wingets += Add-Winget -Name "3D Viewer" -ID "9NBLGGH42THS"
@@ -453,12 +420,7 @@ $wingets += Add-Winget -Name "Blender" -ID "BlenderFoundation.Blender"
 $wingets += Add-Winget -Name "Calibre" -ID "calibre.calibre"
 
 # CPU-Z
-$CPUZParams = @{
-    Name     = "CPU-Z"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "CPU-Z")
-    URL      = "https://download.cpuid.com/cpu-z/cpu-z_2.01-en.zip"
-}
-Install-Zip @CPUZParams
+$wingets += Add-Winget -Name "CPU-Z" -ID "CPUID.CPU-Z"
 
 # Discord
 $wingets += Add-Winget -Name "Discord" -ID "Discord.Discord"
@@ -497,23 +459,11 @@ $GodotParams = @{
 }
 Install-GitHub @GodotParams
 
-# Handbrake
-$HandBrakeParams = @{
-    Name    = "HandBrake"
-    Repo    = "HandBrake/HandBrake"
-    Pattern = "*-x86_64-Win_GUI.zip"
-}
-Install-GitHub @HandBrakeParams
-
 # Inkscape
 $wingets += Add-Winget -Name "Inkscape" -ID "Inkscape.Inkscape"
 
 # Jupyter Notebook
 pip install jupyter
-
-# LaTeX-OCR
-pip install torch torchvision torchaudio
-pip install pix2tex[gui]
 
 # Libre Hardware Monitor
 $LibreHardwareParams = @{
@@ -527,10 +477,16 @@ Rename-Item (Join-Path -Path "$InstallDrive/Libre Hardware Monitor" -ChildPath "
 # Libre Office
 $wingets += Add-Winget -Name "Libre Office" -ID "TheDocumentFoundation.LibreOffice"
 
+# Microsoft Teams
 if ($confirmationTeams -eq 'y') {
-    # Microsoft Teams
     $wingets += Add-Winget -Name "Microsoft Teams" -ID "Microsoft.Teams"
 }
+
+# LocalSend
+$wingets += Add-Winget -Name "LocalSend" -ID "localsend"
+
+# LogSeq
+$wingets += Add-Winget -Name "LogSeq" -ID "Logseq.Logseq"
 
 # Microsoft Whiteboard
 $wingets += Add-Winget -Name "Microsoft Whiteboard" -ID "9MSPC6MP8FM4"
@@ -559,52 +515,29 @@ $wingets += Add-Winget -Name "MPEG-2" -ID "9N95Q1ZZPMH4"
 # Notion
 $wingets += Add-Winget -Name "Notion" -ID "Notion.Notion"
 
-# NVM for Windows
-$wingets += Add-Winget -Name "NVM for Windows" -ID "CoreyButler.NVMforWindows"
-
 # OBS Studio
-$OBSStudioParams = @{
-    Name     = "OBS Studio"
-    Repo     = "obsproject/obs-studio"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "OBS Studio")
-}
-Install-GitHub @OBSStudioParams
+$wingets += Add-Winget -Name "OBS Studio" -ID "XPFFH613W8V6LV"
 
 # Oh My Posh
 $wingets += Add-Winget -Name "Oh My Posh" -ID JanDeDobbeleer.OhMyPosh -Source "winget"
 
-# Onion Share
-$OnionShareParams = @{
-    Name     = "Onion Share"
-    Repo     = "onionshare/onionshare"
-    Pattern  = "*-win64-*.msi"
-    Location = (Join-Path -Path "$InstallDrive" -ChildPath "Onion Share")
-    FileType = "msi"
-}
-Install-GitHub @OnionShareParams
-
 # PDF Sam
-$PDFSamParams = @{
-    Name     = "PDF Sam"
-    Repo     = "torakiki/pdfsam"
-    Pattern  = "pdfsam-*-windows.zip"
-    Location = "$InstallDrive"
-}
-Install-GitHub @PDFSamParams
-
-Get-ChildItem $InstallDrive\pdfsam-*-windows | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "PDF Sam"
-}
+$wingets += Add-Winget -Name "PDF Sam" -ID "PDFsam.PDFsam"
 
 # PowerToys
 $wingets += Add-Winget -Name "PowerToys" -ID "Microsoft.PowerToys"
 
-# Proton Drive
-Invoke-WebRequest (Get-DownloadLink -URL "https://proton.me/drive/download" -DownloadURL "https://proton.me/download/drive/windows/*.exe") -OutFile ProtonDrive.exe
-Move-Item .\ProtonDrive.exe .\Downloads\ProtonDrive.exe
+# ProtonDrive
+$wingets += Add-Winget -Name "ProtonDrive" -ID "Proton.ProtonDrive"
+
+# ProtonMail
+$wingets += Add-Winget -Name "ProtonMail" -ID "Proton.ProtonMail"
+
+# ProtonPass
+$wingets += Add-Winget -Name "ProtonPass" -ID "Proton.ProtonPass"
 
 # ProtonVPN
-$wingets += Add-Winget -Name "ProtonVPN" -ID "ProtonTechnologies.ProtonVPN"
+$wingets += Add-Winget -Name "ProtonVPN" -ID "Proton.ProtonVPN"
 
 # RustDesk
 gh release download -R rustdesk/rustdesk --pattern "*_64.exe"
@@ -617,25 +550,10 @@ New-Item -Path $InstallDrive\RustDesk -ItemType Directory
 Move-Item .\RustDesk.exe $InstallDrive\RustDesk\RustDesk.exe
 
 # Shotcut
-gh release download -R mltframework/shotcut --pattern "*.zip"
-
-Get-ChildItem "shotcut-*.zip" | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "Shotcut.zip"
-}
-
-Expand-Archive Shotcut.zip $InstallDrive\
-
-Remove-Item Shotcut.zip
+$wingets += Add-Winget -Name "Shotcut" -ID "Meltytech.Shotcut"
 
 # SyncTrayzor
-gh release download -R canton7/SyncTrayzor --pattern "*-x64.exe"
-
-Get-ChildItem *.exe | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "SyncTrayzor.exe"
-}
-
-.\SyncTrayzor.exe /SILENT
-Remove-Item SyncTrayzor.exe
+$wingets += Add-Winget -Name "SyncTrayzor" -ID "SyncTrayzor.SyncTrayzor"
 
 # TeraCopy
 $wingets += Add-Winget -Name "TeraCopy" -ID "CodeSector.TeraCopy"
@@ -651,34 +569,11 @@ Install-EXE @TorParams
 Move-Item ([Environment]::GetFolderPath("Desktop") + "\Tor Browser") "$InstallDrive\Tor Browser"
 
 # Transmission
-gh release download -R transmission/transmission --pattern "*-x64.msi"
+$wingets += Add-Winget -Name "Transmission" -ID "Transmission.Transmission"
 
-$transmissionFiles = Get-ChildItem -Path "." -Filter "transmission-*-x64.msi" # It will download two files, so we need to remove one
-$transmissionFileToDelete = $transmissionFiles | Where-Object { $_.Name -like "*qt5*" }
-if ($transmissionFileToDelete) {
-    Remove-Item -Path $transmissionFileToDelete.FullName -Force
-}
-
-Get-ChildItem "transmission-*-x64.msi" | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "transmission.msi"
-}
-
-$transmissionInstallDir = (Join-Path -Path "$InstallDrive" -ChildPath "Transmission")
-
-Start-Process msiexec.exe -Wait -ArgumentList "/package transmission.msi", "INSTALLDIR=`"$transmissionInstallDir`"", "TARGETDIR=`"$transmissionInstallDir`"", "/passive", "/norestart"
-Remove-Item transmission.msi
-
+# Unity Hub
 if ($ConfirmationUnity -eq 'y') {
-    # Unity Hub
-    $UnityHubParams = @{
-        Name         = "Unity Hub"
-        ArgumentList = @("/S", "/D=$InstallDrive\Unity")
-        URL          = "https://public-cdn.cloud.unity3d.com/hub/prod/UnityHubSetup.exe"
-    }
-    Install-EXE @UnityHubParams
-
-    Move-Item C:\Program\* "$InstallDrive\Unity\"
-    Remove-Item C:\Program
+    $wingets += Add-Winget -Name "Unity Hub" -ID "Unity.UnityHub" -Location "$InstallDrive\Unity Hub"
 }
 
 # Visual Studio Code
@@ -697,9 +592,6 @@ if ($confirmationWindowsTerm -eq 'y') {
     Set-Content -Path 'settings.json' -Value (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MagnusMat/Windows-Terminal-Setup/main/Terminal%20settings.json").Content
     Set-Location ~
 }
-
-# WingetUI
-$wingets += Add-Winget -Name "WingetUI" -ID "SomePythonThings.WingetUIStore"
 
 # WinSCP
 $wingets += Add-Winget -Name "WinSCP" -ID "WinSCP.WinSCP"
@@ -727,22 +619,11 @@ if ($confirmationGames -eq 'y') {
     }
     Install-GitHub @ArchiSteamFarmParams
 
-    # Epic Games
-    $EpicGamesParams = @{
-        Name     = "Epic Games"
-        Location = (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Epic Games")
-        URL      = "https://epicgames-download1.akamaized.net/Builds/UnrealEngineLauncher/Installers/Win32/EpicInstaller-13.3.0.msi?launcherfilename=EpicInstaller-13.3.0.msi"
-    }
-    Install-MSI @EpicGamesParams
+    # Battle.net
+    $wingets += Add-Winget -Name "Battle.net" -ID "XPDM5VSMTKQLBJ"
 
-    # Global Steam Controller
-    $GloSCParams = @{
-        Name     = "GloSC"
-        Repo     = "Alia5/GlosSI"
-        Location = (Join-Path -Path "$InstallDrive" -ChildPath "Global Steam Controller")
-        Version  = "0.0.7.0"
-    }
-    Install-GitHub @GloSCParams
+    # Epic Games
+    $wingets += Add-Winget -Name "Epic Games Store" -ID "EpicGames.EpicGamesLauncher" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Epic Games")
 
     # GOG Galaxy
     $wingets += Add-Winget -Name "GOG Galaxy" -ID "GOG.Galaxy" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "GOG Galaxy")
@@ -754,10 +635,10 @@ if ($confirmationGames -eq 'y') {
     $wingets += Add-Winget -Name "Ubisoft Connect" -ID "Ubisoft.Connect" -Location (Join-Path -Path "$InstallDrive\Game Launchers" -ChildPath "Ubisoft Connect")
 
     # Xbox
-    $wingets += Add-Winget "Xbox" -ID "9MV0B5HZVK9Z"
+    $wingets += Add-Winget -Name "Xbox" -ID "9MV0B5HZVK9Z"
 
     # Xbox Accessories
-    $wingets += Add-Winget "Xbox Accessories" -ID "9NBLGGH30XJ3"
+    $wingets += Add-Winget -Name "Xbox Accessories" -ID "9NBLGGH30XJ3"
 }
 
 if ($confirmationEmulators -eq 'y') {
@@ -798,17 +679,6 @@ if ($confirmationEmulators -eq 'y') {
     Move-Item Dolphin (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
     Remove-Item Dolphin.7z
 
-    # NoPayStation
-    $noPayStationLink = Get-DownloadLink -URL "https://nopaystation.com/" -DownloadURL "https://nopaystation.com/vita/npsReleases/*.exe"
-    Invoke-WebRequest "$noPayStationLink" -OutFile NoPayStation.exe
-
-    mkdir $InstallDrive\Emulators\NoPayStation
-    Move-Item NoPayStation.exe (Join-Path -Path "$InstallDrive\Emulators\NoPayStation" -ChildPath "NoPayStation.exe")
-    gh release download -R mmozeiko/pkg2zip --pattern "pkg2zip_64bit.zip"
-
-    Expand-Archive "pkg2zip_64bit.zip" (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "NoPayStation")
-    Remove-item pkg2zip_64bit.zip
-
     # PCSX2
     gh release download -R PCSX2/pcsx2 --pattern "*-portable.7z"
     Get-ChildItem "*.7z" | Rename-Item -NewName {
@@ -836,14 +706,6 @@ if ($confirmationEmulators -eq 'y') {
     }
     Install-Zip @PPSSPPParams
 
-    # Project64
-    $Project64Params = @{
-        Name     = "Project64"
-        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "Project64")
-        URL      = "https://www.pj64-emu.com/file/project64-3-0-0-5632-f83bee9/"
-    }
-    Install-Zip @Project64Params
-
     # QCMA
     gh release download -R codestation/qcma --pattern "*.exe"
     Get-ChildItem "Qcma_*.exe" | Rename-Item -NewName {
@@ -866,41 +728,6 @@ if ($confirmationEmulators -eq 'y') {
     Rename-Item RetroArch-Win64 RetroArch
     Move-Item RetroArch (Join-Path -Path "$InstallDrive" -ChildPath "Emulators")
     Remove-Item RetroArch.7z
-
-    # RPCS3
-    $RPCS3Params = @{
-        Name     = "RPCS3"
-        Repo     = "RPCS3/rpcs3-binaries-win"
-        Pattern  = "*.7z"
-        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "RPCS3")
-        FileType = "7z"
-    }
-    Install-GitHub @RPCS3Params
-
-    # Ryujinx
-    $RyujinxParams = @{
-        Name     = "Ryujinx"
-        Repo     = "Ryujinx/release-channel-master"
-        Pattern  = "ryujinx-*-win_x64.zip"
-        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "Ryujinx")
-    }
-    Install-GitHub @RyujinxParams
-
-    # SNES9X
-    $SNES9XParams = @{
-        Name     = "SNES9X"
-        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "SNES9X")
-        URL      = "https://dl.emulator-zone.com/download.php/emulators/snes/snes9x/snes9x-1.60-win32-x64.zip"
-    }
-    Install-Zip @SNES9XParams
-
-    # Visual Boy Advance
-    $VisualBoyAdvanceParams = @{
-        Name     = "Visual Boy Advance"
-        Location = (Join-Path -Path "$InstallDrive\Emulators" -ChildPath "Visual Boy Advance")
-        URL      = "https://dl.emulator-zone.com/download.php/emulators/gba/vboyadvance/VisualBoyAdvance-1.8.0-beta3.zip"
-    }
-    Install-Zip @VisualBoyAdvanceParams
 }
 
 # -------------------- Final Install of Wingets --------------------
