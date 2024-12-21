@@ -238,6 +238,7 @@ $env:PATH = $env:PATH + ";C:\Program Files\7-Zip"
 $env:PATH = $env:PATH + ";$env:USERPROFILE\AppData\Roaming\Python\Python311\Scripts"
 
 # Set PowerShell Profile
+# Link not working
 Invoke-WebRequest -Uri "https://raw.githubusercontent.com/MagnusMat/PowerShell-Scripts/main/Profile/Microsoft.PowerShell_profile.ps1" -OutFile Microsoft.Powershell_profile.ps1
 
 Copy-Item .\Microsoft.Powershell_profile.ps1 $env:USERPROFILE\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
@@ -273,6 +274,7 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
 python.exe -m pip install --upgrade pip --user
 
 # Install Windows Theme
+# Link not working
 Invoke-WebRequest -Uri https://github.com/MagnusMat/Windows-Setup/raw/6f36349404c969e2639bbe333fe7ed51c036e397/Desktop/Planets.deskthemepack -OutFile ./Planets.deskthemepack
 Start-Process -FilePath ./Planets.deskthemepack
 Remove-Item ./Planets.deskthemepack
@@ -280,12 +282,6 @@ Remove-Item ./Planets.deskthemepack
 # -------------------- Fonts --------------------
 
 New-Item Fonts -ItemType Directory
-
-# Google Fonts
-Invoke-WebRequest -Uri https://github.com/google/fonts/archive/main.zip -OutFile fonts.zip
-Expand-Archive .\fonts.zip .\Fonts\
-Get-ChildItem -Path .\Fonts\fonts-main\apache\ -Recurse -File -Filter *.ttf | Move-Item -Destination .\Fonts\
-Remove-Item .\fonts.zip, .\Fonts -Recurse -Force -Confirm:$false
 
 # Fira Code
 Install-GitHub -Name "FiraCode" -Repo "tonsky/FiraCode" -Location ".\FiraCode"
@@ -383,18 +379,6 @@ Get-ChildItem $InstallDrive\*-full_build | Rename-Item -NewName {
 # Microsoft 2015 VCRedistributables
 $developmentToolWingets += Add-Winget -Name "Microsoft 2015 VCRedistributables" -ID "Microsoft.VCRedist.2015+.x64"
 
-# Pandoc
-Install-GitHub -Name "Pandoc" -Repo "jgm/pandoc" -Pattern "*_64.zip"
-Get-ChildItem $InstallDrive\pandoc-* | Rename-Item -NewName {
-    $_.Name -replace $_.Name, "Pandoc"
-}
-
-[Environment]::SetEnvironmentVariable(
-    "Path",
-    [Environment]::GetEnvironmentVariable("Path", [EnvironmentVariableTarget]::User) + ";$InstallDrive\Pandoc",
-    [EnvironmentVariableTarget]::User
-)
-
 # Visual Studio 2022 Community
 $developmentToolWingets += Add-Winget -Name "Visual Studio 2022 Community" -ID "Microsoft.VisualStudio.2022.Community"
 
@@ -424,9 +408,6 @@ $wingets += Add-Winget -Name "CPU-Z" -ID "CPUID.CPU-Z"
 
 # Discord
 $wingets += Add-Winget -Name "Discord" -ID "Discord.Discord"
-
-# Docker Desktop
-$wingets += Add-Winget -Name "Docker Desktop" -ID "Docker.DockerDesktop"
 
 # Draw.io
 $wingets += Add-Winget -Name "Draw.io" -ID "JGraph.Draw"
