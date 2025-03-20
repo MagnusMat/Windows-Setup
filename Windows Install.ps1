@@ -423,12 +423,6 @@ Install-GitHub @$EnteAuthParams
 # Facebook Messenger
 $wingets += Add-Winget -Name "Facebook Messenger" -ID "9WZDNCRF0083"
 
-# Floorp Browser
-$wingets += Add-Winget -Name "Floorp Browser" -ID "Ablaze.Floorp"
-
-# Fluent Reader
-$wingets += Add-Winget -Name "Fluent Reader" -ID "yang991178.fluent-reader"
-
 # GitHub Desktop
 $wingets += Add-Winget -Name "GitHub Desktop" -ID "GitHub.GitHubDesktop"
 
@@ -587,6 +581,9 @@ Install-Zip @WizTreeParams
 
 # Yubico Authenticator
 $wingets += Add-Winget -Name "Yubico Authenticator" -ID "Yubico.Authenticator"
+
+# Zen Browser
+$wingets += Add-Winget -Name "Zen Browser" -ID "Zen-Team.Zen-Browser"
 
 # -------------------- Game Launchers & Emulators --------------------
 
